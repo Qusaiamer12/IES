@@ -24,6 +24,11 @@ IMAGES = {
     "IES_LOGO": ("ies-chapter-logo.png", 516, "PNG"),
     "HU_LOGO": ("hashemite-university-logo.png", 240, "PNG"),
     "BRANCH_LOGO": ("ieee-hu-branch-logo.png", 240, "PNG"),
+    "P_HUBOT": ("partners/hubot.png", 320, "PNG"),
+    "P_IECS": ("partners/iecs.png", 360, "PNG"),
+    "P_KADAN": ("partners/kadan.png", 160, "PNG"),
+    "P_GOODDAY": ("partners/good-day.png", 320, "PNG"),
+    "P_ZEIDAN": ("partners/zeidan.png", 260, "PNG"),
 }
 
 
@@ -60,7 +65,7 @@ def main() -> None:
     html = html.replace("/*__EVENTS__*/[]", json.dumps(events, ensure_ascii=False))
 
     standalone = (
-        '<!doctype html>\n<html lang="ar" dir="rtl">\n<head>\n<meta charset="utf-8">\n'
+        '<!doctype html>\n<html lang="en" dir="ltr">\n<head>\n<meta charset="utf-8">\n'
         '<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">\n'
         "</head>\n<body>\n" + html + "\n</body>\n</html>\n"
     )
