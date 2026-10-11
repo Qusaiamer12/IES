@@ -175,7 +175,10 @@ html[lang="en"] .hero h1{line-height:.95;letter-spacing:-.035em}
 .sec-navy .empty p{color:var(--mist)}
 .events{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,320px),1fr));gap:24px}
 .event{display:flex;flex-direction:column;gap:10px;border:2px solid var(--navy);border-radius:22px;padding:24px;box-shadow:8px 8px 0 var(--navy);background:var(--white)}
-.event .date{font:600 15px/1.3 var(--f-mono);color:var(--blue)}
+.event .date{font:600 15px/1.3 var(--f-mono);color:var(--blue);display:flex;align-items:center;gap:8px}
+html[lang="ar"] .event .date,html[lang="ar"] .ev-head-meta{font-family:var(--f-ar);font-weight:700}
+.ev-head-meta span{display:inline-flex;align-items:center;gap:6px}
+.ev-ph{position:absolute;inset:0;width:100%;height:100%}
 .event h3{font-size:22px;line-height:1.35}
 .event p{color:var(--ink-2)}
 .tbd{display:inline-block;font:600 13px/1.4 var(--f-mono);letter-spacing:.06em;background:rgba(255,194,26,.22);color:inherit;border:1px dashed currentColor;border-radius:6px;padding:1px 7px;direction:ltr;unicode-bidi:isolate}
@@ -288,7 +291,8 @@ html[lang="ar"] .pub h3{text-align:right}
 
 /* ---------- footer ---------- */
 .foot{background:var(--navy);color:var(--mist);padding-block:56px 40px;border-top:4px solid var(--gold)}
-.foot-grid{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr) minmax(0,1fr);gap:36px}
+.foot-grid{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr) minmax(0,1fr) minmax(0,1.2fr);gap:36px}
+@media (max-width:1060px) and (min-width:861px){.foot-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media (max-width:860px){.foot-grid{grid-template-columns:1fr}}
 .foot-grid>*{min-width:0;display:flex;flex-direction:column;gap:14px}
 .foot-logos{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
@@ -301,7 +305,107 @@ html[lang="ar"] .pub h3{text-align:right}
 .foot a{text-decoration:none;color:var(--white);font-weight:500}
 .foot a:hover{color:var(--gold)}
 .foot ul{display:flex;flex-direction:column;gap:6px}
-.foot-bottom{margin-top:44px;padding-top:22px;border-top:1px solid var(--navy-line);display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px;font-size:14px}
+.foot-bottom{margin-top:44px;padding-top:22px;border-top:1px solid var(--navy-line);display:flex;flex-direction:column;gap:14px;font-size:14px}
+
+/* ---------- IEEE utility bar ---------- */
+.ieee-bar{background:#060D1F;color:var(--mist);font-size:13px}
+.ieee-bar .wrap{display:flex;align-items:center;justify-content:space-between;gap:16px;min-height:36px}
+.ieee-bar ul{display:flex;flex-wrap:wrap;gap:4px 18px}
+.ieee-bar a{text-decoration:none;color:var(--mist);direction:ltr;display:inline-block;padding-block:6px}
+.ieee-bar a:hover{color:var(--white)}
+.ieee-bar .mark{font:700 15px/1 var(--f-en);letter-spacing:.06em;color:var(--white);direction:ltr}
+@media (max-width:560px){.ieee-bar .opt{display:none}}
+.top-cta{min-height:44px;padding:8px 20px;font-size:15px}
+@media (max-width:880px){.top-cta{display:none}.nav .nav-join{color:var(--gold)}}
+@media (min-width:881px){.nav .nav-join{display:none}}
+
+/* breadcrumbs */
+.crumbs{display:flex;flex-wrap:wrap;gap:8px;font-size:14px;color:var(--mist)}
+.crumbs a{color:var(--white);text-decoration:none;font-weight:500}
+.crumbs a:hover{color:var(--gold)}
+.crumbs span[aria-hidden]{opacity:.6}
+
+/* event cards + detail */
+.event{padding:0;overflow:hidden}
+.event .ev-img{aspect-ratio:16/9;background:var(--navy-deep);overflow:hidden;position:relative}
+.event .ev-img img{width:100%;height:100%;object-fit:cover}
+.event .ev-body{display:flex;flex-direction:column;gap:10px;padding:22px 24px 24px}
+.tag{display:inline-block;width:fit-content;background:var(--orange);color:var(--navy);font:700 12px/1.3 var(--f-en);letter-spacing:.12em;text-transform:uppercase;padding:5px 10px;border-radius:6px}
+html[lang="ar"] .tag{font:700 13px/1.3 var(--f-ar);letter-spacing:0}
+.ev-img .tag{position:absolute;top:14px;inset-inline-start:14px}
+.event h3 a{text-decoration:none}
+.event h3 a:hover{text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:4px}
+.ev-sub{display:flex;flex-direction:column;gap:6px}
+.article{max-width:72ch;display:flex;flex-direction:column;gap:18px}
+.article p,.article li{font-size:18px;line-height:1.85;color:var(--ink-2)}
+.article ul{list-style:disc;padding-inline-start:22px;display:flex;flex-direction:column;gap:6px}
+.article h2{font-size:clamp(24px,2.6vw,30px);margin-top:12px}
+.article .cover{border-radius:20px;overflow:hidden;border:2px solid var(--navy);box-shadow:8px 8px 0 var(--navy)}
+.ev-head-meta{display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center;font:600 15px/1.3 var(--f-mono);color:var(--mist)}
+
+.back-ic{display:inline-flex;transform:scaleX(-1)}
+[dir="rtl"] .back-ic{transform:none}
+
+/* term tabs */
+.terms{display:flex;flex-wrap:wrap;align-items:center;gap:10px 16px;margin-bottom:22px}
+.terms h2{font-size:clamp(24px,2.8vw,32px);margin-inline-end:auto}
+
+/* steps */
+.steps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px;counter-reset:step}
+@media (max-width:860px){.steps{grid-template-columns:1fr}}
+.step{display:flex;flex-direction:column;gap:10px;padding:24px;border:2px solid var(--navy);border-radius:20px;background:var(--white);box-shadow:6px 6px 0 var(--navy)}
+.step .n{font:700 44px/1 var(--f-en);color:var(--orange);-webkit-text-stroke:2px var(--navy);direction:ltr}
+.step h3{font-size:20px;line-height:1.4}
+.step p{color:var(--ink-2);font-size:16px}
+.layers{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px}
+@media (max-width:860px){.layers{grid-template-columns:1fr}}
+.layer{display:flex;flex-direction:column;gap:10px;padding-top:20px;border-top:3px solid var(--gold)}
+.layer .k{font:600 13px/1.3 var(--f-mono);letter-spacing:.14em;color:var(--gold)}
+.layer h3{font-size:22px;line-height:1.35}
+.layer p{color:var(--mist);font-size:16px}
+.layer a{color:var(--gold);font-weight:700}
+
+/* FAQ */
+.faq{display:flex;flex-direction:column;gap:12px;max-width:860px}
+.faq details{border:2px solid var(--navy);border-radius:16px;background:var(--white)}
+.faq details[open]{box-shadow:6px 6px 0 var(--navy)}
+.faq summary{cursor:pointer;list-style:none;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:18px 22px;font-weight:700;font-size:18px;min-height:56px}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary .pm{flex-shrink:0;width:30px;height:30px;border-radius:999px;background:var(--gold);display:flex;align-items:center;justify-content:center;transition:transform .2s}
+.faq details[open] summary .pm{transform:rotate(45deg)}
+.faq .a{padding:0 22px 20px;color:var(--ink-2);max-width:68ch}
+
+/* timeline */
+.timeline{display:flex;flex-direction:column;gap:0;border-inline-start:3px solid var(--navy-line);margin-inline-start:10px}
+.tl{position:relative;padding:0 0 32px;padding-inline-start:32px;display:flex;flex-direction:column;gap:6px}
+.tl::before{content:"";position:absolute;inset-inline-start:-12px;top:6px;width:18px;height:18px;border-radius:4px;background:var(--gold);transform:rotate(45deg);border:3px solid var(--navy)}
+.tl b{font:700 32px/1 var(--f-en);color:var(--gold);direction:ltr;width:fit-content}
+.tl h3{font-size:21px;line-height:1.4}
+.tl p{color:var(--mist);max-width:60ch}
+.tl.now::before{background:var(--orange)}
+
+/* contact */
+.form{display:flex;flex-direction:column;gap:16px}
+.field{display:flex;flex-direction:column;gap:6px}
+.field label{font-weight:700;font-size:15px}
+.field input,.field textarea{font:inherit;font-size:17px;padding:12px 14px;border:2px solid var(--navy);border-radius:12px;background:var(--white);color:var(--navy);min-height:50px}
+.field textarea{min-height:140px;resize:vertical}
+.field input:focus,.field textarea:focus{outline:3px solid var(--blue);outline-offset:1px}
+.info-list{display:flex;flex-direction:column;gap:18px}
+.info-list>div{display:flex;gap:14px;align-items:flex-start}
+.info-list>div>div{min-width:0;display:flex;flex-direction:column;gap:2px;align-items:flex-start}
+.info-list .ic{width:44px;height:44px;border-radius:999px;background:var(--navy);color:var(--gold);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.info-list b{display:block}
+.info-list p{color:var(--ink-2)}
+
+/* social icon buttons */
+.socials{display:flex;flex-wrap:wrap;gap:10px}
+.soc{width:44px;height:44px;border-radius:999px;border:2px solid var(--navy-line);display:inline-flex;align-items:center;justify-content:center;color:var(--white);text-decoration:none}
+a.soc:hover{background:var(--gold);border-color:var(--gold);color:var(--navy)}
+span.soc{opacity:.45}
+.foot .foot-legal{display:flex;flex-direction:row;flex-wrap:wrap;gap:6px 18px;font-size:13px}
+.foot-legal a{color:var(--mist);font-weight:400}
+.foot-copy{font-size:13px;line-height:1.6;max-width:100ch}
 
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{transition:none!important;animation:none!important}
@@ -318,9 +422,12 @@ html[lang="ar"] .pub h3{text-align:right}
 
   /* ===== settings still to be filled in ===== */
   const CONFIG = {
-    domain: null,        // e.g. "ieshu.org", needed before writing NFC tags
-    joinFormUrl: null,   // Google Form or Formspree link
-    social: { instagram: null, linkedin: null, facebook: null, email: null }
+    domain: null,          // e.g. "ieshu.org", needed before writing NFC tags
+    currentTerm: '2026/2027',
+    joinFormUrl: null,     // Google Form or Formspree link
+    contactFormUrl: null,  // Formspree endpoint for the contact form
+    email: null,
+    social: { instagram: null, linkedin: null, facebook: null }
   };
 
   const IMG = { ies: "__IES_LOGO__", hu: "__HU_LOGO__", branch: "__BRANCH_LOGO__" };
@@ -366,7 +473,12 @@ html[lang="ar"] .pub h3{text-align:right}
     calendar: '<path d="M4 6h16v14H4zM4 10h16M8 3v5M16 3v5"/>',
     mail: '<path d="M3 6h18v12H3zM3 7l9 6 9-6"/>',
     phone: '<path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2z"/>',
-    link: '<path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/>'
+    link: '<path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/>',
+    pin: '<path d="M12 21s-7-6.2-7-12a7 7 0 0 1 14 0c0 5.8-7 12-7 12z"/><circle cx="12" cy="9" r="2.5"/>',
+    plus: '<path d="M12 5v14M5 12h14"/>',
+    instagram: '<rect x="3.5" y="3.5" width="17" height="17" rx="5"/><circle cx="12" cy="12" r="4"/><path d="M17 7h.01"/>',
+    linkedin: '<rect x="3.5" y="3.5" width="17" height="17" rx="3"/><path d="M8 10.5V16M8 7.8v.01M11.5 16v-5.5M11.5 13c0-1.6 1-2.6 2.4-2.6s2.1 1 2.1 2.6V16"/>',
+    facebook: '<path d="M14 21v-8h3l.5-3.5H14V7.8c0-1 .4-1.8 1.9-1.8H18V3.1A20 20 0 0 0 15.4 3C12.8 3 11 4.6 11 7.5v2H8V13h3v8"/>'
   };
   const arrow = (size = 20) => `<span class="flip" style="display:inline-flex">${ico(P.arrow, size)}</span>`;
 
@@ -470,13 +582,25 @@ html[lang="ar"] .pub h3{text-align:right}
     </a>`;
   };
 
+  const fmtDate = d => {
+    if (!d) return '';
+    const dt = new Date(d + 'T12:00:00');
+    return isNaN(dt) ? d : dt.toLocaleDateString(lang === 'ar' ? 'ar-JO-u-nu-latn' : 'en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+  };
+  const evCat = e => L(e.categoryAr, e.categoryEn);
+
   const eventsList = (list) => list.length ? `<div class="events">${list.map(e => `
       <article class="event">
-        <div class="date mono">${esc(e.date || '')}</div>
-        <h3>${esc(L(e.titleAr, e.titleEn))}</h3>
-        ${e.locationAr || e.locationEn ? `<p>${esc(L(e.locationAr, e.locationEn))}</p>` : ''}
-        ${e.descAr || e.descEn ? `<p>${esc(L(e.descAr, e.descEn))}</p>` : ''}
-        ${e.link ? `<a class="textlink" href="${esc(e.link)}" target="_blank" rel="noopener">${L('التفاصيل', 'Details')} ${arrow(18)}</a>` : ''}
+        <div class="ev-img">${e.image ? `<img src="${esc(e.image)}" alt="" loading="lazy">` : `<svg class="ev-ph flip" viewBox="0 0 400 225" preserveAspectRatio="xMaxYMid slice" aria-hidden="true">
+            <polygon points="270,0 400,0 400,225 200,225" fill="#FF6B1A"/><polygon points="226,0 246,0 176,225 156,225" fill="#FFC21A"/>
+            <g stroke="#FFFFFF" stroke-opacity=".3" stroke-width="3" stroke-linecap="round" fill="none"><path d="M0 170 H60 L90 140 H140"/><path d="M40 0 V30 L70 60 H120"/></g>
+            <g fill="#FFFFFF" fill-opacity=".6"><circle cx="140" cy="140" r="5"/><circle cx="120" cy="60" r="5"/></g></svg>`}${evCat(e) ? `<span class="tag">${esc(evCat(e))}</span>` : ''}</div>
+        <div class="ev-body">
+          <div class="date mono">${ico(P.calendar, 16)} ${esc(fmtDate(e.date))}</div>
+          <h3><a href="#e-${esc(e.slug)}">${esc(L(e.titleAr, e.titleEn))}</a></h3>
+          ${e.summaryAr || e.summaryEn ? `<p>${esc(L(e.summaryAr, e.summaryEn))}</p>` : ''}
+          <a class="textlink" href="#e-${esc(e.slug)}">${L('اقرأ عن الفعالية', 'Read more')} ${arrow(18)}</a>
+        </div>
       </article>`).join('')}</div>`
     : `<div class="empty">
         ${hex(P.calendar, false, 64)}
@@ -484,16 +608,27 @@ html[lang="ar"] .pub h3{text-align:right}
         <p>${L('أول فعاليات الشعبة رح تنزل هون أول ما تنعلن. تابعنا على حساباتنا', 'The chapter’s first events will be listed here as soon as they are announced. Follow us on')} ${TBD(L('روابط السوشال', 'social links'))}</p></div>
       </div>`;
 
-  const upcoming = () => {
-    const today = new Date().toISOString().slice(0, 10);
-    return EVENTS.filter(e => !e.date || e.date >= today).slice(0, 3);
-  };
+  const today = () => new Date().toISOString().slice(0, 10);
+  const byDate = (a, b) => String(a.date).localeCompare(String(b.date));
+  const upcomingEvents = () => EVENTS.filter(e => !e.date || e.date >= today()).sort(byDate);
+  const pastEvents = () => EVENTS.filter(e => e.date && e.date < today()).sort(byDate).reverse();
+  // home: next events first, otherwise the latest past ones
+  const featuredEvents = () => (upcomingEvents().length ? upcomingEvents() : pastEvents()).slice(0, 3);
 
   /* ===== header / footer ===== */
-  const NAV = [['home', 'الرئيسية', 'Home'], ['about', 'عن IES', 'About'], ['team', 'الفريق', 'Team'], ['events', 'الفعاليات', 'Events'], ['join', 'انضم', 'Join']];
+  const NAV = [['home', 'الرئيسية', 'Home'], ['about', 'عن IES', 'About'], ['team', 'الفريق', 'Team'], ['events', 'الفعاليات', 'Events'], ['contact', 'تواصل', 'Contact']];
+  const IEEE_LINKS = [
+    ['IEEE.org', 'https://www.ieee.org/', ''], ['IEEE Xplore', 'https://ieeexplore.ieee.org/', ''],
+    ['IEEE Spectrum', 'https://spectrum.ieee.org/', 'opt'], ['IEEE IES', 'https://www.ieee-ies.org/', 'opt']
+  ];
 
   const header = active => `
     <a class="skip" href="#main" data-skip>${L('انتقل للمحتوى', 'Skip to content')}</a>
+    <div class="ieee-bar"><div class="wrap">
+      <ul>${IEEE_LINKS.map(([n, h, c]) => `<li class="${c}"><a href="${h}" target="_blank" rel="noopener">${n}</a></li>`).join('')}
+        <li><a href="https://www.ieee.org/membership/join/index.html" target="_blank" rel="noopener">${L('انضم إلى IEEE', 'Join IEEE')}</a></li></ul>
+      <span class="mark" aria-hidden="true">IEEE</span>
+    </div></div>
     <header class="top"><div class="wrap top-in">
       <a class="brand" href="#home" aria-label="${L('IEEE IES · الجامعة الهاشمية، الرئيسية', 'IEEE IES Hashemite University, home')}">
         <span class="brand-pill"><img src="${IMG.ies}" alt="" width="58" height="34"></span>
@@ -501,16 +636,26 @@ html[lang="ar"] .pub h3{text-align:right}
       </a>
       <nav class="nav" id="nav" aria-label="${L('القائمة الرئيسية', 'Main')}">
         ${NAV.map(([k, ar, en]) => `<a href="#${k}" ${k === active ? 'aria-current="page"' : ''}>${L(ar, en)}</a>`).join('')}
+        <a href="#join" class="nav-join" ${active === 'join' ? 'aria-current="page"' : ''}>${L('انضم للشعبة', 'Join the chapter')}</a>
       </nav>
       <div class="top-actions">
+        <a class="btn btn-gold top-cta" href="#join" ${active === 'join' ? 'aria-current="page"' : ''}>${L('انضم للشعبة', 'Join the chapter')}</a>
         <button type="button" class="lang" id="langBtn" lang="${lang === 'ar' ? 'en' : 'ar'}" aria-label="${L('Switch to English', 'التبديل إلى العربية')}">${lang === 'ar' ? 'EN' : 'عربي'}</button>
         <button type="button" class="menu-btn" id="menuBtn" aria-expanded="false" aria-controls="nav" aria-label="${L('القائمة', 'Menu')}">${ico(P.menu, 22, 'currentColor', 2.4)}</button>
       </div>
     </div></header>`;
 
-  const socialItem = (key, label) => CONFIG.social[key]
-    ? `<li><a href="${esc(CONFIG.social[key])}" target="_blank" rel="noopener">${label}</a></li>`
-    : `<li>${label} ${TBD()}</li>`;
+  const SOCIALS = [['instagram', 'Instagram'], ['linkedin', 'LinkedIn'], ['facebook', 'Facebook']];
+  const socialIcons = () => `<div class="socials">${SOCIALS.map(([k, n]) => CONFIG.social[k]
+      ? `<a class="soc" href="${esc(CONFIG.social[k])}" target="_blank" rel="noopener" aria-label="${n}">${ico(P[k], 20)}</a>`
+      : `<span class="soc" title="${n}: ${L('الرابط لسا ما انضاف', 'link not added yet')}" aria-label="${n} (${L('قريبًا', 'coming soon')})">${ico(P[k], 20)}</span>`).join('')}</div>`;
+  const IEEE_LEGAL = [
+    ['Accessibility', 'https://www.ieee.org/accessibility_statement.html'],
+    ['Nondiscrimination Policy', 'https://www.ieee.org/p9-26.html'],
+    ['IEEE Ethics Reporting', 'https://ieee-ethics-reporting.org/'],
+    ['IEEE Privacy Policy', 'https://www.ieee.org/security_privacy.html'],
+    ['Terms & Disclosures', 'https://www.ieee.org/about/help/site-terms-conditions.html']
+  ];
 
   const footer = () => `
     <footer class="foot"><div class="wrap">
@@ -522,25 +667,33 @@ html[lang="ar"] .pub h3{text-align:right}
             <span class="c"><img src="${IMG.hu}" alt="${L('الجامعة الهاشمية', 'The Hashemite University')}" width="58" height="58"></span>
           </div>
           <strong>${L('شعبة IEEE IES الطلابية', 'IEEE IES Student Chapter')}</strong>
-          <p>${L('فرع IEEE · الجامعة الهاشمية. الدورة 2026/2027.', 'IEEE Hashemite University Student Branch. Term 2026/2027.')}</p>
+          <p>${L('فرع IEEE الطلابي في الجامعة الهاشمية، شعبة الأردن، الإقليم الثامن.', 'IEEE Hashemite University Student Branch, Jordan Section, Region 8.')}</p>
         </div>
         <div>
-          <h3>${L('الموقع', 'Site')}</h3>
-          <ul>${NAV.map(([k, ar, en]) => `<li><a href="#${k}">${L(ar, en)}</a></li>`).join('')}</ul>
+          <h3>${L('الموقع', 'Explore')}</h3>
+          <ul>${NAV.map(([k, ar, en]) => `<li><a href="#${k}">${L(ar, en)}</a></li>`).join('')}<li><a href="#join">${L('انضم للشعبة', 'Join the chapter')}</a></li></ul>
         </div>
         <div>
-          <h3>${L('تابعنا', 'Follow')}</h3>
-          <ul>${socialItem('instagram', 'Instagram')}${socialItem('linkedin', 'LinkedIn')}${socialItem('facebook', 'Facebook')}${socialItem('email', L('البريد', 'Email'))}</ul>
+          <h3>${L('روابط IEEE', 'IEEE links')}</h3>
+          <ul>${IEEE_LINKS.map(([n, h]) => `<li><a href="${h}" target="_blank" rel="noopener" class="ltr">${n}</a></li>`).join('')}</ul>
+        </div>
+        <div>
+          <h3>${L('تواصل', 'Contact')}</h3>
+          <p>${L('الجامعة الهاشمية، الزرقاء، الأردن', 'The Hashemite University, Zarqa, Jordan')}</p>
+          <p>${CONFIG.email ? `<a href="mailto:${esc(CONFIG.email)}" class="ltr">${esc(CONFIG.email)}</a>` : `${L('البريد', 'Email')} ${TBD()}`}</p>
+          ${socialIcons()}
         </div>
       </div>
       <div class="foot-bottom">
-        <span>© 2026 IEEE IES · ${L('الجامعة الهاشمية', 'Hashemite University')}</span>
-        <span class="ltr">Built to Connect · جزء من البصمة</span>
+        <ul class="foot-legal ltr">${IEEE_LEGAL.map(([n, h]) => `<li><a href="${h}" target="_blank" rel="noopener">${n}</a></li>`).join('')}</ul>
+        <p class="foot-copy ltr">© Copyright 2026 IEEE – All rights reserved. A public charity, IEEE is the world's largest technical professional organization dedicated to advancing technology for the benefit of humanity.</p>
+        <p class="foot-copy ltr">Built to Connect · جزء من البصمة</p>
       </div>
     </div></footer>`;
 
   /* ===== pages ===== */
-  const pageHero = (eyebrow, title, lead) => `
+  // crumbs: [[label, hash], ...] — the last one is the current page
+  const pageHero = (eyebrow, title, lead, crumbs) => `
     <section class="hero page-hero">
       <div class="slab-corner flip" aria-hidden="true"><svg viewBox="0 0 420 400" preserveAspectRatio="xMaxYMid slice">
         <polygon points="230,0 420,0 420,400 110,400" fill="#FF6B1A"/>
@@ -551,6 +704,10 @@ html[lang="ar"] .pub h3{text-align:right}
         <span class="eyebrow">${eyebrow}</span>
         <h1>${title}</h1>
         ${lead ? `<p class="lead">${lead}</p>` : ''}
+        <nav class="crumbs" aria-label="${L('مسار الصفحة', 'Breadcrumb')}">
+          <a href="#home">${L('الرئيسية', 'Home')}</a>
+          ${(crumbs || [[title.replace(/<[^>]+>/g, '')]]).map(([n, h], i, a) => `<span aria-hidden="true">/</span>${i < a.length - 1 && h ? `<a href="#${h}">${n}</a>` : `<span aria-current="page">${n}</span>`}`).join('')}
+        </nav>
       </div></div>
       ${edge()}
     </section>`;
@@ -622,10 +779,10 @@ html[lang="ar"] .pub h3{text-align:right}
     <section class="sec sec-white" aria-labelledby="ev-h">
       <div class="wrap">
         <div class="sec-head">
-          <div><span class="eyebrow">${L('الفعاليات', 'Events')}</span><h2 id="ev-h">${L('الفعاليات القادمة', 'Upcoming events')}</h2></div>
+          <div><span class="eyebrow">${L('الفعاليات', 'Events')}</span><h2 id="ev-h">${upcomingEvents().length || !EVENTS.length ? L('الفعاليات القادمة', 'Upcoming events') : L('آخر فعالياتنا', 'Latest activities')}</h2></div>
           ${EVENTS.length ? `<a class="textlink" href="#events">${L('كل الفعاليات', 'All events')} ${arrow(18)}</a>` : ''}
         </div>
-        ${eventsList(upcoming())}
+        ${eventsList(featuredEvents())}
       </div>
     </section>
 
@@ -700,12 +857,17 @@ html[lang="ar"] .pub h3{text-align:right}
     </section>
 
     <section class="sec sec-navy" aria-labelledby="ab4">
-      <div class="wrap">
-        <div class="sec-head"><div>
-          <span class="eyebrow">${L('شو بتستفيد', 'What you get')}</span>
-          <h2 id="ab4">${L('شو بتاخد لما تنضم', 'What members get')}</h2>
-        </div></div>
-        ${benefitsGrid()}
+      <div class="wrap split">
+        <div class="prose">
+          <span class="eyebrow">${L('قصتنا', 'Our story')}</span>
+          <h2 id="ab4">${L('من 1951 لهلأ', 'From 1951 to now')}</h2>
+          <p>${L('الشعبة بتشتغل ضمن فرع IEEE الطلابي في الجامعة الهاشمية، وبتنضم لتاريخ طويل إلى IES حول العالم.', 'The chapter works within the IEEE Hashemite University Student Branch and joins a long IES history worldwide.')}</p>
+        </div>
+        <ol class="timeline" style="list-style:none">
+          <li class="tl"><b>1951</b><h3>${L('بداية IES', 'IES begins')}</h3><p>${L('جمعية الإلكترونيات الصناعية بتحتفل بمرور 75 سنة في 2026.', 'The Industrial Electronics Society celebrates 75 years in 2026.')}</p></li>
+          <li class="tl"><b>2002</b><h3>${L('فرع IEEE في الجامعة الهاشمية', 'IEEE at the Hashemite University')}</h3><p>${L('تأسيس فرع IEEE الطلابي في الجامعة ضمن شعبة الأردن والإقليم الثامن.', 'The IEEE HU Student Branch is established within the Jordan Section and Region 8.')}</p></li>
+          <li class="tl now"><b>2026</b><h3>${L('تأسيس شعبة IES HU', 'IES HU is founded')}</h3><p>${L('دورة 2026/2027 هي دورة التأسيس والفريق المؤسس.', '2026/2027 is the founding term with the founding team.')}</p></li>
+        </ol>
       </div>
       ${edge()}
     </section>
@@ -714,13 +876,23 @@ html[lang="ar"] .pub h3{text-align:right}
   const sortedMembers = () => [...MEMBERS].sort((a, b) =>
     ROLE_ORDER.indexOf(a.role) - ROLE_ORDER.indexOf(b.role) || String(a.memberId).localeCompare(String(b.memberId)));
 
+  const termOf = m => m.term || CONFIG.currentTerm;
+  const allTerms = () => [...new Set(MEMBERS.map(termOf))].sort().reverse();
+  let teamTerm = null;
+
   const team = () => {
-    const list = sortedMembers().filter(m => teamFilter === 'all' || m.role === teamFilter);
+    const terms = allTerms();
+    if (!terms.includes(teamTerm)) teamTerm = terms[0] || CONFIG.currentTerm;
+    const list = sortedMembers().filter(m => termOf(m) === teamTerm && (teamFilter === 'all' || m.role === teamFilter));
     const btn = (key, label, acc) => `<button type="button" class="filter" data-filter="${key}" aria-pressed="${teamFilter === key}" ${acc ? `style="--acc:${acc}"` : ''}>${acc ? '<i aria-hidden="true"></i>' : ''}${label}</button>`;
     return `
     ${pageHero(L('الفريق', 'Team'), L('فريق التأسيس', 'The founding team'), L('الهيئة الإدارية والأعضاء لدورة 2026/2027. اضغط على أي عضو لتفتح صفحته.', 'The 2026/2027 committee and members. Open any member to see their page.'))}
     <section class="sec sec-white" aria-label="${L('أعضاء الفريق', 'Team members')}">
       <div class="wrap">
+        <div class="terms">
+          <h2>${L('الهيئة الإدارية', 'Committee')} <span class="ltr">${esc(teamTerm)}</span></h2>
+          ${terms.length > 1 ? `<div class="filters" role="group" aria-label="${L('اختر الدورة', 'Choose term')}" style="margin:0">${terms.map(t => `<button type="button" class="filter" data-term="${esc(t)}" aria-pressed="${t === teamTerm}"><span class="ltr">${esc(t)}</span></button>`).join('')}</div>` : ''}
+        </div>
         <div class="filters" role="group" aria-label="${L('فلترة حسب الدور', 'Filter by role')}">
           ${btn('all', L('الكل', 'All'))}
           ${ROLE_ORDER.map(k => btn(k, L(ROLES[k].ar, ROLES[k].en[0] + ROLES[k].en.slice(1).toLowerCase()), ROLES[k].acc)).join('')}
@@ -733,16 +905,89 @@ html[lang="ar"] .pub h3{text-align:right}
     ${cta()}`;
   };
 
-  const events = () => `
-    ${pageHero(L('الفعاليات', 'Events'), L('الفعاليات', 'Events'), L('ورش وزيارات ولقاءات الشعبة.', 'Chapter workshops, visits and meetups.'))}
-    <section class="sec sec-white" aria-label="${L('قائمة الفعاليات', 'Event list')}">
-      <div class="wrap">${eventsList(EVENTS)}</div>
+  const events = () => {
+    const up = upcomingEvents(), past = pastEvents();
+    return `
+    ${pageHero(L('الفعاليات', 'Events'), L('الفعاليات', 'Events'), L('ورش وزيارات ولقاءات الشعبة، ولكل فعالية صفحة توثّق شو صار فيها.', 'Chapter workshops, visits and meetups. Every activity gets its own page.'))}
+    <section class="sec sec-white" aria-labelledby="ev-up">
+      <div class="wrap">
+        <div class="sec-head"><div><h2 id="ev-up">${L('القادمة', 'Upcoming')}</h2></div></div>
+        ${eventsList(up)}
+        ${past.length ? `<div class="sec-head" style="margin-top:72px"><div><h2>${L('فعاليات سابقة', 'Past activities')}</h2></div></div>${eventsList(past)}` : ''}
+      </div>
     </section>
     ${cta()}`;
+  };
+
+  const eventPage = slug => {
+    const e = EVENTS.find(x => x.slug === slug);
+    if (!e) return `${pageHero('404', L('الفعالية مش موجودة', 'Event not found'), '', [[L('الفعاليات', 'Events'), 'events'], ['404']])}
+      <section class="sec sec-white"><div class="wrap"><a class="btn btn-gold btn-hard" href="#events">${L('كل الفعاليات', 'All events')} ${arrow()}</a></div></section>`;
+    const body = L(e.bodyAr, e.bodyEn) || [];
+    return `
+    ${pageHero(esc(evCat(e) || L('فعالية', 'Activity')), esc(L(e.titleAr, e.titleEn)),
+      `<span class="ev-head-meta"><span>${ico(P.calendar, 16)} ${esc(fmtDate(e.date))}</span>${L(e.locationAr, e.locationEn) ? `<span>${ico(P.pin, 16)} ${esc(L(e.locationAr, e.locationEn))}</span>` : ''}</span>`,
+      [[L('الفعاليات', 'Events'), 'events'], [esc(L(e.titleAr, e.titleEn))]])}
+    <section class="sec sec-white"><div class="wrap"><article class="article">
+      ${e.image ? `<div class="cover"><img src="${esc(e.image)}" alt=""></div>` : ''}
+      ${e.summaryAr || e.summaryEn ? `<p style="font-weight:700;color:var(--navy)">${esc(L(e.summaryAr, e.summaryEn))}</p>` : ''}
+      ${(Array.isArray(body) ? body : [body]).map(p => `<p>${esc(p)}</p>`).join('')}
+      ${e.link ? `<div><a class="btn btn-gold btn-hard" href="${esc(e.link)}" target="_blank" rel="noopener">${L('التسجيل والتفاصيل', 'Registration & details')} ${arrow()}</a></div>` : ''}
+      <div><a class="textlink" href="#events"><span class="back-ic">${ico(P.arrow, 18)}</span>${L('كل الفعاليات', 'All events')}</a></div>
+    </article></div></section>
+    ${cta()}`;
+  };
+
+  const FAQ = [
+    { qAr: 'شو هي IES؟', qEn: 'What is IES?',
+      aAr: 'جمعية الإلكترونيات الصناعية، وحدة من الجمعيات التقنية في IEEE، مختصة بالإلكترونيات والتحكم والاتصالات والقياس والذكاء الحسابي في الأنظمة الصناعية وأنظمة التصنيع.',
+      aEn: 'The Industrial Electronics Society, an IEEE technical society for electronics, control, communications, instrumentation and computational intelligence in industrial and manufacturing systems.' },
+    { qAr: 'شو بستفيد لما أنضم؟', qEn: 'What do I get as a member?',
+      aAr: 'ورش عملية (Arduino، PLC، MATLAB، إلكترونيات القدرة)، الوصول لأبحاث IEEE، تواصل مع مهندسين وخريجين، زيارات صناعية، خبرة قيادية، سيرة ذاتية أقوى، مساعدة في البحث والنشر، ومجتمع من ناس بتبني أشياء.',
+      aEn: 'Hands-on workshops (Arduino, PLC, MATLAB, power electronics), access to IEEE research, networking with engineers and alumni, industry visits, leadership experience, a stronger CV, help with research and publishing, and a community of people who build things.' },
+    { qAr: 'لازم أكون عضو IEEE عشان أشارك بالفعاليات؟', qEn: 'Do I need IEEE membership to join activities?', tbd: true },
+    { qAr: 'هل الانضمام للشعبة بكلّف شي؟', qEn: 'Does joining the chapter cost anything?', tbd: true },
+    { qAr: 'لازم أكون طالب هندسة؟', qEn: 'Do I need to be an engineering student?', tbd: true },
+    { qAr: 'كيف بصير جزء من الهيئة الإدارية؟', qEn: 'How do I join the committee?', tbd: true },
+    { qAr: 'وين بلاقي فعاليات الشعبة؟', qEn: 'Where can I find chapter events?',
+      aAr: 'بصفحة الفعاليات بهاد الموقع، وعلى حسابات الشعبة على السوشال ميديا.', aEn: 'On the Events page of this site, and on the chapter’s social media accounts.' }
+  ];
+
+  const faqBlock = () => `<div class="faq">${FAQ.map((f, i) => `
+      <details ${i === 0 ? 'open' : ''}><summary>${L(f.qAr, f.qEn)}<span class="pm" aria-hidden="true">${ico(P.plus, 16, '#0B1530', 2.6)}</span></summary>
+      <div class="a">${f.tbd ? `${L('الجواب رح ينضاف من الهيئة الإدارية.', 'Answer to be added by the committee.')} ${TBD()}` : L(f.aAr, f.aEn)}</div></details>`).join('')}</div>`;
 
   const join = () => `
-    ${pageHero(L('انضم', 'Join'), L('انضم لـ IES HU', 'Join IES HU'), L('عبّي فورم الانضمام وبنتواصل معك.', 'Fill in the join form and we will get in touch.'))}
-    <section class="sec sec-white" aria-labelledby="jf">
+    ${pageHero(L('انضم', 'Join'), L('انضم إلى IES HU', 'Join IES HU'), L('عبّي فورم الانضمام وبنتواصل معك.', 'Fill in the join form and we will get in touch.'))}
+    <section class="sec sec-navy" aria-labelledby="why">
+      <div class="wrap">
+        <div class="sec-head"><div><span class="eyebrow">${L('ليش تنضم', 'Why join')}</span>
+          <h2 id="why">${L('IEEE، وبعدين IES، وبعدين إحنا', 'IEEE, then IES, then us')}</h2></div></div>
+        <div class="layers">
+          <div class="layer"><span class="k">IEEE</span><h3>${L('أكبر منظمة تقنية مهنية بالعالم', 'The world’s largest technical professional organization')}</h3>
+            <p>${L('مكرّسة لتطوير التكنولوجيا لخدمة الإنسانية، وعضويتها بتربطك بمجتمع تقني عالمي.', 'Dedicated to advancing technology for the benefit of humanity. Membership connects you to a global technical community.')}</p>
+            <a href="https://www.ieee.org/membership/join/index.html" target="_blank" rel="noopener">${L('عضوية IEEE', 'IEEE membership')} ↗</a></div>
+          <div class="layer"><span class="k">IEEE IES</span><h3>${L('جمعية الإلكترونيات الصناعية', 'Industrial Electronics Society')}</h3>
+            <p>${L('الأتمتة والروبوتات وإلكترونيات القدرة والأنظمة المدمجة والصناعة 4.0.', 'Automation, robotics, power electronics, embedded systems and Industry 4.0.')}</p>
+            <a href="https://www.ieee-ies.org/" target="_blank" rel="noopener">ieee-ies.org ↗</a></div>
+          <div class="layer"><span class="k">IES HU</span><h3>${L('شعبتنا في الجامعة الهاشمية', 'Our chapter at HU')}</h3>
+            <p>${L('ورش وزيارات وفريق بيتعلم ويبني مع بعض، ضمن فرع IEEE الطلابي في الجامعة.', 'Workshops, visits and a team that learns and builds together, within the HU Student Branch.')}</p>
+            <a href="#about">${L('عن الشعبة', 'About the chapter')}</a></div>
+        </div>
+      </div>
+      ${edge()}
+    </section>
+    <section class="sec sec-white" aria-labelledby="how">
+      <div class="wrap">
+        <div class="sec-head"><div><span class="eyebrow">${L('كيف تنضم', 'How to join')}</span><h2 id="how">${L('بثلاث خطوات', 'In three steps')}</h2></div></div>
+        <ol class="steps" style="list-style:none;padding:0">
+          <li class="step"><span class="n">1</span><h3>${L('عبّي فورم الانضمام', 'Fill in the join form')}</h3><p>${L('الرابط تحت.', 'The link is below.')}</p></li>
+          <li class="step"><span class="n">2</span><h3>${L('بنتواصل معك', 'We get in touch')}</h3><p>${L('الهيئة الإدارية بتراجع الطلب وبترد عليك.', 'The committee reviews your request and replies.')}</p></li>
+          <li class="step"><span class="n">3</span><h3>${L('احضر أول فعالية', 'Come to your first activity')}</h3><p>${L('تابع صفحة الفعاليات وحساباتنا.', 'Watch the Events page and our accounts.')}</p></li>
+        </ol>
+      </div>
+    </section>
+    <section class="sec sec-white" aria-labelledby="jf" style="padding-top:0">
       <div class="wrap split">
         <div class="join-box">
           ${hex(P.doc, !!CONFIG.joinFormUrl, 64)}
@@ -754,8 +999,39 @@ html[lang="ar"] .pub h3{text-align:right}
         </div>
         <div class="prose">
           <span class="eyebrow">${L('شو بتستفيد', 'What you get')}</span>
-          <h2>${L('ليش تنضم؟', 'Why join?')}</h2>
+          <h2>${L('شو بتاخد لما تنضم', 'What members get')}</h2>
           <ul class="chips">${BENEFITS.map(b => `<li class="chip"><i></i>${L(b.ar, b.en)}</li>`).join('')}</ul>
+        </div>
+      </div>
+    </section>
+    <section class="sec sec-white" aria-labelledby="faq-h" style="padding-top:0">
+      <div class="wrap">
+        <div class="sec-head"><div><span class="eyebrow">${L('أسئلة شائعة', 'FAQ')}</span><h2 id="faq-h">${L('أسئلة بتتكرر', 'Common questions')}</h2></div></div>
+        ${faqBlock()}
+      </div>
+    </section>`;
+
+  const contact = () => `
+    ${pageHero(L('تواصل', 'Contact'), L('تواصل معنا', 'Get in touch'), L('أسئلة، أفكار، أو شراكات. احكيلنا.', 'Questions, ideas or partnerships. Tell us.'))}
+    <section class="sec sec-white" aria-labelledby="cf">
+      <div class="wrap split">
+        <div class="panel">
+          <h2 id="cf" style="font-size:26px">${L('ابعتلنا رسالة', 'Send us a message')}</h2>
+          <form class="form" id="contactForm" novalidate>
+            <div class="field"><label for="c-name">${L('الاسم', 'Name')}</label><input id="c-name" name="name" required autocomplete="name"></div>
+            <div class="field"><label for="c-email">${L('البريد الإلكتروني', 'Email')}</label><input id="c-email" name="email" type="email" required autocomplete="email" dir="ltr"></div>
+            <div class="field"><label for="c-subject">${L('الموضوع', 'Subject')}</label><input id="c-subject" name="subject" required></div>
+            <div class="field"><label for="c-msg">${L('الرسالة', 'Message')}</label><textarea id="c-msg" name="message" required></textarea></div>
+            <div><button type="submit" class="btn btn-gold btn-hard" style="border-color:var(--navy)">${L('أرسل الرسالة', 'Send message')} ${arrow()}</button></div>
+            <p class="status" id="contactMsg" role="status"></p>
+          </form>
+        </div>
+        <div class="info-list">
+          <div><span class="ic">${ico(P.pin, 20)}</span><div><b>${L('العنوان', 'Address')}</b><p>${L('الجامعة الهاشمية، الزرقاء، الأردن', 'The Hashemite University, Zarqa, Jordan')} ${TBD(L('الكلية والقسم', 'faculty & department'))}</p>
+            <a class="textlink" style="color:var(--blue)" href="https://www.google.com/maps/search/?api=1&query=The+Hashemite+University+Zarqa" target="_blank" rel="noopener">${L('افتح بالخريطة', 'Open in Maps')} ↗</a></div></div>
+          <div><span class="ic">${ico(P.mail, 20)}</span><div><b>${L('البريد', 'Email')}</b><p>${CONFIG.email ? `<span class="ltr">${esc(CONFIG.email)}</span>` : TBD()}</p></div></div>
+          <div><span class="ic">${ico(P.network, 20)}</span><div><b>${L('تابع الشعبة', 'Follow the chapter')}</b><p>${SOCIALS.map(([k, n]) => CONFIG.social[k] ? `<a href="${esc(CONFIG.social[k])}" target="_blank" rel="noopener">${n}</a>` : `${n} ${TBD()}`).join(' · ')}</p></div></div>
+          <div><span class="ic">${ico(P.flag, 20)}</span><div><b>${L('شراكات', 'Partnerships')}</b><p>${L('شركات أو جهات حابة تدعم ورشة أو زيارة صناعية؟ تواصل معنا.', 'A company or organization that wants to support a workshop or an industry visit? Get in touch.')}</p></div></div>
         </div>
       </div>
     </section>`;
@@ -813,7 +1089,7 @@ html[lang="ar"] .pub h3{text-align:right}
         <div>
           <div class="btn-row">
             <button type="button" class="btn btn-gold btn-hard" id="vcfBtn" style="border-color:var(--navy)">${ico(P.download, 20, 'currentColor', 2.4)} ${L('حفظ جهة الاتصال', 'Save contact')}</button>
-            <a class="btn btn-outline" href="#join">${L('انضم لـ IES', 'Join IES')} ${arrow()}</a>
+            <a class="btn btn-outline" href="#join">${L('انضم إلى IES', 'Join IES')} ${arrow()}</a>
           </div>
           <p class="status" id="vcfMsg" role="status"></p>
           <dl class="facts">
@@ -860,8 +1136,8 @@ html[lang="ar"] .pub h3{text-align:right}
   };
 
   /* ===== router ===== */
-  const PAGES = { home, about, team, events, join };
-  const TITLES = { home: ['الرئيسية', 'Home'], about: ['عن IES', 'About'], team: ['الفريق', 'Team'], events: ['الفعاليات', 'Events'], join: ['انضم', 'Join'] };
+  const PAGES = { home, about, team, events, join, contact };
+  const TITLES = { home: ['الرئيسية', 'Home'], about: ['عن IES', 'About'], team: ['الفريق', 'Team'], events: ['الفعاليات', 'Events'], join: ['انضم', 'Join'], contact: ['تواصل', 'Contact'] };
   const app = document.getElementById('app');
 
   function render() {
@@ -874,6 +1150,10 @@ html[lang="ar"] .pub h3{text-align:right}
       const m = MEMBERS.find(x => x.slug === route.slice(2));
       key = 'team'; body = memberPage(route.slice(2));
       title = m ? L(m.nameAr, m.nameEn) : L('العضو مش موجود', 'Member not found');
+    } else if (route.startsWith('e-')) {
+      const e = EVENTS.find(x => x.slug === route.slice(2));
+      key = 'events'; body = eventPage(route.slice(2));
+      title = e ? L(e.titleAr, e.titleEn) : L('الفعالية مش موجودة', 'Event not found');
     } else {
       key = PAGES[route] ? route : 'home';
       body = PAGES[key]();
@@ -903,6 +1183,24 @@ html[lang="ar"] .pub h3{text-align:right}
       render();
       document.querySelector(`[data-filter="${teamFilter}"]`).focus();
     });
+    document.querySelectorAll('[data-term]').forEach(b => b.onclick = () => {
+      teamTerm = b.dataset.term; teamFilter = 'all';
+      render();
+      document.querySelector(`[data-term="${teamTerm}"]`).focus();
+    });
+    const cf = document.getElementById('contactForm');
+    if (cf) cf.onsubmit = async e => {
+      e.preventDefault();
+      const msg = document.getElementById('contactMsg');
+      const bad = [...cf.elements].find(el => el.required && !el.checkValidity());
+      if (bad) { msg.textContent = L('عبّي كل الحقول، وتأكد إن البريد صحيح.', 'Fill in every field and check the email address.'); bad.focus(); return; }
+      if (!CONFIG.contactFormUrl) { msg.textContent = L('الفورم لسا مش موصول. رح يشتغل لما ينضاف رابط Formspree بالإعدادات.', 'The form is not connected yet. It will work once a Formspree link is added in the settings.'); return; }
+      try {
+        const r = await fetch(CONFIG.contactFormUrl, { method: 'POST', body: new FormData(cf), headers: { Accept: 'application/json' } });
+        if (!r.ok) throw new Error();
+        cf.reset(); msg.textContent = L('وصلت رسالتك. بنرد عليك قريبًا.', 'Message received. We will reply soon.');
+      } catch (_) { msg.textContent = L('ما قدرنا نبعت الرسالة. جرّب كمان مرة أو راسلنا على حساباتنا.', 'Could not send the message. Try again or message us on social media.'); }
+    };
     const vb = document.getElementById('vcfBtn');
     if (vb) vb.onclick = () => {
       const m = MEMBERS.find(x => x.slug === route.slice(2));
