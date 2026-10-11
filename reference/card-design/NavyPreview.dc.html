@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8">
+<title>Navy Card Preview</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&amp;family=Permanent+Marker&amp;family=Herr+Von+Muellerhoff&amp;family=IBM+Plex+Sans+Arabic:wght@500;700&amp;family=JetBrains+Mono:wght@600&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#1449D6}a:hover{color:#0B1530}
+</style>
+</helmet>
+<div style="width: 1792px; height: 540px; display: flex; gap: 80px">
+<div style="width: 856px; height: 540px; flex-shrink: 0">
+<dc-import name="Main" role="vice" tone="navy" founding="{{ true }}" hint-size="856px,540px"></dc-import>
+</div>
+<div style="width: 856px; height: 540px; flex-shrink: 0">
+<dc-import name="Back" role="vice" tone="navy" founding="{{ true }}" hint-size="856px,540px"></dc-import>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1792,"height":540}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {};
+  }
+}
+</script>
+</body>
+</html>

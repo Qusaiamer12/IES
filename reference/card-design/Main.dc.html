@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8">
+<title>IES Card Front</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&amp;family=IBM+Plex+Sans+Arabic:wght@500;700&amp;family=JetBrains+Mono:wght@600&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#FFFFFF}a:hover{color:#FFE2CC}
+</style>
+</helmet>
+<div dir="ltr" style="width: 856px; height: 540px; position: relative; overflow: hidden; border-radius: 32px; background: {{accent}}; color: #FFFFFF; font-family: 'Space Grotesk', sans-serif; box-sizing: border-box; text-align: left">
+<svg aria-hidden="true" width="856" height="540" viewBox="0 0 856 540" style="position: absolute; inset: 0" fill="none">
+<polygon points="560,0 856,0 856,540 380,540" fill="#FF6B1A"></polygon>
+<polygon points="640,0 700,0 520,540 460,540" fill="#FFC21A"></polygon>
+<text x="470" y="520" font-family="Space Grotesk, sans-serif" font-size="300" font-weight="700" fill="none" stroke="#FFFFFF" stroke-opacity="0.28" stroke-width="3" letter-spacing="-10">IES</text>
+<g stroke="#FFFFFF" stroke-opacity="0.35" stroke-width="3" stroke-linecap="round">
+<path d="M0 470 H150 L200 420 H300"></path>
+<path d="M0 500 H90"></path>
+<path d="M300 0 V40 L340 80 H460"></path>
+</g>
+<g fill="#FFFFFF">
+<circle cx="300" cy="420" r="7"></circle><circle cx="460" cy="80" r="7"></circle><circle cx="90" cy="500" r="6"></circle>
+</g>
+</svg>
+<sc-if value="{{leader}}" hint-placeholder-val="{{ true }}">
+<div aria-hidden="true" style="position: absolute; inset: 12px; border: 3px solid #FFC21A; border-radius: 24px; pointer-events: none"></div>
+</sc-if>
+<sc-if value="{{founding}}" hint-placeholder-val="{{ true }}">
+<svg role="img" aria-label="Founding Member, est. 2026" width="190" height="190" viewBox="0 0 150 150" style="position: absolute; right: 56px; top: 176px; transform: rotate(-12deg)">
+<defs><path id="stampRing" d="M75 75 m-53 0 a53 53 0 1 1 106 0 a53 53 0 1 1 -106 0"></path></defs>
+<circle cx="75" cy="75" r="73" fill="#0B1530"></circle>
+<circle cx="75" cy="75" r="69" fill="none" stroke="#FFC21A" stroke-width="2"></circle>
+<circle cx="75" cy="75" r="36" fill="#FFC21A"></circle>
+<text font-family="Space Grotesk, sans-serif" font-size="16" font-weight="700" fill="#FFC21A"><textPath href="#stampRing" textLength="328" lengthAdjust="spacing">FOUNDING MEMBER ★ EST. 2026 ★</textPath></text>
+<text x="75" y="70" text-anchor="middle" font-family="Space Grotesk, sans-serif" font-size="13" font-weight="700" fill="#0B1530" letter-spacing="0.5">FOUNDER</text>
+<text x="75" y="92" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="21" font-weight="600" fill="#0B1530">#002</text>
+</svg>
+</sc-if>
+<div style="position: relative; height: 100%; box-sizing: border-box; padding: 44px 56px 46px; display: flex; flex-direction: column; justify-content: space-between">
+<div style="display: flex; justify-content: space-between; align-items: flex-start">
+<div style="display: flex; align-items: center; gap: 16px">
+<div style="background: #FFFFFF; border-radius: 16px; padding: 10px 16px; display: flex; align-items: center">
+<img src="/_blob/70b49657f390cdf9c5a44851203b7a11" alt="IEEE Industrial Electronics Society, HU Student Branch IES Chapter" style="height: 66px; width: 114px; object-fit: contain; display: block">
+</div>
+<div style="font-size: 20px; font-weight: 700; letter-spacing: 0.1em; line-height: 1.2">HASHEMITE<br>UNIVERSITY</div>
+</div>
+</div>
+<div style="display: flex; flex-direction: column; gap: 8px; max-width: 470px">
+<div style="font-family: 'IBM Plex Sans Arabic', sans-serif; font-size: 26px; font-weight: 700" dir="rtl" lang="ar">قصي عامر</div>
+<div style="font-size: 72px; font-weight: 700; line-height: 0.95; letter-spacing: -0.02em; width: 328px; height: 137px">Qusai<br>Amer</div>
+<div style="display: flex; align-items: center; gap: 12px; margin-top: 4px">
+<div style="display: flex; align-items: center; gap: 10px; background: {{pillBg}}; color: {{pillFg}}; font-size: 22px; font-weight: 700; padding: 9px 22px; border-radius: 999px; letter-spacing: 0.08em">
+<sc-if value="{{isVice}}" hint-placeholder-val="{{ true }}">
+<svg aria-hidden="true" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="#0B1530" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9.5l6-5 6 5"></path><path d="M4 15.5l6-5 6 5"></path></svg>
+</sc-if>
+<sc-if value="{{isChair}}" hint-placeholder-val="{{ false }}">
+<svg aria-hidden="true" width="20" height="24" viewBox="0 0 20 24" fill="none" stroke="#0B1530" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8l6-5 6 5"></path><path d="M4 14l6-5 6 5"></path><path d="M4 20l6-5 6 5"></path></svg>
+</sc-if>
+<sc-if value="{{leader}}" hint-placeholder-val="{{ true }}">
+<div aria-hidden="true" style="width: 2px; height: 22px; background: #0B1530; opacity: 0.35; border-radius: 2px"></div>
+</sc-if>
+<span>{{roleLabel}}</span>
+</div>
+</div>
+<div style="font-size: 21px; font-weight: 700; letter-spacing: 0.08em; margin-top: 2px">MECHATRONICS ENGINEERING</div>
+</div>
+<div style="display: flex; gap: 40px">
+<div style="display: flex; flex-direction: column; gap: 2px">
+<div style="font-size: 18px; font-weight: 700; letter-spacing: 0.14em">MEMBER ID</div>
+<div style="font-family: 'JetBrains Mono', monospace; font-size: 32px">IES-002</div>
+</div>
+<div style="display: flex; flex-direction: column; gap: 2px">
+<div style="font-size: 18px; font-weight: 700; letter-spacing: 0.14em">VALID THRU</div>
+<div style="font-family: 'JetBrains Mono', monospace; font-size: 32px">08/2027</div>
+</div>
+</div>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"role":{"editor":"enum","options":["chair","vice","tech","events","media","member"],"default":"vice","section":"Member"},"founding":{"editor":"boolean","default":true,"section":"Member"},"tone":{"editor":"enum","options":["blue","navy"],"default":"blue","section":"Style"},"$preview":{"width":856,"height":540}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const roles = {
+      chair:  { accent: '#0B1530', label: 'CHAIR' },
+      vice:   { accent: '#1449D6', label: 'VICE CHAIR' },
+      tech:   { accent: '#0B7A75', label: 'TECHNICAL TEAM' },
+      events: { accent: '#B0185A', label: 'EVENTS TEAM' },
+      media:  { accent: '#6A2BE0', label: 'MEDIA TEAM' },
+      member: { accent: '#2E3A59', label: 'MEMBER' }
+    };
+    const key = roles[this.props.role] ? this.props.role : 'vice';
+    const r = roles[key];
+    const rank = key === 'chair' ? 3 : key === 'vice' ? 2 : 0;
+    const leader = rank > 0;
+    return {
+      accent: this.props.tone === 'navy' ? '#0F2347' : r.accent,
+      roleLabel: r.label,
+      leader: leader,
+      isVice: rank === 2,
+      isChair: rank === 3,
+      pillBg: leader ? '#FFC21A' : '#0B1530',
+      pillFg: leader ? '#0B1530' : '#FFC21A',
+      founding: this.props.founding ?? true
+    };
+  }
+}
+</script>
+</body>
+</html>

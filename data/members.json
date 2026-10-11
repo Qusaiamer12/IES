@@ -1,0 +1,24 @@
+[
+  {
+    "slug": "qusai",
+    "nameEn": "Qusai Amer",
+    "nameAr": "قصي عامر",
+    "role": "vice",
+    "specialtyEn": "Mechatronics Engineering",
+    "specialtyAr": "هندسة الميكاترونكس",
+    "memberId": "IES-002",
+    "ieeeNumber": "101642449",
+    "validThru": "08/2027",
+    "founding": true,
+    "motto": "The Special One",
+    "signature": "Qusai Amer",
+    "badges": [],
+    "photo": "/assets/qusai-portrait-optional.jpg",
+    "links": {
+      "linkedin": null,
+      "instagram": null,
+      "email": null,
+      "phone": null
+    }
+  }
+]

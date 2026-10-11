@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<title>IES Card Back</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&amp;family=Permanent+Marker&amp;family=Herr+Von+Muellerhoff&amp;family=IBM+Plex+Sans+Arabic:wght@500;700&amp;family=JetBrains+Mono:wght@600&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#0B1530}a:hover{color:#1449D6}
+</style>
+</helmet>
+<div dir="rtl" lang="ar" style="width: 856px; height: 540px; position: relative; overflow: hidden; border-radius: 32px; background: #FF6B1A; color: #0B1530; font-family: 'IBM Plex Sans Arabic', sans-serif; box-sizing: border-box; text-align: right">
+<svg aria-hidden="true" width="856" height="540" viewBox="0 0 856 540" style="position: absolute; inset: 0" fill="none">
+<polygon points="0,0 300,0 476,540 0,540" fill="{{accent}}"></polygon>
+<polygon points="216,0 276,0 456,540 396,540" fill="#FFC21A"></polygon>
+<g stroke="#FFFFFF" stroke-opacity="0.4" stroke-width="3" stroke-linecap="round">
+<path d="M0 120 H90 L130 160 V300"></path>
+<path d="M60 540 V460 L100 420 H180"></path>
+</g>
+<g fill="#FFFFFF"><circle cx="130" cy="300" r="7"></circle><circle cx="180" cy="420" r="7"></circle></g>
+<g stroke="#0B1530" stroke-opacity="0.18" stroke-width="3" fill="none">
+<path d="M856 90 H780 L740 130 V200"></path>
+</g>
+</svg>
+<sc-if value="{{leader}}" hint-placeholder-val="{{ true }}">
+<div aria-hidden="true" style="position: absolute; inset: 12px; border: 3px solid #FFC21A; border-radius: 24px; pointer-events: none"></div>
+</sc-if>
+<div dir="ltr" lang="en" style="position: absolute; left: 356px; top: 152px; z-index: 2; transform: rotate(-6deg); background: #0B1530; border-radius: 14px; padding: 12px 26px 14px; box-shadow: 7px 7px 0 #FFC21A; display: flex; align-items: center; gap: 14px">
+<svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="#FFC21A"><path d="M12 2l2.9 6.6 7.1.6-5.4 4.7 1.6 7L12 17.2 5.8 20.9l1.6-7L2 9.2l7.1-.6z"></path></svg>
+<div style="font-family: 'Permanent Marker', cursive; font-size: 38px; line-height: 1; color: #FFFFFF; white-space: nowrap">The Special One</div>
+<svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="#FFC21A"><path d="M12 2l2.9 6.6 7.1.6-5.4 4.7 1.6 7L12 17.2 5.8 20.9l1.6-7L2 9.2l7.1-.6z"></path></svg>
+</div>
+<div style="position: relative; height: 100%; box-sizing: border-box; padding: 46px 56px 42px; display: flex; flex-direction: column; justify-content: space-between">
+<div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 32px">
+<div style="display: flex; flex-direction: column; gap: 14px">
+<div style="display: flex; align-items: center; gap: 14px">
+<div style="width: 62px; height: 62px; border-radius: 999px; background: #0B1530; display: flex; align-items: center; justify-content: center">
+<svg role="img" aria-label="NFC" width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#FFC21A" stroke-width="2.2" stroke-linecap="round" style="transform: scaleX(-1)">
+<path d="M6 8.5a5 5 0 0 1 0 7"></path><path d="M9.5 6a9 9 0 0 1 0 12"></path><path d="M13 3.5a13 13 0 0 1 0 17"></path>
+</svg>
+</div>
+<div style="font-size: 50px; font-weight: 700; line-height: 1.05">قرّب جوالك</div>
+</div></div>
+<div style="width: 168px; height: 168px; flex-shrink: 0; border-radius: 999px; box-sizing: border-box; border: 6px solid #FFFFFF; overflow: hidden; background: #FFFFFF; padding: 4px; box-shadow: 8px 8px 0 #0B1530">
+<img src="/_blob/e8568f32377e311a42f0fd807a928786" alt="Hashemite University" style="width: 100%; height: 100%; object-fit: contain; display: block">
+</div>
+</div>
+<div style="display: flex; justify-content: space-between; align-items: flex-end; gap: 24px">
+<div style="display: flex; flex-direction: column; gap: 10px; align-items: flex-start">
+<div style="font-size: 38px; font-weight: 700; color: #FFFFFF; background: #0B1530; padding: 2px 18px; border-radius: 10px">جزء من البصمة</div>
+<div style="font-family: 'JetBrains Mono', monospace; font-size: 20px" dir="ltr">IEEE NO. 101642449</div>
+</div>
+<div style="display: flex; flex-direction: column; gap: 8px; align-items: flex-end">
+<div style="font-size: 20px; font-weight: 700; color: #FFFFFF">إنجازاتي</div>
+<div style="display: flex; gap: 10px" dir="ltr">
+<sc-for list="{{badges}}" as="b" hint-placeholder-count="4">
+<div style="display: flex; flex-direction: column; align-items: center; gap: 4px; width: 66px">
+<svg role="img" aria-label="{{b.aria}}" width="58" height="65" viewBox="0 0 64 72">
+<polygon points="32,3 61,19.5 61,52.5 32,69 3,52.5 3,19.5" fill="{{b.fill}}" stroke="{{b.stroke}}" stroke-width="3" stroke-dasharray="{{b.dash}}"></polygon>
+<svg x="20" y="24" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="{{b.icon}}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="{{b.path}}"></path></svg>
+</svg>
+<div style="font-size: 18px; font-weight: 700; color: #FFFFFF; line-height: 1.2">{{b.label}}</div>
+</div>
+</sc-for>
+</div>
+</div>
+</div>
+<div style="display: flex; justify-content: space-between; align-items: center">
+<div style="display: flex; align-items: center; gap: 12px">
+<div style="background: #FFFFFF; border-radius: 10px; padding: 6px 10px; display: flex; align-items: center">
+<img src="/_blob/70b49657f390cdf9c5a44851203b7a11" alt="IEEE IES" style="height: 38px; width: 66px; object-fit: contain; display: block">
+</div>
+<div style="font-size: 20px; font-weight: 700">فرع IEEE · الجامعة الهاشمية</div>
+</div>
+<div dir="ltr" lang="en" style="position: relative; width: 260px; height: 74px">
+<div style="position: absolute; left: 34px; top: -6px; font-family: 'Herr Von Muellerhoff', cursive; font-size: 72px; line-height: 1; color: #FFFFFF; white-space: nowrap">Qusai Amer</div>
+<svg aria-hidden="true" width="260" height="74" viewBox="0 0 260 74" fill="none" style="position: absolute; left: 0; top: 0">
+<path d="M4 60 C 26 70, 70 66, 118 56 C 160 47, 214 42, 254 46" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round"></path>
+<path d="M4 60 C 2 54, 18 50, 46 52" stroke="#FFFFFF" stroke-width="1.6" stroke-linecap="round"></path>
+</svg>
+</div>
+</div>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"role":{"editor":"enum","options":["chair","vice","tech","events","media","member"],"default":"vice","section":"Member"},"founding":{"editor":"boolean","default":true,"section":"Member"},"tone":{"editor":"enum","options":["blue","navy"],"default":"blue","section":"Style"},"$preview":{"width":856,"height":540}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const accents = { chair: '#0B1530', vice: '#1449D6', tech: '#0B7A75', events: '#B0185A', media: '#6A2BE0', member: '#2E3A59' };
+    const role = this.props.role ?? 'vice';
+    const founding = this.props.founding ?? true;
+    const leader = role === 'chair' || role === 'vice';
+    const badge = (earned, label, path) => ({
+      label: label,
+      path: path,
+      aria: label + (earned ? ' (earned)' : ' (locked)'),
+      fill: earned ? '#0B1530' : 'none',
+      stroke: earned ? '#FFC21A' : '#FFFFFF',
+      dash: earned ? '0' : '6 5',
+      icon: earned ? '#FFC21A' : '#FFFFFF'
+    });
+    return {
+      accent: this.props.tone === 'navy' ? '#0F2347' : (accents[role] || accents.vice),
+      leader: leader,
+      badges: [
+        badge(founding, 'مؤسس', 'M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z'),
+        badge(leader, 'قائد', 'M5 21V4h11l-2 4 2 4H5'),
+        badge(false, 'ورشة', 'M14.5 6.5a4 4 0 0 0-5.3 5.3L4 17l3 3 5.2-5.2a4 4 0 0 0 5.3-5.3l-2.5 2.5-2.5-.5-.5-2.5z'),
+        badge(false, 'صانع', 'M8 8h8v8H8zM10 3v5M14 3v5M10 16v5M14 16v5M3 10h5M3 14h5M16 10h5M16 14h5')
+      ]
+    };
+  }
+}
+</script>
+</body>
+</html>
