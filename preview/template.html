@@ -38,28 +38,31 @@ button{font:inherit;color:inherit}
 .wrap{max-width:calc(var(--maxw) + 2 * var(--gutter));margin-inline:auto;padding-inline:var(--gutter)}
 
 /* ---------- header ---------- */
-.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:40;background:var(--navy);color:var(--white);border-bottom:1px solid var(--navy-line)}
-.top-in{display:flex;align-items:center;gap:20px;min-height:68px}
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:40;background:var(--white);color:var(--navy);border-bottom:1px solid var(--rule);box-shadow:0 1px 0 rgba(11,21,48,.04)}
+.top-in{display:flex;align-items:center;gap:20px;min-height:84px}
 .brand{display:flex;align-items:center;gap:12px;text-decoration:none;flex-shrink:0}
-.brand-pill{background:var(--white);border-radius:12px;padding:5px 9px}
-.brand-pill img{height:34px;width:auto}
+.brand-pill{display:block}
+.brand-pill img{height:52px;width:auto}
+.brand-txt{padding-inline-start:14px;border-inline-start:2px solid var(--rule)}
 .brand-txt{font:700 14px/1.15 var(--f-en);letter-spacing:.1em}
 .nav{display:flex;gap:4px;margin-inline-start:auto}
-.nav a{position:relative;text-decoration:none;font-weight:700;font-size:16px;padding:10px 14px;border-radius:999px;color:var(--mist)}
-.nav a:hover{color:var(--white)}
-.nav a[aria-current="page"]{color:var(--white)}
-.nav a[aria-current="page"]::after{content:"";position:absolute;inset-inline:14px;bottom:3px;height:3px;border-radius:2px;background:var(--gold)}
+.nav a{position:relative;text-decoration:none;font-weight:700;font-size:16px;padding:10px 14px;border-radius:999px;color:var(--ink-2)}
+.nav a:hover{color:var(--blue)}
+.nav a[aria-current="page"]{color:var(--navy)}
+.nav a[aria-current="page"]::after{content:"";position:absolute;inset-inline:14px;bottom:2px;height:3px;border-radius:2px;background:var(--orange)}
 .top-actions{display:flex;gap:8px;align-items:center}
-.lang{min-height:42px;min-width:56px;padding:6px 14px;border-radius:999px;border:2px solid var(--white);background:transparent;cursor:pointer;font-weight:700;font-size:15px}
-.lang:hover{background:var(--white);color:var(--navy)}
+.lang{min-height:42px;min-width:56px;padding:6px 14px;border-radius:999px;border:2px solid var(--navy);background:transparent;cursor:pointer;font-weight:700;font-size:15px}
+.lang:hover{background:var(--navy);color:var(--white)}
 .menu-btn{display:none;width:44px;height:44px;border-radius:999px;border:0;background:var(--gold);color:var(--navy);cursor:pointer;align-items:center;justify-content:center}
 @media (max-width:880px){
   .brand-txt{display:none}
   .top-actions{margin-inline-start:auto}
   .menu-btn{display:inline-flex}
-  .nav{display:none;position:absolute;inset-inline:0;top:100%;background:var(--navy);flex-direction:column;padding:8px var(--gutter) 20px;border-bottom:4px solid var(--gold)}
+  .nav{display:none;position:absolute;inset-inline:0;top:100%;background:var(--white);flex-direction:column;padding:8px var(--gutter) 20px;border-bottom:4px solid var(--gold);box-shadow:0 12px 24px rgba(11,21,48,.12)}
   .nav.open{display:flex}
-  .nav a{font-size:19px;padding:14px 4px;border-radius:0;border-bottom:1px solid var(--navy-line)}
+  .nav a{font-size:19px;padding:14px 4px;border-radius:0;border-bottom:1px solid var(--rule)}
+  .top-in{min-height:70px}
+  .brand-pill img{height:44px}
   .nav a[aria-current="page"]::after{inset-inline:auto;inset-inline-start:-12px;top:18px;bottom:18px;width:4px;height:auto}
 }
 
@@ -83,8 +86,11 @@ button{font:inherit;color:inherit}
 .sec-navy{background:var(--navy);color:var(--white)}
 .sec-white{background:var(--white);color:var(--navy)}
 .sec-orange{background:var(--orange);color:var(--navy)}
-.eyebrow{display:block;font:600 13px/1.4 var(--f-mono);letter-spacing:.16em;text-transform:uppercase;color:var(--blue);margin-bottom:14px}
-.sec-navy .eyebrow,.hero .eyebrow{color:var(--gold)}
+.eyebrow{display:inline-block;width:fit-content;font:700 12px/1.4 var(--f-en);letter-spacing:.16em;text-transform:uppercase;background:var(--orange);color:var(--navy);padding:5px 18px 5px 12px;clip-path:polygon(0 0,100% 0,calc(100% - 10px) 100%,0 100%);margin-bottom:16px}
+html[lang="ar"] .eyebrow{font:700 13px/1.5 var(--f-ar);letter-spacing:0;padding:4px 12px 4px 18px;clip-path:polygon(0 0,100% 0,100% 100%,10px 100%)}
+.sec-navy .eyebrow,.hero .eyebrow{background:var(--gold)}
+.eyebrow-navy{background:var(--navy)!important;color:var(--gold)}
+.hero-copy .eyebrow,.prose .eyebrow{margin-bottom:0}
 h2{font-size:clamp(30px,4.4vw,50px);line-height:1.15;font-weight:700;text-wrap:balance;letter-spacing:-.01em}
 html[lang="en"] h2{letter-spacing:-.02em;line-height:1.05}
 .lead{font-size:clamp(17px,1.5vw,20px);line-height:1.7;max-width:62ch;color:var(--ink-2)}
@@ -102,7 +108,8 @@ html[lang="en"] h2{letter-spacing:-.02em;line-height:1.05}
 [dir="rtl"] .flip{transform:scaleX(-1)}
 
 /* ---------- hero (home + inner pages) ---------- */
-.hero{position:relative;overflow:hidden;background:var(--navy);color:var(--white);padding-block:var(--pt) var(--pb)}
+.hero{position:relative;overflow:hidden;background-color:var(--navy);background-image:radial-gradient(rgba(255,255,255,.08) 1.3px,transparent 1.6px);background-size:26px 26px;color:var(--white);padding-block:var(--pt) var(--pb)}
+.m-hero{background-color:var(--acc)}
 .hero-grid{position:relative;display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);gap:32px;align-items:center}
 .hero-copy{position:relative;z-index:2;min-width:0;display:flex;flex-direction:column;gap:22px}
 .hero h1{font-size:clamp(52px,8.4vw,108px);line-height:1.08;font-weight:700;text-wrap:balance;letter-spacing:-.01em}
@@ -124,7 +131,8 @@ html[lang="en"] .hero h1{line-height:.95;letter-spacing:-.035em}
   .slabs{top:0;inset-inline:calc(-1 * var(--gutter))}
   .ies-outline{inset-inline-end:-.06em}
   .hero-art .stamp{top:6%;inset-inline-start:2%}
-  .hero-art .sticker{bottom:18%;inset-inline-start:auto;inset-inline-end:6%}
+  .hero-art .sticker{bottom:18%;inset-inline-start:auto;inset-inline-end:4%;padding:8px 16px 10px}
+  .hero-art .sticker span{font-size:19px}
 }
 .page-hero{padding-block:clamp(44px,6vw,80px) clamp(56px,7vw,92px)}
 .page-hero h1{font-size:clamp(44px,6.6vw,84px)}
@@ -307,16 +315,71 @@ html[lang="ar"] .pub h3{text-align:right}
 .foot ul{display:flex;flex-direction:column;gap:6px}
 .foot-bottom{margin-top:44px;padding-top:22px;border-top:1px solid var(--navy-line);display:flex;flex-direction:column;gap:14px;font-size:14px}
 
+
+/* slanted section buttons (SIGHT style) */
+.btn-slant{display:inline-flex;align-items:center;justify-content:center;min-height:48px;padding:10px 34px 10px 24px;background:var(--navy);color:var(--white);font:700 14px/1.2 var(--f-en);letter-spacing:.1em;text-transform:uppercase;text-decoration:none;clip-path:polygon(0 0,100% 0,calc(100% - 16px) 100%,0 100%);transition:transform .15s ease,background .15s ease;flex-shrink:0}
+html[lang="ar"] .btn-slant{font:700 16px/1.3 var(--f-ar);letter-spacing:0;padding:10px 24px 10px 34px;clip-path:polygon(16px 0,100% 0,100% 100%,0 100%)}
+.btn-slant:hover{background:var(--blue)}
+.sec-navy .btn-slant{background:var(--gold);color:var(--navy)}
+.sec-navy .btn-slant:hover{background:var(--white)}
+.btn-slant:focus-visible{outline-offset:4px}
+
+/* stats band */
+.stats-band{background:var(--navy);padding-block:0 clamp(40px,5vw,64px);border-top:1px solid var(--navy-line)}
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;padding-top:clamp(28px,4vw,40px)}
+.stat{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;text-align:center;padding:24px 16px;border:1px solid var(--navy-line);border-top:3px solid var(--gold);border-radius:14px;background:rgba(255,255,255,.03);color:var(--white)}
+.stat b{font:700 clamp(32px,3.6vw,44px)/1 var(--f-en);letter-spacing:-.02em}
+.stat span{font-size:14px;color:var(--mist);line-height:1.45}
+html[lang="en"] .stat span{text-transform:uppercase;letter-spacing:.1em;font-size:12px}
+.stat.hot{background:var(--gold);border-color:var(--gold);color:var(--navy)}
+.stat.hot b{font-size:clamp(44px,5vw,60px)}
+.stat.hot span{color:var(--navy);font-weight:700}
+@media (max-width:760px){.stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+/* 75 years */
+.s75{position:relative;overflow:hidden;background:var(--orange);color:var(--navy);padding-block:clamp(56px,8vw,104px)}
+.s75-art{position:absolute;inset:0}
+.s75-art svg{width:100%;height:100%;display:block}
+.s75-grid{position:relative;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:clamp(24px,5vw,72px);align-items:center}
+@media (max-width:860px){.s75-grid{grid-template-columns:1fr}}
+.n75-wrap{display:flex;flex-direction:column;align-items:flex-start;gap:14px;direction:ltr}
+html[lang="ar"] .n75-wrap{align-items:flex-end}
+.n75{font:700 clamp(200px,30vw,400px)/.78 var(--f-en);letter-spacing:-.07em;color:var(--white);text-shadow:12px 12px 0 var(--navy);-webkit-text-stroke:3px var(--navy);padding-inline-end:.08em}
+.n75-l{font:700 clamp(13px,1.3vw,16px)/1.3 var(--f-mono);letter-spacing:.16em;background:var(--navy);color:var(--gold);padding:8px 14px;border-radius:8px}
+.s75-copy{display:flex;flex-direction:column;gap:18px;min-width:0}
+.s75-copy h2{font-size:clamp(30px,3.8vw,46px)}
+.s75-copy p{font-size:clamp(17px,1.5vw,19px);line-height:1.75;font-weight:500;max-width:56ch}
+.mini-tl{list-style:none;padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0;border-top:3px solid var(--navy);margin-top:6px}
+.mini-tl li{display:flex;flex-direction:column;gap:4px;padding:14px 12px 0 0;position:relative}
+html[dir="rtl"] .mini-tl li{padding:14px 0 0 12px}
+.mini-tl li::before{content:"";position:absolute;top:-9px;inset-inline-start:0;width:14px;height:14px;background:var(--navy);transform:rotate(45deg)}
+.mini-tl li.on::before{background:var(--white);border:3px solid var(--navy)}
+.mini-tl b{font:700 24px/1 var(--f-en);width:fit-content}
+.mini-tl span{font-size:14px;font-weight:600;line-height:1.4}
+
+/* organizations */
+.orgs{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:20px}
+@media (max-width:860px){.orgs{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.org{display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center;padding:26px 16px 22px;border:1px solid var(--rule);border-radius:16px;background:#F5F7FB;text-decoration:none;height:100%}
+.org-logo{height:84px;display:flex;align-items:center;justify-content:center;filter:grayscale(1);opacity:.75;transition:filter .2s,opacity .2s}
+.org-logo img{max-height:84px;width:auto;max-width:160px}
+.org-logo.round img{width:84px;height:84px;border-radius:999px;object-fit:contain;background:var(--white)}
+.org-word{font:700 44px/1 var(--f-en);letter-spacing:.04em;color:#00629B}
+.org-name{font-weight:700;font-size:15px;line-height:1.35}
+.org-sub{font-size:13px;color:var(--ink-3)}
+a.org:hover{border-color:var(--navy);box-shadow:6px 6px 0 var(--navy);background:var(--white)}
+.org:hover .org-logo{filter:none;opacity:1}
+
 /* ---------- IEEE utility bar ---------- */
 .ieee-bar{background:#060D1F;color:var(--mist);font-size:13px}
 .ieee-bar .wrap{display:flex;align-items:center;justify-content:space-between;gap:16px;min-height:36px}
 .ieee-bar ul{display:flex;flex-wrap:wrap;gap:4px 18px}
-.ieee-bar a{text-decoration:none;color:var(--mist);direction:ltr;display:inline-block;padding-block:6px}
+.ieee-bar a{text-decoration:none;color:var(--mist);display:inline-block;padding-block:6px}
 .ieee-bar a:hover{color:var(--white)}
 .ieee-bar .mark{font:700 15px/1 var(--f-en);letter-spacing:.06em;color:var(--white);direction:ltr}
 @media (max-width:560px){.ieee-bar .opt{display:none}}
 .top-cta{min-height:44px;padding:8px 20px;font-size:15px}
-@media (max-width:880px){.top-cta{display:none}.nav .nav-join{color:var(--gold)}}
+@media (max-width:880px){.top-cta{display:none}.nav .nav-join{color:var(--orange)}}
 @media (min-width:881px){.nav .nav-join{display:none}}
 
 /* breadcrumbs */
@@ -427,9 +490,10 @@ span.soc{opacity:.45}
     joinFormUrl: null,     // Google Form or Formspree link
     contactFormUrl: null,  // Formspree endpoint for the contact form
     email: null,
-    social: { instagram: null, linkedin: null, facebook: null }
+    social: { instagram: 'https://www.instagram.com/ieee.ies.hu/', linkedin: null, facebook: null }
   };
 
+  const SLOGAN_EN = 'We Make Industry Move';
   const IMG = { ies: "__IES_LOGO__", hu: "__HU_LOGO__", branch: "__BRANCH_LOGO__" };
 
   const ROLES = {
@@ -565,7 +629,7 @@ span.soc{opacity:.45}
     const r = role(m);
     return `<a class="mtile" href="#m-${esc(m.slug)}" style="--acc:${r.acc}" aria-label="${esc(L(m.nameAr, m.nameEn))}, ${esc(L(r.ar, r.en))}">
       <div class="mt-art">
-        ${m.photo ? `<img src="${m.photo}" alt="" loading="lazy">` : `<span class="ies-mini" aria-hidden="true">IES</span>`}
+        ${m.photo ? `<img src="${m.photo}" alt="">` : `<span class="ies-mini" aria-hidden="true">IES</span>`}
         <svg class="flip" viewBox="0 0 400 300" preserveAspectRatio="none" aria-hidden="true">
           <polygon points="330,0 400,0 400,300 250,300" fill="#FF6B1A"/>
           <polygon points="300,0 316,0 236,300 220,300" fill="#FFC21A"/>
@@ -591,7 +655,7 @@ span.soc{opacity:.45}
 
   const eventsList = (list) => list.length ? `<div class="events">${list.map(e => `
       <article class="event">
-        <div class="ev-img">${e.image ? `<img src="${esc(e.image)}" alt="" loading="lazy">` : `<svg class="ev-ph flip" viewBox="0 0 400 225" preserveAspectRatio="xMaxYMid slice" aria-hidden="true">
+        <div class="ev-img">${e.image ? `<img src="${esc(e.image)}" alt="">` : `<svg class="ev-ph flip" viewBox="0 0 400 225" preserveAspectRatio="xMaxYMid slice" aria-hidden="true">
             <polygon points="270,0 400,0 400,225 200,225" fill="#FF6B1A"/><polygon points="226,0 246,0 176,225 156,225" fill="#FFC21A"/>
             <g stroke="#FFFFFF" stroke-opacity=".3" stroke-width="3" stroke-linecap="round" fill="none"><path d="M0 170 H60 L90 140 H140"/><path d="M40 0 V30 L70 60 H120"/></g>
             <g fill="#FFFFFF" fill-opacity=".6"><circle cx="140" cy="140" r="5"/><circle cx="120" cy="60" r="5"/></g></svg>`}${evCat(e) ? `<span class="tag">${esc(evCat(e))}</span>` : ''}</div>
@@ -687,7 +751,7 @@ span.soc{opacity:.45}
       <div class="foot-bottom">
         <ul class="foot-legal ltr">${IEEE_LEGAL.map(([n, h]) => `<li><a href="${h}" target="_blank" rel="noopener">${n}</a></li>`).join('')}</ul>
         <p class="foot-copy ltr">© Copyright 2026 IEEE – All rights reserved. A public charity, IEEE is the world's largest technical professional organization dedicated to advancing technology for the benefit of humanity.</p>
-        <p class="foot-copy ltr">Built to Connect · جزء من البصمة</p>
+        <p class="foot-copy ltr">${SLOGAN_EN} · جزء من البصمة</p>
       </div>
     </div></footer>`;
 
@@ -716,19 +780,14 @@ span.soc{opacity:.45}
     <section class="hero" aria-labelledby="hero-h">
       <div class="wrap hero-grid">
         <div class="hero-copy">
-          <span class="eyebrow">IEEE IES · ${L('الجامعة الهاشمية', 'Hashemite University')}</span>
-          <h1 id="hero-h">${L('جزء من البصمة', 'Built to Connect')}</h1>
+          <span class="eyebrow">${L('شعبة طلابية · الجامعة الهاشمية', 'Student chapter · The Hashemite University')}</span>
+          <h1 id="hero-h">${L('جزء من البصمة', SLOGAN_EN)}</h1>
           <p class="lead">${L(
             'شعبة طلابية جديدة لجمعية الإلكترونيات الصناعية في IEEE، تابعة لفرع IEEE الطلابي في الجامعة الهاشمية. نتعلّم الأتمتة والروبوتات والأنظمة المدمجة بالتجربة العملية، ونبنيها معًا.',
             'A new student chapter of the IEEE Industrial Electronics Society at the Hashemite University. We learn automation, robotics and embedded systems by building them, together.')}</p>
           <div class="btn-row">
             <a class="btn btn-gold" href="#join">${L('انضم للشعبة', 'Join the chapter')} ${arrow()}</a>
-            <a class="btn btn-outline" href="#about">${L('شو هي IES؟', 'What is IES?')}</a>
-          </div>
-          <div class="facts-row">
-            <div><b class="ltr">2026/27</b><span>${L('دورة التأسيس', 'Founding term')}</span></div>
-            <div><b class="ltr">IES</b><span>${L('جمعية تقنية في IEEE', 'An IEEE technical society')}</span></div>
-            <div><b class="ltr">75</b><span>${L('سنة على تأسيس IES في 2026', 'years of IES in 2026')}</span></div>
+            <a class="btn btn-outline" href="#events">${L('شوف الفعاليات', 'Explore events')}</a>
           </div>
         </div>
         <div class="hero-art" aria-hidden="true">
@@ -741,10 +800,62 @@ span.soc{opacity:.45}
             <g fill="#FFFFFF"><circle cx="110" cy="300" r="7"/><circle cx="700" cy="90" r="7"/><circle cx="60" cy="560" r="6"/></g>
           </svg></div>
           <span class="ies-outline">IES</span>
-          ${stamp('IES · HU', '2026', 'FOUNDING CHAPTER ★ EST. 2026 ★', 'Founding chapter, est. 2026')}
-          ${lang === 'ar' ? sticker('Built to Connect', false) : sticker('جزء من البصمة', true)}
+          ${stamp('IES', '75', 'IES 75 YEARS ★ 1951 – 2026 ★', 'IES 75 years, 1951 to 2026')}
+          ${lang === 'ar' ? sticker(SLOGAN_EN, false) : sticker('جزء من البصمة', true)}
         </div>
       </div>
+    </section>
+
+    <section class="stats-band" aria-label="${L('أرقام', 'At a glance')}">
+      <ul class="wrap stats">
+        <li class="stat hot"><b class="ltr">75</b><span>${L('سنة على تأسيس IES في 2026', 'years of IES in 2026')}</span></li>
+        <li class="stat"><b class="ltr">2026</b><span>${L('سنة تأسيس شعبتنا', 'our chapter is founded')}</span></li>
+        <li class="stat"><b class="ltr">7</b><span>${L('مجالات صناعية بنشتغل فيها', 'industrial fields we work in')}</span></li>
+        <li class="stat"><b class="ltr">IECON</b><span>${L('مؤتمر IES الرئيسي', 'the flagship IES conference')}</span></li>
+      </ul>
+    </section>
+
+    <section class="s75" aria-labelledby="s75-h">
+      <div class="wrap s75-grid">
+        <div class="n75-wrap" aria-hidden="true">
+          <span class="n75">75</span>
+          <span class="n75-l">YEARS OF IEEE IES · 1951 — 2026</span>
+        </div>
+        <div class="s75-copy">
+          <span class="eyebrow eyebrow-navy">${L('اليوبيل الماسي لجمعية IES', 'The IES diamond jubilee')}</span>
+          <h2 id="s75-h">${L('75 سنة من الإلكترونيات الصناعية. وإحنا أول سطر بالفصل الجاي.', '75 years of industrial electronics. We are the first line of the next chapter.')}</h2>
+          <p>${L(
+            'في 2026 بتكمّل IES خمسة وسبعين سنة من الشغل في الإلكترونيات والتحكم والأتمتة حول العالم. وبنفس السنة بتنولد شعبتنا في الجامعة الهاشمية.',
+            'In 2026, IES marks 75 years of work in electronics, control and automation around the world. Our chapter at the Hashemite University is founded in that same year.')}</p>
+          <ol class="mini-tl">
+            <li><b class="ltr">1951</b><span>${L('بداية IES', 'IES begins')}</span></li>
+            <li><b class="ltr">2002</b><span>${L('فرع IEEE في الهاشمية', 'IEEE branch at HU')}</span></li>
+            <li class="on"><b class="ltr">2026</b><span>${L('75 سنة IES، وتأسيس شعبتنا', '75 years of IES, and our chapter')}</span></li>
+          </ol>
+        </div>
+      </div>
+    </section>
+
+    <section class="sec sec-white" aria-labelledby="ev-h">
+      <div class="wrap">
+        <div class="sec-head">
+          <div><span class="eyebrow">${L('الفعاليات', 'Featured events')}</span><h2 id="ev-h">${upcomingEvents().length || !EVENTS.length ? L('الفعاليات القادمة', 'Upcoming events') : L('آخر فعالياتنا', 'Latest activities')}</h2>
+          <p class="lead">${L('الناس والأفكار واللحظات ورا شغل الشعبة.', 'The people, ideas and moments behind the chapter’s work.')}</p></div>
+          ${EVENTS.length ? `<a class="btn-slant" href="#events">${L('كل الفعاليات', 'View all events')}</a>` : ''}
+        </div>
+        ${eventsList(featuredEvents())}
+      </div>
+    </section>
+
+    <section class="sec sec-navy" aria-labelledby="get-h">
+      <div class="wrap">
+        <div class="sec-head"><div>
+          <span class="eyebrow">${L('شو بتستفيد', 'What you get')}</span>
+          <h2 id="get-h">${L('شو بتاخد لما تنضم', 'What members get')}</h2>
+        </div><a class="btn-slant" href="#join">${L('انضم للشعبة', 'Join the chapter')}</a></div>
+        ${benefitsGrid()}
+      </div>
+      ${edge()}
     </section>
 
     <section class="sec sec-white" aria-labelledby="what-h">
@@ -755,34 +866,12 @@ span.soc{opacity:.45}
           <p>${L(
             'جمعية الإلكترونيات الصناعية (IES) وحدة من الجمعيات التقنية في IEEE، مختصة بنظرية وتطبيق الإلكترونيات والتحكم والاتصالات والقياس والذكاء الحسابي في الأنظمة الصناعية وأنظمة التصنيع.',
             'The Industrial Electronics Society (IES) is an IEEE technical society for the theory and application of electronics, control, communications, instrumentation and computational intelligence in industrial and manufacturing systems.')}</p>
-          <div><a class="textlink" href="#about">${L('اقرأ أكثر عن IES', 'More about IES')} ${arrow(18)}</a></div>
+          <div><a class="btn-slant" href="#about">${L('اقرأ أكثر عن IES', 'More about IES')}</a></div>
         </div>
         <div class="panel">
           <h3>${L('مجالات الاهتمام', 'Field of interest')}</h3>
           <ul class="chips">${FIELDS.map(([ar, en]) => `<li class="chip"><i></i>${L(ar, en)}</li>`).join('')}</ul>
-          <div class="big75"><b class="ltr">75</b><span>${L('IES بتحتفل بمرور 75 سنة على تأسيسها في 2026', 'IES celebrates its 75th anniversary in 2026')}</span></div>
         </div>
-      </div>
-    </section>
-
-    <section class="sec sec-navy" aria-labelledby="get-h">
-      <div class="wrap">
-        <div class="sec-head"><div>
-          <span class="eyebrow">${L('شو بتستفيد', 'What you get')}</span>
-          <h2 id="get-h">${L('شو بتاخد لما تنضم', 'What members get')}</h2>
-        </div></div>
-        ${benefitsGrid()}
-      </div>
-      ${edge()}
-    </section>
-
-    <section class="sec sec-white" aria-labelledby="ev-h">
-      <div class="wrap">
-        <div class="sec-head">
-          <div><span class="eyebrow">${L('الفعاليات', 'Events')}</span><h2 id="ev-h">${upcomingEvents().length || !EVENTS.length ? L('الفعاليات القادمة', 'Upcoming events') : L('آخر فعالياتنا', 'Latest activities')}</h2></div>
-          ${EVENTS.length ? `<a class="textlink" href="#events">${L('كل الفعاليات', 'All events')} ${arrow(18)}</a>` : ''}
-        </div>
-        ${eventsList(featuredEvents())}
       </div>
     </section>
 
@@ -791,14 +880,40 @@ span.soc{opacity:.45}
         <div class="sec-head">
           <div><span class="eyebrow">${L('الفريق', 'Team')}</span><h2 id="team-h">${L('فريق التأسيس', 'The founding team')}</h2>
           <p class="lead">${L('الهيئة الإدارية لدورة 2026/2027.', 'The 2026/2027 committee.')}</p></div>
-          <a class="textlink" href="#team">${L('شوف الفريق كامل', 'See the full team')} ${arrow(18)}</a>
+          <a class="btn-slant" href="#team">${L('شوف الفريق كامل', 'See the full team')}</a>
         </div>
         <div class="team-grid">${sortedMembers().slice(0, 4).map(memberTile).join('')}</div>
         <p class="note">${L('باقي أعضاء الفريق رح ينضافوا قريبًا', 'More team members coming soon')} ${TBD(L('قائمة الأعضاء', 'member list'))}</p>
       </div>
       ${edge()}
     </section>
+
+    ${orgs()}
     ${cta()}`;
+
+  const ORGS = () => [
+    { name: 'IEEE', sub: L('المنظمة الأم', 'The parent organization'), href: 'https://www.ieee.org/', word: 'IEEE' },
+    { name: 'IEEE Industrial Electronics Society', sub: L('الجمعية التقنية', 'Our technical society'), href: 'https://www.ieee-ies.org/', img: IMG.ies },
+    { name: 'IEEE HU Student Branch', sub: L('فرع IEEE الطلابي', 'Our student branch'), href: null, img: IMG.branch, round: true },
+    { name: L('الجامعة الهاشمية', 'The Hashemite University'), sub: L('بيتنا', 'Our home campus'), href: 'https://hu.edu.jo/', img: IMG.hu, round: true }
+  ];
+
+  const orgs = () => `
+    <section class="sec sec-white" aria-labelledby="org-h">
+      <div class="wrap">
+        <div class="sec-head">
+          <div><span class="eyebrow">${L('شبكتنا', 'Our network')}</span>
+            <h2 id="org-h">${L('أسماء كبيرة بتمشي جنبنا', 'Big names walking beside us')}</h2>
+            <p class="lead">${L('الشعبة جزء من شبكة أكبر منها بكثير. وإذا شركتك حابة تدعم ورشة أو زيارة صناعية، إلها مكان هون.', 'Our chapter is part of a much bigger network. If your company wants to support a workshop or an industry visit, there is a place for it here.')}</p></div>
+          <a class="btn-slant" href="#contact">${L('كن شريكنا', 'Partner with us')}</a>
+        </div>
+        <ul class="orgs">${ORGS().map(o => {
+          const inner = `<span class="org-logo ${o.round ? 'round' : ''}">${o.img ? `<img src="${o.img}" alt="">` : `<span class="org-word" aria-hidden="true">${o.word}</span>`}</span>
+            <span class="org-name">${esc(o.name)}</span><span class="org-sub">${esc(o.sub)}</span>`;
+          return `<li>${o.href ? `<a class="org" href="${o.href}" target="_blank" rel="noopener">${inner}</a>` : `<div class="org">${inner}</div>`}</li>`;
+        }).join('')}</ul>
+      </div>
+    </section>`;
 
   const about = () => `
     ${pageHero(L('عن IES', 'About'), L('شو هي IES؟', 'What is IES?'),
@@ -851,7 +966,7 @@ span.soc{opacity:.45}
         <div class="panel" style="align-items:flex-start">
           <h3>${L('الشعار', 'Slogan')}</h3>
           <p style="font:700 clamp(30px,3.6vw,42px)/1.2 var(--f-ar)" lang="ar" dir="rtl">جزء من البصمة</p>
-          <p style="font:700 clamp(26px,3vw,36px)/1.1 var(--f-en);letter-spacing:-.02em" lang="en" dir="ltr">Built to Connect</p>
+          <p style="font:700 clamp(26px,3vw,36px)/1.1 var(--f-en);letter-spacing:-.02em" lang="en" dir="ltr">${SLOGAN_EN}</p>
         </div>
       </div>
     </section>
@@ -931,7 +1046,7 @@ span.soc{opacity:.45}
     <section class="sec sec-white"><div class="wrap"><article class="article">
       ${e.image ? `<div class="cover"><img src="${esc(e.image)}" alt=""></div>` : ''}
       ${e.summaryAr || e.summaryEn ? `<p style="font-weight:700;color:var(--navy)">${esc(L(e.summaryAr, e.summaryEn))}</p>` : ''}
-      ${(Array.isArray(body) ? body : [body]).map(p => `<p>${esc(p)}</p>`).join('')}
+      ${(Array.isArray(body) ? body : [body]).filter(Boolean).map(p => `<p>${esc(p)}</p>`).join('') || `<p>${L('التفاصيل والوقت والمكان رح تنضاف قريبًا. تابعنا على إنستغرام.', 'Time, place and details will be added soon. Follow us on Instagram.')} ${TBD()}</p>${CONFIG.social.instagram ? `<div><a class="btn-slant" href="${esc(CONFIG.social.instagram)}" target="_blank" rel="noopener">Instagram @ieee.ies.hu</a></div>` : ''}`}
       ${e.link ? `<div><a class="btn btn-gold btn-hard" href="${esc(e.link)}" target="_blank" rel="noopener">${L('التسجيل والتفاصيل', 'Registration & details')} ${arrow()}</a></div>` : ''}
       <div><a class="textlink" href="#events"><span class="back-ic">${ico(P.arrow, 18)}</span>${L('كل الفعاليات', 'All events')}</a></div>
     </article></div></section>

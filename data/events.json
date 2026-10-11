@@ -1,1 +1,34 @@
-[]
+[
+  {
+    "slug": "jordan-ieee-day-2026",
+    "titleAr": "يوم IEEE الأردن 2026",
+    "titleEn": "Jordan IEEE Day 2026",
+    "categoryAr": "يوم IEEE",
+    "categoryEn": "IEEE Day",
+    "date": "2026-10-14",
+    "locationAr": null,
+    "locationEn": null,
+    "summaryAr": "احتفال يوم IEEE على مستوى الأردن.",
+    "summaryEn": "The nationwide IEEE Day celebration in Jordan.",
+    "bodyAr": [],
+    "bodyEn": [],
+    "image": null,
+    "link": null
+  },
+  {
+    "slug": "ieee-day-hu-2026",
+    "titleAr": "يوم IEEE في الجامعة الهاشمية 2026",
+    "titleEn": "IEEE Day HU 2026",
+    "categoryAr": "يوم IEEE",
+    "categoryEn": "IEEE Day",
+    "date": "2026-10-20",
+    "locationAr": "الجامعة الهاشمية",
+    "locationEn": "The Hashemite University",
+    "summaryAr": "احتفال يوم IEEE في الجامعة الهاشمية.",
+    "summaryEn": "The IEEE Day celebration at the Hashemite University.",
+    "bodyAr": [],
+    "bodyEn": [],
+    "image": null,
+    "link": null
+  }
+]

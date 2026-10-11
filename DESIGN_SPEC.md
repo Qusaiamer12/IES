@@ -12,7 +12,7 @@ Source of truth for the website and the NFC member cards. All sizes for the card
 | Parent | IEEE Hashemite University Student Branch (فرع IEEE · الجامعة الهاشمية) |
 | Term | 2026/2027 (chapter is new — founding team) |
 | Chapter slogan (AR) | جزء من البصمة |
-| Chapter slogan (EN) | Built to Connect |
+| Chapter slogan (EN) | We Make Industry Move (was: Built to Connect) |
 | Card call to action | قرّب جوالك (tap your phone) |
 
 ---
