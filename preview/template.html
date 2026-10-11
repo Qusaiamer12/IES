@@ -318,25 +318,23 @@ a.link-node:hover{box-shadow:6px 6px 0 var(--navy);transform:translate(-2px,-2px
 .res span{color:var(--mist);font-size:15px}
 .res em{font-style:normal;font:600 12px/1.3 var(--f-mono);letter-spacing:.12em;color:var(--gold);text-transform:uppercase}
 
-/* ---------- officers / members ---------- */
-.team-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,270px),1fr));gap:32px}
-.mtile{position:relative;display:flex;flex-direction:column;background:var(--acc);color:var(--white);border-radius:24px;overflow:hidden;text-decoration:none;box-shadow:8px 8px 0 var(--navy);transition:transform .18s ease,box-shadow .18s ease;max-width:400px}
-.mtile:hover{transform:translate(-3px,-3px);box-shadow:11px 11px 0 var(--navy)}
-.mt-art{position:relative;aspect-ratio:4/3;overflow:hidden;background:var(--navy-deep)}
-.mt-art img{width:100%;height:100%;object-fit:cover;object-position:50% 12%}
-.mt-art svg{position:absolute;inset:0;width:100%;height:100%}
-.mt-art .ies-mini{position:absolute;right:-.05em;bottom:-.16em;font:700 150px/1 var(--f-en);letter-spacing:-.04em;color:transparent;-webkit-text-stroke:2px rgba(255,255,255,.3)}
-.mt-frame{position:absolute;inset:10px;border:3px solid var(--gold);border-radius:18px;pointer-events:none;z-index:2}
-.mt-body{display:flex;flex-direction:column;gap:6px;padding:20px 22px 24px}
-.mt-en{font:700 30px/1 var(--f-en);letter-spacing:-.02em}
-.mt-ar{font-size:16px;opacity:.85;width:fit-content}
-.mt-spec{font-size:13px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;opacity:.92}
-.mt-id{font:600 15px/1.2 var(--f-mono);opacity:.9}
+/* ---------- team ---------- */
+.team-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,250px),1fr));gap:28px}
+.mtile{display:flex;flex-direction:column;background:var(--white);border:1px solid var(--rule);border-radius:20px;overflow:hidden;text-decoration:none;transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease;max-width:360px}
+.mtile:hover{transform:translateY(-4px);border-color:var(--navy);box-shadow:0 18px 36px rgba(11,21,48,.12)}
+.mt-photo{aspect-ratio:1/1;background:var(--paper);overflow:hidden}
+.mt-photo img{width:100%;height:100%;object-fit:cover;object-position:50% 15%}
+.mt-photo .ini{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font:700 64px/1 var(--f-en);color:var(--navy);opacity:.25}
+.mt-body{display:flex;flex-direction:column;gap:4px;padding:18px 20px 22px}
+.mt-role{display:inline-flex;align-items:center;gap:8px;font:700 12px/1.3 var(--f-en);letter-spacing:.12em;text-transform:uppercase;color:var(--acc)}
+.mt-role i{width:8px;height:8px;border-radius:999px;background:var(--acc)}
+.mt-name{font:700 22px/1.2 var(--f-en);letter-spacing:-.01em}
+.mt-spec{font-size:15px;color:var(--ink-2)}
 .filters{display:flex;flex-wrap:wrap;gap:10px}
 .filter{min-height:44px;padding:8px 18px;border-radius:999px;border:2px solid var(--navy);background:var(--white);color:var(--navy);font-weight:700;font-size:15px;cursor:pointer;display:inline-flex;align-items:center;gap:8px}
-.filter i{width:12px;height:12px;border-radius:3px;background:var(--acc)}
+.filter i{width:10px;height:10px;border-radius:999px;background:var(--acc)}
 .filter[aria-pressed="true"]{background:var(--navy);color:var(--white)}
-.filter:hover{box-shadow:4px 4px 0 var(--navy);transform:translate(-2px,-2px)}
+.filter:hover{border-color:var(--blue)}
 .terms{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:16px;margin-bottom:28px}
 .terms h2{font-size:clamp(26px,3vw,36px)}
 .note{margin-top:36px;color:var(--ink-2);display:flex;align-items:center;gap:10px;flex-wrap:wrap}
@@ -344,46 +342,40 @@ a.link-node:hover{box-shadow:6px 6px 0 var(--navy);transform:translate(-2px,-2px
 .advisor b{display:block;font-size:18px}
 .advisor span{color:var(--ink-3);font:600 12px/1.3 var(--f-mono);letter-spacing:.12em;text-transform:uppercase}
 
-/* ---------- member page ---------- */
-.m-hero{background-color:var(--acc)}
-.m-hero .hero-grid{grid-template-columns:minmax(0,1.15fr) minmax(0,.85fr)}
-.m-hero h1{font-size:clamp(52px,7.4vw,96px)}
-.m-ar{font-size:clamp(24px,3vw,34px);font-weight:700;line-height:1.3;width:fit-content}
-.m-spec{font-weight:700;font-size:clamp(15px,1.4vw,18px);letter-spacing:.08em;text-transform:uppercase}
-.nfc-chip{display:inline-flex;align-items:center;gap:10px;width:fit-content;background:var(--navy);color:var(--white);border-radius:999px;padding:6px 16px 6px 8px;font-weight:700;font-size:14px}
-.nfc-chip .dot{width:30px;height:30px;border-radius:999px;background:var(--gold);display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.m-art{display:flex;align-items:center;justify-content:center}
-.m-photo-wrap{position:relative;z-index:2;width:min(320px,74%)}
-.m-photo{aspect-ratio:4/5;border:6px solid var(--white);border-radius:26px;overflow:hidden;background:var(--navy-deep);box-shadow:10px 10px 0 var(--mshadow,var(--navy))}
-.m-photo img{width:100%;height:100%;object-fit:cover;object-position:50% 10%}
-.m-photo .noimg{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font:700 96px/1 var(--f-en);color:transparent;-webkit-text-stroke:2px rgba(255,255,255,.45)}
-.m-photo-wrap .stamp{position:absolute;top:-30px;right:-46px;width:clamp(116px,13vw,150px);transform:rotate(-12deg)}
-.m-frame{position:absolute;inset:12px;border:3px solid var(--gold);border-radius:24px;pointer-events:none;z-index:3}
-.m-hero .wrap{padding-inline:max(var(--gutter),32px)}
-@media (max-width:860px){
-  .m-hero .hero-grid{grid-template-columns:1fr}
-  .m-art{order:-1;min-height:0;padding-block:8px 18px}
-  .m-hero .slabs{top:calc(-1 * var(--pt));bottom:0}
-  .m-photo-wrap{width:min(230px,62%)}
-  .m-photo-wrap .stamp{right:-58px;top:-18px;width:118px}
-}
-.m-body{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:clamp(32px,5vw,64px);align-items:start}
-.m-body>*{min-width:0;display:flex;flex-direction:column;gap:28px}
-@media (max-width:860px){.m-body{grid-template-columns:1fr}}
-.m-body h2{font-size:clamp(24px,2.6vw,30px)}
-.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));border:2px solid var(--navy);border-radius:20px;overflow:hidden}
-.facts div{padding:18px 22px;display:flex;flex-direction:column;gap:4px;border-right:2px solid var(--rule);border-bottom:2px solid var(--rule);margin:0 -2px -2px 0}
-.facts dt{font:700 12px/1.3 var(--f-en);letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3)}
-.facts dd{font:600 22px/1.25 var(--f-mono)}
-@media (max-width:520px){.facts{grid-template-columns:1fr}.facts div{flex-direction:row;align-items:center;justify-content:space-between;gap:12px;padding:14px 18px}.facts dd{font-size:19px}}
-.badges{display:flex;flex-wrap:wrap;gap:12px 14px}
-.badge{display:flex;flex-direction:column;align-items:center;gap:6px;width:76px;text-align:center}
-.badge b{font-size:15px;line-height:1.2}
-.badge small{font-size:12px;color:var(--ink-3);font-weight:500}
+/* ---------- member profile ---------- */
+.profile{background:var(--paper);padding-block:clamp(36px,5vw,72px) clamp(48px,6vw,88px);border-bottom:1px solid var(--rule)}
+.profile-grid{display:grid;grid-template-columns:minmax(0,380px) minmax(0,1fr);gap:clamp(28px,5vw,72px);align-items:center}
+@media (max-width:820px){.profile-grid{grid-template-columns:1fr}}
+.pf-photo{border-radius:24px;overflow:hidden;background:var(--white);aspect-ratio:4/5;max-width:380px;border:1px solid var(--rule)}
+.pf-photo img{width:100%;height:100%;object-fit:cover;object-position:50% 12%}
+.pf-photo .ini{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font:700 120px/1 var(--f-en);color:var(--navy);opacity:.2}
+@media (max-width:820px){.pf-photo{max-width:260px}}
+.pf-info{display:flex;flex-direction:column;gap:14px;min-width:0}
+.crumbs-dark{display:flex;flex-wrap:wrap;gap:8px;font-size:14px;color:var(--ink-3)}
+.crumbs-dark a{color:var(--navy);text-decoration:none;font-weight:500}
+.crumbs-dark a:hover{color:var(--blue)}
+.pf-role{display:inline-flex;align-items:center;gap:10px;font:700 13px/1.3 var(--f-en);letter-spacing:.12em;text-transform:uppercase;color:var(--acc)}
+.pf-role i{width:10px;height:10px;border-radius:999px;background:var(--acc)}
+.pf-role span{color:var(--ink-3);letter-spacing:.08em}
+.pf-info h1{font-size:clamp(44px,6vw,76px);line-height:1;letter-spacing:-.035em}
+.pf-ar{font-size:22px;font-weight:700;color:var(--ink-2);width:fit-content}
+.pf-spec{font-size:clamp(18px,1.6vw,21px);color:var(--ink-2)}
+.pf-quote{margin:4px 0 0;padding-left:16px;border-left:3px solid var(--gold);font-size:18px;font-style:italic;color:var(--navy)}
+.pf-tags{display:flex;flex-wrap:wrap;gap:8px}
+.pf-tags li{display:inline-flex;align-items:center;gap:8px;padding:6px 14px;border-radius:999px;background:var(--white);border:1px solid var(--rule);font-size:14px;font-weight:700}
+.pf-tags svg{color:var(--orange)}
+.pf-body{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:clamp(28px,5vw,64px);align-items:start}
+@media (max-width:820px){.pf-body{grid-template-columns:1fr}}
+.pf-body>div{min-width:0;display:flex;flex-direction:column;gap:16px}
+.pf-body h2{font-size:clamp(22px,2.4vw,28px)}
+.facts{display:flex;flex-direction:column;border-top:1px solid var(--rule)}
+.facts div{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:16px 0;border-bottom:1px solid var(--rule)}
+.facts dt{font-weight:500;color:var(--ink-2)}
+.facts dd{font:600 18px/1.25 var(--f-mono)}
 .links{display:flex;flex-direction:column;gap:10px}
-.link-row{display:flex;align-items:center;gap:14px;min-height:56px;padding:10px 18px;border:2px solid var(--navy);border-radius:16px;text-decoration:none;font-weight:700}
-.link-row:hover{background:var(--navy);color:var(--white)}
-.link-row .v{margin-left:auto;font:600 14px/1.2 var(--f-mono);opacity:.75;overflow-wrap:anywhere}
+.link-row{display:flex;align-items:center;gap:14px;min-height:56px;padding:10px 18px;border:1px solid var(--rule);border-radius:14px;text-decoration:none;font-weight:700}
+.link-row:hover{border-color:var(--navy)}
+.link-row .v{margin-left:auto;font:600 14px/1.2 var(--f-mono);color:var(--ink-3);overflow-wrap:anywhere}
 .status{min-height:24px;font-size:15px;color:var(--ink-2)}
 .hint{font-size:15px;color:var(--ink-2);display:flex;gap:10px;align-items:flex-start;max-width:56ch}
 .hint svg{flex-shrink:0;margin-top:3px}
@@ -579,7 +571,7 @@ span.soc{opacity:.4}
       <div class="wrap"><div class="cta-in">
         <h2 id="cta-h">${title}</h2>
         <p>${text}</p>
-        <div class="btn-row"><a class="btn btn-navy btn-hard" href="#membership">Join IES HU ${arrow()}</a><a class="btn btn-dark" href="#contact">Contact us</a></div>
+        <div class="btn-row"><a class="btn btn-navy btn-hard" href="#join">Join IES HU ${arrow()}</a><a class="btn btn-dark" href="#contact">Contact us</a></div>
       </div></div>
     </section>`;
 
@@ -642,26 +634,19 @@ span.soc{opacity:.4}
 
   const memberTile = m => {
     const r = role(m);
-    return `<a class="mtile" href="#m-${esc(m.slug)}" style="--acc:${r.acc}" aria-label="${esc(m.nameEn)}, ${r.label}">
-      <div class="mt-art">
-        ${m.photo ? `<img src="${m.photo}" alt="">` : `<span class="ies-mini" aria-hidden="true">IES</span>`}
-        <svg viewBox="0 0 400 300" preserveAspectRatio="none" aria-hidden="true">
-          <polygon points="330,0 400,0 400,300 250,300" fill="#FF6B1A"/><polygon points="300,0 316,0 236,300 220,300" fill="#FFC21A"/>
-        </svg>
-        ${isLeader(m) ? '<div class="mt-frame" aria-hidden="true"></div>' : ''}
-      </div>
+    return `<a class="mtile" href="#m-${esc(m.slug)}" style="--acc:${r.acc === '#0B1530' ? '#1449D6' : r.acc}">
+      <div class="mt-photo">${m.photo ? `<img src="${m.photo}" alt="">` : `<div class="ini" aria-hidden="true">${esc(initials(m.nameEn))}</div>`}</div>
       <div class="mt-body">
-        <div class="mt-en">${esc(m.nameEn)}</div>
-        ${m.nameAr ? `<div class="mt-ar ar" lang="ar">${esc(m.nameAr)}</div>` : ''}
-        ${rolePill(m)}
-        <div class="mt-spec">${esc(m.specialtyEn)}</div>
-        <div class="mt-id">${esc(m.memberId)}</div>
+        <span class="mt-role"><i aria-hidden="true"></i>${r.label}</span>
+        <span class="mt-name">${esc(m.nameEn)}</span>
+        <span class="mt-spec">${esc(m.specialtyEn)}</span>
       </div>
     </a>`;
   };
+  const initials = n => String(n || '').split(/\s+/).map(w => w[0] || '').join('').slice(0, 2).toUpperCase();
 
   /* ===== header / footer ===== */
-  const NAV = [['home', 'Home'], ['about', 'About Us'], ['events', 'Activities & Events'], ['projects', 'Projects'], ['officers', 'Officers'], ['membership', 'Membership'], ['contact', 'Contact']];
+  const NAV = [['home', 'Home'], ['chapter', 'The Chapter'], ['team', 'Our Team'], ['events', 'Events'], ['projects', 'Projects'], ['contact', 'Contact']];
   const IEEE_LINKS = [['IEEE.org', 'https://www.ieee.org/', ''], ['IEEE Xplore', 'https://ieeexplore.ieee.org/', ''], ['IEEE Spectrum', 'https://spectrum.ieee.org/', 'opt'], ['IEEE IES', 'https://www.ieee-ies.org/', 'opt']];
   const JOIN_IEEE = 'https://www.ieee.org/membership/join/index.html';
 
@@ -677,9 +662,9 @@ span.soc{opacity:.4}
       </a>
       <nav class="nav" id="nav" aria-label="Main">
         ${NAV.map(([k, n]) => `<a href="#${k}" ${k === active ? 'aria-current="page"' : ''}>${n}</a>`).join('')}
-        <a href="#membership" class="nav-join">Join IES HU</a>
+        <a href="#join" class="nav-join" ${active === 'join' ? 'aria-current="page"' : ''}>Join Us</a>
       </nav>
-      <a class="btn btn-gold top-cta" href="#membership">Join IES HU</a>
+      <a class="btn btn-gold top-cta" href="#join" ${active === 'join' ? 'aria-current="page"' : ''}>Join Us ${arrow(18)}</a>
       <button type="button" class="menu-btn" id="menuBtn" aria-expanded="false" aria-controls="nav" aria-label="Menu">${ico(P.menu, 22, 'currentColor', 2.4)}</button>
     </div></header>`;
 
@@ -707,11 +692,11 @@ span.soc{opacity:.4}
           <strong>IEEE IES Student Chapter</strong>
           <p>The Hashemite University · IEEE HU Student Branch, Jordan Section, Region 8.</p>
         </div>
-        <div><h3>Explore</h3><ul>${NAV.map(([k, n]) => `<li><a href="#${k}">${n}</a></li>`).join('')}</ul></div>
+        <div><h3>Explore</h3><ul>${NAV.map(([k, n]) => `<li><a href="#${k}">${n}</a></li>`).join('')}<li><a href="#join">Join Us</a></li></ul></div>
         <div><h3>IEEE</h3><ul>${IEEE_LINKS.map(([n, h]) => `<li><a href="${h}" ${ext}>${n}</a></li>`).join('')}<li><a href="${JOIN_IEEE}" ${ext}>Join IEEE</a></li></ul></div>
         <div><h3>Contact</h3>
           <p>The Hashemite University<br>Zarqa, Jordan</p>
-          <p>${CONFIG.email ? `<a href="mailto:${esc(CONFIG.email)}">${esc(CONFIG.email)}</a>` : `Email ${TBD()}`}</p>
+          ${CONFIG.email ? `<p><a href="mailto:${esc(CONFIG.email)}">${esc(CONFIG.email)}</a></p>` : ''}
           ${socialIcons()}
         </div>
       </div>
@@ -731,7 +716,7 @@ span.soc{opacity:.4}
           <h1 id="hero-h">We Make Industry <em>Move</em></h1>
           <p class="lead">The IEEE Industrial Electronics Society chapter at the Hashemite University. Students who learn automation, robotics, power electronics and embedded systems by building them.</p>
           <div class="btn-row">
-            <a class="btn btn-gold btn-hard" href="#membership">Join IES HU ${arrow()}</a>
+            <a class="btn btn-gold btn-hard" href="#join">Join IES HU ${arrow()}</a>
             <a class="btn btn-light" href="#events">Explore events</a>
           </div>
         </div>
@@ -761,9 +746,9 @@ span.soc{opacity:.4}
     <section class="sec sec-white" aria-labelledby="ev-h">
       <div class="wrap">
         <div class="sec-head">
-          <div>${eyebrow('Activities & events')}<h2 id="ev-h">${upcomingEvents().length || !EVENTS.length ? 'What’s coming up' : 'Latest from the chapter'}</h2>
+          <div>${eyebrow('Events')}<h2 id="ev-h">${upcomingEvents().length || !EVENTS.length ? 'What’s coming up' : 'Latest from the chapter'}</h2>
           <p class="lead">Workshops, visits and IEEE days we organize or take part in.</p></div>
-          ${EVENTS.length ? `<a class="btn btn-dark btn-hard" href="#events">All activities ${arrow(18)}</a>` : ''}
+          ${EVENTS.length ? `<a class="btn btn-dark btn-hard" href="#events">All events ${arrow(18)}</a>` : ''}
         </div>
         ${eventsGrid((upcomingEvents().length ? upcomingEvents() : pastEvents()).slice(0, 3))}
       </div>
@@ -782,7 +767,7 @@ span.soc{opacity:.4}
             <li><b>1982</b><span>Named IEEE IES</span></li>
             <li class="on"><b>2026</b><span>75 years · IES HU</span></li>
           </ol>
-          <div><a class="btn btn-navy btn-hard" href="#about" style="--hard:var(--white)">Our story ${arrow(18)}</a></div>
+          <div><a class="btn btn-navy btn-hard" href="#chapter" style="--hard:var(--white)">Our story ${arrow(18)}</a></div>
         </div>
       </div>
     </section>
@@ -790,7 +775,7 @@ span.soc{opacity:.4}
     <section class="sec sec-paper" aria-labelledby="pt-h">
       <div class="wrap">
         <div class="sec-head">
-          <div>${eyebrow('Partners & friends')}<h2 id="pt-h">The partners who power our branch</h2>
+          <div>${eyebrow('Branch partners')}<h2 id="pt-h">The partners who power our branch</h2>
           <p class="lead">Companies and schools that back the IEEE Hashemite University Student Branch, and every chapter in it.</p></div>
           <a class="btn btn-dark btn-hard" href="#contact">Become a partner ${arrow(18)}</a>
         </div>
@@ -800,8 +785,8 @@ span.soc{opacity:.4}
     </section>
     ${cta()}`;
 
-  const about = () => `
-    ${pageHero('About us', 'About IES HU', 'An IEEE Industrial Electronics Society student chapter at the Hashemite University, founded in the society’s 75th year.', [['About Us']], 'ABOUT')}
+  const chapter = () => `
+    ${pageHero('The chapter', 'The IES HU Chapter', 'An IEEE Industrial Electronics Society student chapter at the Hashemite University, founded in the society’s 75th year.', [['The Chapter']], 'IES')}
 
     <section class="sec sec-white" aria-labelledby="who-h">
       <div class="wrap split">
@@ -873,7 +858,7 @@ span.soc{opacity:.4}
     ${cta()}`;
 
   const events = () => `
-    ${pageHero('Activities & events', 'Activities & Events', 'Workshops, visits and IEEE days. Every activity gets its own page, so the work stays on record.', null, 'EVENTS')}
+    ${pageHero('Events', 'Events', 'Workshops, visits and IEEE days. Every activity gets its own page, so the work stays on record.', null, 'EVENTS')}
     <section class="sec sec-white" aria-labelledby="up-h">
       <div class="wrap">
         <div class="sec-head"><div>${eyebrow('Upcoming')}<h2 id="up-h">Coming up</h2></div></div>
@@ -890,13 +875,13 @@ span.soc{opacity:.4}
 
   const eventPage = slug => {
     const e = EVENTS.find(x => x.slug === slug);
-    if (!e) return `${pageHero('404', 'Event not found', 'Check the link, or browse all activities.', [['Activities & Events', 'events'], ['Not found']])}
-      <section class="sec sec-white"><div class="wrap"><a class="btn btn-gold btn-hard" href="#events">All activities ${arrow()}</a></div></section>`;
+    if (!e) return `${pageHero('404', 'Event not found', 'Check the link, or browse all activities.', [['Events', 'events'], ['Not found']])}
+      <section class="sec sec-white"><div class="wrap"><a class="btn btn-gold btn-hard" href="#events">All events ${arrow()}</a></div></section>`;
     const body = (e.bodyEn || []).filter(Boolean);
     return `
     ${pageHero(esc(e.categoryEn || 'Activity'), esc(e.titleEn),
       `<span class="hero-meta"><span>${ico(P.calendar, 16)} ${fmtDate(e.date)}</span>${e.locationEn ? `<span>${ico(P.pin, 16)} ${esc(e.locationEn)}</span>` : ''}</span>`,
-      [['Activities & Events', 'events'], [esc(e.titleEn)]])}
+      [['Events', 'events'], [esc(e.titleEn)]])}
     <section class="sec sec-white"><div class="wrap"><article class="article">
       ${e.image ? `<div class="cover"><img src="${esc(e.image)}" alt=""></div>` : ''}
       ${e.summaryEn ? `<p style="font-weight:700;color:var(--navy)">${esc(e.summaryEn)}</p>` : ''}
@@ -904,7 +889,7 @@ span.soc{opacity:.4}
         : `<p>Time, venue and the full program will be posted here soon. ${TBD()}</p>
            <div><a class="btn btn-dark btn-hard" href="${CONFIG.social.instagram}" ${ext}>${ico(P.instagram, 20)} Follow @ieee.ies.hu</a></div>`}
       ${e.link ? `<div><a class="btn btn-gold btn-hard" href="${esc(e.link)}" ${ext}>Registration &amp; details ${arrow()}</a></div>` : ''}
-      <div><a class="back-link" href="#events">${arrow(18)} All activities</a></div>
+      <div><a class="back-link" href="#events">${arrow(18)} All events</a></div>
     </article></div></section>
     ${cta()}`;
   };
@@ -931,13 +916,13 @@ span.soc{opacity:.4}
     </section>
     ${cta('Got a project idea?', 'Members can pitch a project to the committee. Tell us what you want to build.')}`;
 
-  const officers = () => {
+  const team = () => {
     const terms = allTerms();
     if (!terms.includes(teamTerm)) teamTerm = terms[0] || CONFIG.currentTerm;
     const list = sortedMembers().filter(m => termOf(m) === teamTerm && (teamFilter === 'all' || m.role === teamFilter));
     const btn = (key, label, acc) => `<button type="button" class="filter" data-filter="${key}" aria-pressed="${teamFilter === key}" ${acc ? `style="--acc:${acc}"` : ''}>${acc ? '<i aria-hidden="true"></i>' : ''}${label}</button>`;
     return `
-    ${pageHero('Officers', 'Officers', 'The student volunteers who lead the chapter. Open any card to see the member’s page.', null, 'TEAM')}
+    ${pageHero('Our team', 'Our Team', 'The students who run IES HU. Open a profile to see each member’s page.', [['Our Team']], 'TEAM')}
     <section class="sec sec-white" aria-label="Committee">
       <div class="wrap">
         <div class="terms">
@@ -963,11 +948,11 @@ span.soc{opacity:.4}
     { q: 'Does joining the chapter cost anything?' },
     { q: 'Do I need to be an engineering student?' },
     { q: 'How do I become an officer?' },
-    { q: 'Where can I find chapter events?', a: 'On the Activities & Events page of this site, and on Instagram at @ieee.ies.hu.' }
+    { q: 'Where can I find chapter events?', a: 'On the Events page of this site, and on Instagram at @ieee.ies.hu.' }
   ];
 
-  const membership = () => `
-    ${pageHero('Membership', 'Membership', 'What you get when you join, and how to get started.', null, 'JOIN')}
+  const join = () => `
+    ${pageHero('Join us', 'Join IES HU', 'What you get when you join, and how to get started.', [['Join Us']], 'JOIN')}
     <section class="sec sec-white" aria-labelledby="why-h">
       <div class="wrap">
         <div class="sec-head"><div>${eyebrow('Why join')}<h2 id="why-h">One membership, three communities</h2></div></div>
@@ -980,7 +965,7 @@ span.soc{opacity:.4}
             <a href="https://www.ieee-ies.org/" ${ext}>ieee-ies.org ↗</a></div>
           <div class="layer us"><span class="k">IES HU</span><h3>Our chapter at the Hashemite University</h3>
             <p>Workshops, visits and a team that learns and builds together, inside the IEEE HU Student Branch.</p>
-            <a href="#about">About the chapter</a></div>
+            <a href="#chapter">About the chapter</a></div>
         </div>
       </div>
     </section>
@@ -1012,7 +997,7 @@ span.soc{opacity:.4}
         <ol class="steps">
           <li class="step"><span class="n">1</span><h3>Fill in the join form</h3><p>The link is just below.</p></li>
           <li class="step"><span class="n">2</span><h3>We get in touch</h3><p>The committee reviews your request and replies.</p></li>
-          <li class="step"><span class="n">3</span><h3>Come to your first activity</h3><p>Watch the events page and our Instagram.</p></li>
+          <li class="step"><span class="n">3</span><h3>Come to your first activity</h3><p>Follow the Events page and our Instagram.</p></li>
         </ol>
         <div class="join-box" style="margin-top:44px">
           ${hex(P.doc, !!CONFIG.joinFormUrl, 64)}
@@ -1051,7 +1036,7 @@ span.soc{opacity:.4}
         <div class="info-list">
           <div><span class="ic">${ico(P.pin, 20)}</span><div><b>Chapter address</b><p>The Hashemite University, Zarqa, Jordan ${TBD('faculty & department')}</p>
             <a href="https://www.google.com/maps/search/?api=1&query=The+Hashemite+University+Zarqa" ${ext}>Open in Maps ↗</a></div></div>
-          <div><span class="ic">${ico(P.mail, 20)}</span><div><b>Email</b><p>${CONFIG.email ? esc(CONFIG.email) : TBD()}</p></div></div>
+          ${CONFIG.email ? `<div><span class="ic">${ico(P.mail, 20)}</span><div><b>Email</b><a href="mailto:${esc(CONFIG.email)}">${esc(CONFIG.email)}</a></div></div>` : ''}
           <div><span class="ic">${ico(P.instagram, 20)}</span><div><b>Instagram</b><a href="${CONFIG.social.instagram}" ${ext}>@ieee.ies.hu ↗</a></div></div>
           <div><span class="ic">${ico(P.flag, 20)}</span><div><b>Partnerships</b><p>A company or organization that wants to support a workshop or an industry visit? Pick “Partnership or sponsorship” in the form.</p></div></div>
         </div>
@@ -1067,63 +1052,49 @@ span.soc{opacity:.4}
 
   const memberPage = slug => {
     const m = MEMBERS.find(x => x.slug === slug);
-    if (!m) return `${pageHero('404', 'Member not found', 'Check the link, or browse the officers.', [['Officers', 'officers'], ['Not found']])}
-      <section class="sec sec-white"><div class="wrap"><a class="btn btn-gold btn-hard" href="#officers">Officers ${arrow()}</a></div></section>`;
-    const r = role(m), leader = r.rank > 0;
-    const num = String(m.memberId || '').replace(/\D/g, '').padStart(3, '0');
-    const badges = [
-      { on: !!m.founding, i: P.star, t: 'Founder' },
-      { on: leader, i: P.flag, t: 'Leader' },
-      { on: (m.badges || []).includes('workshop'), i: P.wrench, t: 'Workshop' },
-      { on: (m.badges || []).includes('maker'), i: P.chip, t: 'Maker' }
-    ];
+    if (!m) return `${pageHero('404', 'Member not found', 'Check the link, or meet the team.', [['Our Team', 'team'], ['Not found']])}
+      <section class="sec sec-white"><div class="wrap"><a class="btn btn-gold btn-hard" href="#team">Our team ${arrow()}</a></div></section>`;
+    const r = role(m);
+    const acc = r.acc === '#0B1530' ? '#1449D6' : r.acc;
+    const tags = [
+      m.founding && 'Founding member',
+      ...(m.badges || []).map(b => ({ workshop: 'Workshop lead', maker: 'Maker' }[b] || b))
+    ].filter(Boolean);
     const links = Object.entries(m.links || {}).filter(([k, v]) => v && LINKS[k]);
     return `
-    <section class="hero m-hero" style="--acc:${r.acc};${r.acc === '#0B1530' ? '--mshadow:#FFC21A' : ''}" aria-labelledby="m-name">
-      ${leader ? '<div class="m-frame" aria-hidden="true"></div>' : ''}
-      <div class="wrap hero-grid">
-        <div class="hero-copy">
-          <span class="nfc-chip"><span class="dot">${ico(P.nfc, 18, '#0B1530', 2.4)}</span>IES HU member page</span>
+    <section class="profile" aria-labelledby="m-name" style="--acc:${acc}">
+      <div class="wrap profile-grid">
+        <figure class="pf-photo">${m.photo ? `<img src="${m.photo}" alt="Photo of ${esc(m.nameEn)}">` : `<div class="ini" aria-hidden="true">${esc(initials(m.nameEn))}</div>`}</figure>
+        <div class="pf-info">
+          <nav class="crumbs-dark" aria-label="Breadcrumb"><a href="#home">Home</a><span aria-hidden="true">/</span><a href="#team">Our Team</a><span aria-hidden="true">/</span><span aria-current="page">${esc(m.nameEn)}</span></nav>
+          <span class="pf-role"><i aria-hidden="true"></i>${r.label}<span>· Committee ${esc(termOf(m))}</span></span>
           <h1 id="m-name">${esc(m.nameEn)}</h1>
-          ${m.nameAr ? `<p class="m-ar ar" lang="ar">${esc(m.nameAr)}</p>` : ''}
-          <div>${rolePill(m, 'pill-lg')}</div>
-          <p class="m-spec">${esc(m.specialtyEn)}</p>
-          ${m.motto ? `<div>${sticker(m.motto)}</div>` : ''}
-        </div>
-        <div class="hero-art m-art">
-          <div class="slabs" aria-hidden="true"><svg viewBox="0 0 800 700" preserveAspectRatio="xMinYMid slice">
-            <polygon points="420,0 800,0 800,700 190,700" fill="#FF6B1A"/><polygon points="340,0 396,0 166,700 110,700" fill="#FFC21A"/>
-            <g stroke="#FFFFFF" stroke-opacity=".35" stroke-width="3" stroke-linecap="round" fill="none"><path d="M0 560 H90 L130 520 H220"/><path d="M560 0 V40 L600 80 H720"/></g>
-            <g fill="#FFFFFF"><circle cx="220" cy="520" r="7"/><circle cx="720" cy="80" r="7"/></g>
-          </svg></div>
-          <div class="m-photo-wrap">
-            <div class="m-photo">${m.photo ? `<img src="${m.photo}" alt="Photo of ${esc(m.nameEn)}">` : '<div class="noimg" aria-hidden="true">IES</div>'}</div>
-            ${m.founding ? stamp('FOUNDER', '#' + num, 'FOUNDING MEMBER ★ EST. 2026 ★', 'Founding member #' + num + ', est. 2026') : ''}
+          ${m.nameAr ? `<p class="pf-ar ar" lang="ar">${esc(m.nameAr)}</p>` : ''}
+          <p class="pf-spec">${esc(m.specialtyEn)}</p>
+          ${m.motto ? `<blockquote class="pf-quote">“${esc(m.motto)}”</blockquote>` : ''}
+          ${tags.length ? `<ul class="pf-tags">${tags.map(t => `<li>${ico(P.star, 16)}${esc(t)}</li>`).join('')}</ul>` : ''}
+          <div class="btn-row" style="margin-top:6px">
+            <button type="button" class="btn btn-navy" id="vcfBtn">${ico(P.download, 20, 'currentColor', 2.4)} Save contact</button>
+            <a class="btn btn-dark" href="#join">Join IES HU ${arrow()}</a>
           </div>
+          <p class="status" id="vcfMsg" role="status"></p>
         </div>
       </div>
     </section>
     <section class="sec sec-white" aria-label="Member details">
-      <div class="wrap m-body">
+      <div class="wrap pf-body">
         <div>
-          <div class="btn-row">
-            <button type="button" class="btn btn-gold btn-hard" id="vcfBtn">${ico(P.download, 20, 'currentColor', 2.4)} Save contact</button>
-            <a class="btn btn-dark" href="#membership">Join IES HU ${arrow()}</a>
-          </div>
-          <p class="status" id="vcfMsg" role="status"></p>
+          <h2>Membership</h2>
           <dl class="facts">
             <div><dt>Member ID</dt><dd>${esc(m.memberId)}</dd></div>
-            <div><dt>Valid thru</dt><dd>${esc(m.validThru)}</dd></div>
-            ${m.ieeeNumber ? `<div><dt>IEEE no.</dt><dd>${esc(m.ieeeNumber)}</dd></div>` : ''}
+            ${m.ieeeNumber ? `<div><dt>IEEE number</dt><dd>${esc(m.ieeeNumber)}</dd></div>` : ''}
+            <div><dt>Valid through</dt><dd>${esc(m.validThru)}</dd></div>
           </dl>
-          <p class="hint">${ico(P.nfc, 20, '#1449D6', 2.2)} This page opens when a phone taps the member’s NFC card. The link is permanent.</p>
         </div>
         <div>
-          <div style="display:flex;flex-direction:column;gap:18px"><h2>Achievements</h2>
-            <ul class="badges">${badges.map(b => `<li class="badge">${hex(b.i, b.on, 64)}<b>${b.t}</b><small>${b.on ? 'Earned' : 'Locked'}</small></li>`).join('')}</ul></div>
-          <div style="display:flex;flex-direction:column;gap:14px"><h2>Connect</h2>
-            ${links.length ? `<div class="links">${links.map(([k, v]) => `<a class="link-row" href="${esc(LINKS[k].href(v))}" ${k === 'linkedin' || k === 'instagram' ? ext : ''}>${ico(LINKS[k].i)}${LINKS[k].label}<span class="v">${esc(v.replace(/^https?:\/\/(www\.)?/, ''))}</span></a>`).join('')}</div>`
-              : `<p class="hint">Contact links coming soon. ${TBD('links')}</p>`}</div>
+          <h2>Connect</h2>
+          ${links.length ? `<div class="links">${links.map(([k, v]) => `<a class="link-row" href="${esc(LINKS[k].href(v))}" ${k === 'linkedin' || k === 'instagram' ? ext : ''}>${ico(LINKS[k].i)}${LINKS[k].label}<span class="v">${esc(v.replace(/^https?:\/\/(www\.)?/, ''))}</span></a>`).join('')}</div>`
+            : `<p class="hint">Use “Save contact” to keep ${esc(m.nameEn.split(' ')[0])}’s details on your phone.</p>`}
         </div>
       </div>
     </section>
@@ -1149,9 +1120,9 @@ span.soc{opacity:.4}
   };
 
   /* ===== router ===== */
-  const PAGES = { home, about, events, projects, officers, membership, contact };
-  const ALIASES = { team: 'officers', join: 'membership' };
-  const TITLES = { home: 'Home', about: 'About Us', events: 'Activities & Events', projects: 'Projects', officers: 'Officers', membership: 'Membership', contact: 'Contact' };
+  const PAGES = { home, chapter, team, events, projects, join, contact };
+  const ALIASES = { about: 'chapter', officers: 'team', membership: 'join' };
+  const TITLES = { home: 'Home', chapter: 'The Chapter', team: 'Our Team', events: 'Events', projects: 'Projects', join: 'Join Us', contact: 'Contact' };
   const app = document.getElementById('app');
   document.documentElement.lang = 'en';
   document.documentElement.dir = 'ltr';
@@ -1163,7 +1134,7 @@ span.soc{opacity:.4}
     let key, body, title;
     if (route.startsWith('m-')) {
       const m = MEMBERS.find(x => x.slug === route.slice(2));
-      key = 'officers'; body = memberPage(route.slice(2)); title = m ? m.nameEn : 'Member not found';
+      key = 'team'; body = memberPage(route.slice(2)); title = m ? m.nameEn : 'Member not found';
     } else if (route.startsWith('e-')) {
       const e = EVENTS.find(x => x.slug === route.slice(2));
       key = 'events'; body = eventPage(route.slice(2)); title = e ? e.titleEn : 'Event not found';
