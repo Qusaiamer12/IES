@@ -1,14 +1,18 @@
 import membersJson from '@/data/members.json';
 import eventsJson from '@/data/events.json';
 
-export type RoleKey = 'chair' | 'vice' | 'tech' | 'events' | 'media' | 'member';
+export type RoleKey = 'chair' | 'vice' | 'secretary' | 'membership' | 'pr' | 'events' | 'media' | 'design' | 'member';
 
+// Officer positions, in the order the team page lists them.
 export const ROLES: Record<RoleKey, { label: string; accent: string; rank: number }> = {
   chair: { label: 'Chair', accent: '#0B1530', rank: 3 },
   vice: { label: 'Vice Chair', accent: '#1449D6', rank: 2 },
-  tech: { label: 'Technical Team', accent: '#0B7A75', rank: 0 },
-  events: { label: 'Events Team', accent: '#B0185A', rank: 0 },
-  media: { label: 'Media Team', accent: '#6A2BE0', rank: 0 },
+  secretary: { label: 'Secretary', accent: '#2E3A59', rank: 0 },
+  membership: { label: 'Membership Development', accent: '#0B7A75', rank: 0 },
+  pr: { label: 'Public Relations', accent: '#C2410C', rank: 0 },
+  events: { label: 'Event Coordinator', accent: '#B0185A', rank: 0 },
+  media: { label: 'Social Media', accent: '#6A2BE0', rank: 0 },
+  design: { label: 'Designer', accent: '#8B5E00', rank: 0 },
   member: { label: 'Member', accent: '#2E3A59', rank: 0 },
 };
 export const ROLE_ORDER = Object.keys(ROLES) as RoleKey[];
@@ -20,6 +24,9 @@ export type Member = {
   role: RoleKey;
   specialtyEn: string;
   specialtyAr?: string | null;
+  year?: string | null; // study year, e.g. "3rd year"
+  bio?: string | null;
+  highlights?: string[];
   memberId: string;
   ieeeNumber?: string | null;
   validThru?: string | null;

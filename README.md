@@ -57,13 +57,15 @@ The site needs a Node host for the form API, so GitHub Pages alone is not enough
   "slug": "firstname",
   "nameEn": "First Last",
   "nameAr": "الاسم بالعربي",
-  "role": "chair | vice | tech | events | media | member",
+  "role": "chair | vice | secretary | membership | pr | events | media | design | member",
   "specialtyEn": "Electrical Engineering",
+  "year": "3rd year",
   "memberId": "IES-001",
-  "ieeeNumber": "12345678",
   "validThru": "08/2027",
   "founding": true,
   "motto": null,
+  "bio": "Short bio, as the member submitted it.",
+  "highlights": ["One achievement per line."],
   "badges": [],
   "photo": "/members/firstname.jpg",
   "term": "2026/2027",
@@ -71,7 +73,8 @@ The site needs a Node host for the form API, so GitHub Pages alone is not enough
 }
 ```
 
-Slugs are lowercase letters, digits and hyphens. Once a slug is written to an NFC card it must never change,
+Publish only officers who gave consent in the profile form, and never their email, phone, IEEE number or home area.
+Slugs are lowercase letters, digits and hyphens (we use `firstname-lastname`). Once a slug is written to an NFC card it must never change,
 and neither may the domain. Write `https://<domain>/m/<slug>` with the NFC Tools app, test on iPhone and Android, then lock the tag.
 
 **An event** — add an entry to `data/events.json`. Events move from "Coming up" to "Past events" on their date (Amman time):

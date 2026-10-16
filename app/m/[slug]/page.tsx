@@ -50,7 +50,7 @@ export default async function MemberPage({ params }: Props) {
             <p className="pf-role"><i aria-hidden="true" />{role.label}<span>· Committee {m.term || SITE.currentTerm}</span></p>
             <h1 id="m-name">{m.nameEn}</h1>
             {m.nameAr && <p className="pf-ar ar" lang="ar">{m.nameAr}</p>}
-            <p className="pf-spec">{m.specialtyEn}</p>
+            <p className="pf-spec">{[m.specialtyEn, m.year].filter(Boolean).join(' · ')}</p>
             {m.motto && <blockquote className="pf-quote">“{m.motto}”</blockquote>}
             {tags.length > 0 && <ul className="pf-tags">{tags.map(t => <li key={t}><Icon name="star" size={16} />{t}</li>)}</ul>}
             <div className="btn-row pf-actions">
@@ -60,6 +60,22 @@ export default async function MemberPage({ params }: Props) {
           </div>
         </div>
       </section>
+      {(m.bio || (m.highlights ?? []).length > 0) && (
+        <section className="sec sec-white pf-about" aria-labelledby="about-h">
+          <div className="wrap pf-body">
+            <div>
+              <h2 id="about-h">About</h2>
+              {m.bio ? <p className="pf-bio">{m.bio}</p> : <p className="pf-bio">{m.nameEn} is the {roleOf(m).label} of IES HU.</p>}
+            </div>
+            {(m.highlights ?? []).length > 0 && (
+              <div>
+                <h2>Highlights</h2>
+                <ul className="pf-highlights">{m.highlights!.map(h => <li key={h}><Icon name="star" size={18} />{h}</li>)}</ul>
+              </div>
+            )}
+          </div>
+        </section>
+      )}
       <section className="sec sec-white" aria-label="Member details">
         <div className="wrap pf-body">
           <div>

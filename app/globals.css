@@ -468,3 +468,8 @@ fieldset.field{border:0;padding:0;margin:0;min-width:0}
 .link-node.us small{color:var(--navy)}
 .field input[type="radio"],.field input[type="checkbox"]{min-height:0;padding:0;border:0;border-radius:0;background:none;font-size:inherit}
 .radio,.check{min-height:44px;padding:6px 16px;line-height:1.2}
+.pf-about{padding-bottom:0}
+.pf-bio{font-size:clamp(17px,1.5vw,19px);line-height:1.8;color:var(--ink-2);max-width:62ch}
+.pf-highlights{display:flex;flex-direction:column;gap:14px}
+.pf-highlights li{display:flex;gap:12px;align-items:flex-start;line-height:1.65;color:var(--ink-2)}
+.pf-highlights svg{flex-shrink:0;margin-top:4px;color:var(--orange)}
