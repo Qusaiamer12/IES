@@ -4,10 +4,11 @@ import eventsJson from '@/data/events.json';
 export type RoleKey = 'chair' | 'vice' | 'secretary' | 'membership' | 'pr' | 'events' | 'media' | 'design' | 'member';
 
 // Officer positions, in the order the team page lists them.
-export const ROLES: Record<RoleKey, { label: string; accent: string; rank: number }> = {
-  chair: { label: 'Chair', accent: '#0B1530', rank: 3 },
-  vice: { label: 'Vice Chair', accent: '#1449D6', rank: 2 },
-  secretary: { label: 'Secretary', accent: '#2E3A59', rank: 0 },
+// core: the chapter's Core Team (Chair, Vice Chair, Secretary); everyone else is the Executive Team.
+export const ROLES: Record<RoleKey, { label: string; accent: string; rank: number; core?: boolean }> = {
+  chair: { label: 'Chair', accent: '#0B1530', rank: 3, core: true },
+  vice: { label: 'Vice Chair', accent: '#1449D6', rank: 2, core: true },
+  secretary: { label: 'Secretary', accent: '#2E3A59', rank: 0, core: true },
   membership: { label: 'Membership Development', accent: '#0B7A75', rank: 0 },
   pr: { label: 'Public Relations', accent: '#C2410C', rank: 0 },
   events: { label: 'Event Coordinator', accent: '#B0185A', rank: 0 },

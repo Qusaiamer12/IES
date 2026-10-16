@@ -474,3 +474,11 @@ fieldset.field{border:0;padding:0;margin:0;min-width:0}
 .pf-highlights li{display:flex;gap:12px;align-items:flex-start;line-height:1.65;color:var(--ink-2)}
 .pf-highlights svg{flex-shrink:0;margin-top:4px;color:var(--orange)}
 .pf-bio+.pf-bio{margin-top:14px}
+
+/* team groups */
+.team-group+.team-group{margin-top:clamp(48px,6vw,72px)}
+.team-group-head{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 18px;margin-bottom:24px;padding-bottom:14px;border-bottom:2px solid var(--rule)}
+.team-group-head h3{font-size:clamp(22px,2.4vw,28px);letter-spacing:-.01em}
+.team-group-head p{color:var(--ink-2);font-size:16px}
+.team-grid.core{grid-template-columns:repeat(auto-fill,minmax(min(100%,300px),1fr))}
+.team-grid.core .mt-name{font-size:24px}

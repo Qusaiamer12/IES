@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useState } from 'react';
-import { accentOf, initials, ROLE_ORDER, ROLES, roleOf, type Member, type RoleKey } from '@/lib/data';
+import { accentOf, initials, roleOf, type Member } from '@/lib/data';
 
 export function MemberTile({ m }: { m: Member }) {
   return (
@@ -19,15 +19,14 @@ export function MemberTile({ m }: { m: Member }) {
   );
 }
 
-/** Committee grid with term and role filters. Members arrive already sorted. */
+/** Committee for a term: the Core Team first, then the Executive Team. Members arrive already sorted. */
 export function TeamBrowser({ members, currentTerm }: { members: Member[]; currentTerm: string }) {
   const termOf = (m: Member) => m.term || currentTerm;
   const terms = [...new Set(members.map(termOf))].sort().reverse();
   const [term, setTerm] = useState(terms[0] ?? currentTerm);
-  const [role, setRole] = useState<RoleKey | 'all'>('all');
   const inTerm = members.filter(m => termOf(m) === term);
-  const roles = ROLE_ORDER.filter(r => inTerm.some(m => m.role === r));
-  const list = inTerm.filter(m => role === 'all' || m.role === role);
+  const core = inTerm.filter(m => roleOf(m).core);
+  const executive = inTerm.filter(m => !roleOf(m).core);
 
   return (
     <>
@@ -36,22 +35,29 @@ export function TeamBrowser({ members, currentTerm }: { members: Member[]; curre
         {terms.length > 1 && (
           <div className="filters" role="group" aria-label="Choose term">
             {terms.map(t => (
-              <button key={t} type="button" className="filter" aria-pressed={t === term} onClick={() => { setTerm(t); setRole('all'); }}>{t}</button>
+              <button key={t} type="button" className="filter" aria-pressed={t === term} onClick={() => setTerm(t)}>{t}</button>
             ))}
           </div>
         )}
       </div>
-      {roles.length > 1 && (
-        <div className="filters" role="group" aria-label="Filter by role" style={{ marginBottom: 36 }}>
-          <button type="button" className="filter" aria-pressed={role === 'all'} onClick={() => setRole('all')}>All</button>
-          {roles.map(r => (
-            <button key={r} type="button" className="filter" aria-pressed={role === r} onClick={() => setRole(r)} style={{ '--acc': ROLES[r].accent } as React.CSSProperties}>
-              <i aria-hidden="true" />{ROLES[r].label}
-            </button>
-          ))}
-        </div>
+      {core.length > 0 && (
+        <section className="team-group" aria-labelledby="core-h">
+          <div className="team-group-head">
+            <h3 id="core-h">Core Team</h3>
+            <p>Leads the chapter, sets the plan for the year and coordinates the committees.</p>
+          </div>
+          <div className="team-grid core">{core.map(m => <MemberTile key={m.slug} m={m} />)}</div>
+        </section>
       )}
-      <div className="team-grid" aria-live="polite">{list.map(m => <MemberTile key={m.slug} m={m} />)}</div>
+      {executive.length > 0 && (
+        <section className="team-group" aria-labelledby="exec-h">
+          <div className="team-group-head">
+            <h3 id="exec-h">Executive Team</h3>
+            <p>Runs membership, public relations, events, social media and design.</p>
+          </div>
+          <div className="team-grid">{executive.map(m => <MemberTile key={m.slug} m={m} />)}</div>
+        </section>
+      )}
     </>
   );
 }
