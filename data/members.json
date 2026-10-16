@@ -32,7 +32,7 @@
     "memberId": "IES-002",
     "validThru": "08/2027",
     "founding": true,
-    "motto": "The Special One",
+    "motto": null,
     "bio": "Mechatronics Engineering student at the Hashemite University, combining a passion for aerospace engineering with applying artificial intelligence to entrepreneurship.\n\nI work at the intersection of engineering, software and AI to build real products, from embedded systems and automation to language models. I like taking an idea from a concept on paper to a working prototype in the real world. My strengths include prompt engineering and using AI tools to speed up design, development and decision-making.",
     "highlights": [
       "Founder & Chief Technical Officer, CircuBand: a mechatronics and biomedical engineering startup. Ranked Best Startup Idea in Jordan at the Startup World Cup 2026 qualifiers.",
