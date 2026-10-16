@@ -45,7 +45,7 @@ const between = (s, start, end) => {
 
 async function inlineAssets(html) {
   // images and the vCard downloads
-  for (const m of [...html.matchAll(/(src|href)="(\/(?:images|members)\/[^"]+|\/m\/[a-z0-9-]+\/contact\.vcf)"/g)]) {
+  for (const m of [...html.matchAll(/(src|href)="(\/(?:images|members|events)\/[^"]+\.(?:jpe?g|png|webp|svg)|\/m\/[a-z0-9-]+\/contact\.vcf)"/g)]) {
     html = html.replaceAll(`${m[1]}="${m[2]}"`, `${m[1]}="${await dataUri(m[2])}"`);
   }
   // internal links -> hash routes

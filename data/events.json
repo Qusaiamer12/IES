@@ -5,10 +5,28 @@
     "categoryEn": "IEEE Day",
     "date": "2026-10-14",
     "locationEn": null,
-    "summaryEn": "The nationwide IEEE Day celebration in Jordan.",
-    "bodyEn": [],
-    "image": null,
-    "link": null
+    "summaryEn": "IES HU met students and IEEE members from across Jordan at its own booth.",
+    "bodyEn": [
+      "We set up our booth alongside the IEEE HU Women in Engineering and EMBS chapters, where our officers introduced students to the chapter, the fields we work in and how to join.",
+      "The day brought IEEE members from across Jordan together for talks in the main hall and networking between the booths."
+    ],
+    "image": "/events/jordan-ieee-day-2026/booth.jpg",
+    "link": null,
+    "imageAlt": "IES HU officers at the chapter's booth at Jordan IEEE Day 2026",
+    "gallery": [
+      {
+        "src": "/events/jordan-ieee-day-2026/booth.jpg",
+        "alt": "IES HU officers at the chapter's booth, next to the IEEE Women in Engineering and EMBS stands"
+      },
+      {
+        "src": "/events/jordan-ieee-day-2026/venue.jpg",
+        "alt": "Students and IEEE members gathering between the booths at Jordan IEEE Day 2026"
+      },
+      {
+        "src": "/events/jordan-ieee-day-2026/hall.jpg",
+        "alt": "A talk in the main hall at Jordan IEEE Day 2026"
+      }
+    ]
   },
   {
     "slug": "ieee-day-hu-2026",

@@ -10,7 +10,9 @@ export const revalidate = 3600; // re-split upcoming/past events every hour
 
 export default function Home() {
   const { upcoming, past } = splitEvents();
-  const featured = (upcoming.length ? upcoming : past).slice(0, 3);
+  // upcoming first, then the latest past events so recent photos stay visible
+  const featured = [...upcoming, ...past].slice(0, 3);
+  const evTitle = upcoming.length && past.length ? 'Coming up & recently' : upcoming.length || !featured.length ? 'What’s coming up' : 'Latest from the chapter';
   return (
     <>
       <section className="hero" aria-labelledby="hero-h">
@@ -53,7 +55,7 @@ export default function Home() {
 
       <section className="sec sec-white" aria-labelledby="ev-h">
         <div className="wrap">
-          <SectionHead id="ev-h" kicker="Events" title={upcoming.length || !featured.length ? 'What’s coming up' : 'Latest from the chapter'}
+          <SectionHead id="ev-h" kicker="Events" title={evTitle}
             lead="Workshops, visits and IEEE days we organize or take part in."
             action={featured.length ? <Link className="btn btn-dark btn-hard" href="/events">All events <Arrow size={18} /></Link> : undefined} />
           <EventsGrid list={featured} />

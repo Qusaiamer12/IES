@@ -14,7 +14,11 @@ export const generateStaticParams = () => events.map(e => ({ slug: e.slug }));
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const e = getEvent((await params).slug);
   if (!e) return {};
-  return { title: e.titleEn, description: e.summaryEn ?? `${e.titleEn}, ${formatDay(e.date)}.` };
+  return {
+    title: e.titleEn,
+    description: e.summaryEn ?? `${e.titleEn}, ${formatDay(e.date)}.`,
+    openGraph: e.image ? { images: [{ url: e.image }] } : undefined,
+  };
 }
 
 export default async function EventPage({ params }: Props) {
@@ -32,7 +36,7 @@ export default async function EventPage({ params }: Props) {
       <section className="sec sec-white">
         <div className="wrap">
           <article className="article">
-            {e.image && <div className="cover"><img src={e.image} alt="" /></div>}
+            {e.image && <div className="cover"><img src={e.image} alt={e.imageAlt ?? ''} /></div>}
             {e.summaryEn && <p className="article-lead">{e.summaryEn}</p>}
             {body.length ? (
               body.map((p, i) => <p key={i}>{p}</p>)
@@ -41,6 +45,18 @@ export default async function EventPage({ params }: Props) {
                 <p>Time, venue and the full program will be announced on our Instagram.</p>
                 <div><a className="btn btn-dark btn-hard" href={SITE.social.instagram!} target="_blank" rel="noopener"><Icon name="instagram" size={20} /> Follow {SITE.instagramHandle}</a></div>
               </>
+            )}
+            {(e.gallery ?? []).length > 1 && (
+              <section className="gallery" aria-labelledby="gallery-h">
+                <h2 id="gallery-h">Photos</h2>
+                <ul>
+                  {e.gallery!.map(g => (
+                    <li key={g.src}>
+                      <a href={g.src} target="_blank" rel="noopener"><img src={g.src} alt={g.alt} loading="lazy" /></a>
+                    </li>
+                  ))}
+                </ul>
+              </section>
             )}
             {e.link && <div><a className="btn btn-gold btn-hard" href={e.link} target="_blank" rel="noopener">Registration &amp; details <Arrow /></a></div>}
             <div><Link className="back-link" href="/events"><Arrow size={18} /> All events</Link></div>

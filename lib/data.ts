@@ -49,6 +49,8 @@ export type ChapterEvent = {
   summaryEn?: string | null;
   bodyEn?: string[];
   image?: string | null;
+  imageAlt?: string | null;
+  gallery?: { src: string; alt: string }[];
   link?: string | null;
 };
 

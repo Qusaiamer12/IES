@@ -25,7 +25,7 @@ export function EventCard({ e, headingLevel = 3 }: { e: ChapterEvent; headingLev
   return (
     <article className="event">
       <div className="ev-img">
-        {e.image ? <img src={e.image} alt="" loading="lazy" /> : <Placeholder />}
+        {e.image ? <img src={e.image} alt="" loading="lazy" width={640} height={360} /> : <Placeholder />}
         {e.categoryEn && <span className="tag">{e.categoryEn}</span>}
         {d && <div className="ev-date" aria-hidden="true"><b>{d.day}</b><span>{d.month}</span></div>}
       </div>
