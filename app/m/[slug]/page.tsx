@@ -65,7 +65,7 @@ export default async function MemberPage({ params }: Props) {
           <div className="wrap pf-body">
             <div>
               <h2 id="about-h">About</h2>
-              {m.bio ? <p className="pf-bio">{m.bio}</p> : <p className="pf-bio">{m.nameEn} is the {roleOf(m).label} of IES HU.</p>}
+              {m.bio ? m.bio.split(/\n{2,}/).map((para, i) => <p key={i} className="pf-bio">{para}</p>) : <p className="pf-bio">{m.nameEn} is the {roleOf(m).label} of IES HU.</p>}
             </div>
             {(m.highlights ?? []).length > 0 && (
               <div>
