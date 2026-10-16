@@ -9,7 +9,8 @@
     "start": "next start",
     "typecheck": "tsc --noEmit",
     "test:e2e": "node tests/e2e.mjs",
-    "check": "npm run typecheck && npm run build"
+    "check": "npm run typecheck && npm run build",
+    "preview:html": "node scripts/snapshot.mjs preview"
   },
   "engines": {
     "node": ">=20"

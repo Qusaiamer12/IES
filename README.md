@@ -37,6 +37,13 @@ npm run test:e2e                # every page at phone and desktop width: axe acc
                                 # overflow, menu, both forms, API, redirects, security headers
 ```
 
+Single-file HTML preview (all pages, CSS, fonts and photos in one file, for sharing before deploy):
+
+```bash
+npm run build && npm start &    # then:
+npm run preview:html            # writes preview/ies-hu-preview.html
+```
+
 ## Deploy (Vercel, free)
 
 1. Import this GitHub repository on vercel.com. The defaults for Next.js work as they are.
