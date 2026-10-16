@@ -13,9 +13,14 @@
     "bio": null,
     "highlights": [],
     "badges": [],
-    "photo": null,
+    "photo": "/members/qusai-amer.jpg",
     "term": "2026/2027",
-    "links": { "linkedin": null, "instagram": null, "email": null, "phone": null }
+    "links": {
+      "linkedin": null,
+      "instagram": null,
+      "email": null,
+      "phone": null
+    }
   },
   {
     "slug": "ahmad-ayyadi",
@@ -32,9 +37,14 @@
       "Volunteered at the Swaileh Innovation Incubator (Makani project): supported hands-on sessions, organized youth groups, followed up on their attendance, and handled session logistics."
     ],
     "badges": [],
-    "photo": null,
+    "photo": "/members/ahmad-ayyadi.jpg",
     "term": "2026/2027",
-    "links": { "linkedin": "https://www.linkedin.com/in/ahmad-ayyadi-a03385333", "instagram": null, "email": null, "phone": null }
+    "links": {
+      "linkedin": "https://www.linkedin.com/in/ahmad-ayyadi-a03385333",
+      "instagram": null,
+      "email": null,
+      "phone": null
+    }
   },
   {
     "slug": "ahmed-alhunity",
@@ -49,9 +59,14 @@
     "bio": "Ahmed Alhunity is a fourth-year Mechatronics Engineering student at The Hashemite University and an Event Coordinator at IEEE IES. His interests include robotics, home automation, and smart technologies. He also has practical experience in team supervision, purchasing, and sales. He aims to combine his technical, organizational, and leadership skills to contribute to impactful projects and the engineering community.",
     "highlights": [],
     "badges": [],
-    "photo": null,
+    "photo": "/members/ahmed-alhunity.jpg",
     "term": "2026/2027",
-    "links": { "linkedin": "https://www.linkedin.com/in/ahmed-alhunity-23b3a33a2", "instagram": null, "email": null, "phone": null }
+    "links": {
+      "linkedin": "https://www.linkedin.com/in/ahmed-alhunity-23b3a33a2",
+      "instagram": null,
+      "email": null,
+      "phone": null
+    }
   },
   {
     "slug": "raneem-abu-areda",
@@ -69,9 +84,14 @@
       "Completed Computer Vision Training, applying OpenCV and Python to image processing tasks."
     ],
     "badges": [],
-    "photo": null,
+    "photo": "/members/raneem-abu-areda.jpg",
     "term": "2026/2027",
-    "links": { "linkedin": "https://www.linkedin.com/in/raneem-baker-abu-areda-2500b5320", "instagram": null, "email": null, "phone": null }
+    "links": {
+      "linkedin": "https://www.linkedin.com/in/raneem-baker-abu-areda-2500b5320",
+      "instagram": null,
+      "email": null,
+      "phone": null
+    }
   },
   {
     "slug": "shahed-hilal",
@@ -88,9 +108,14 @@
       "Member of the event organisation team in Cyber-eto."
     ],
     "badges": [],
-    "photo": null,
+    "photo": "/members/shahed-hilal.jpg",
     "term": "2026/2027",
-    "links": { "linkedin": "https://www.linkedin.com/in/shahed-hilal-811025343", "instagram": null, "email": null, "phone": null }
+    "links": {
+      "linkedin": "https://www.linkedin.com/in/shahed-hilal-811025343",
+      "instagram": null,
+      "email": null,
+      "phone": null
+    }
   },
   {
     "slug": "tasneem-mherat",
@@ -108,8 +133,13 @@
       "Orex Graphic Designer: created social media templates and creative branding assets for the Orex student engineering initiative."
     ],
     "badges": [],
-    "photo": null,
+    "photo": "/members/tasneem-mherat.jpg",
     "term": "2026/2027",
-    "links": { "linkedin": "https://www.linkedin.com/in/tasneem-mherat", "instagram": null, "email": null, "phone": null }
+    "links": {
+      "linkedin": "https://www.linkedin.com/in/tasneem-mherat",
+      "instagram": null,
+      "email": null,
+      "phone": null
+    }
   }
 ]
