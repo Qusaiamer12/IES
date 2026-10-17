@@ -1,6 +1,8 @@
 # IEEE IES HU — chapter website
 
 Website of the IEEE Industrial Electronics Society student chapter at the Hashemite University.
+
+**Live:** https://ies-hu.vercel.app (Vercel project `ieee-ies-hu`, Supabase project `ies-hu`)
 Next.js 15 (App Router, TypeScript), hosted on Vercel. Content lives in `data/*.json`; form submissions are saved to Supabase
 (and optionally emailed to the chapter inbox).
 
@@ -47,7 +49,8 @@ npm run preview:html            # writes preview/ies-hu-preview.html
 
 ## Deploy and forms
 
-**Vercel** (Hobby, free) builds every push to the production branch. Project settings:
+**Vercel** (Hobby, free) builds every push to the production branch (the repository's default branch); functions run in Frankfurt (`fra1`).
+Project settings:
 
 | Variable | Value |
 |---|---|
