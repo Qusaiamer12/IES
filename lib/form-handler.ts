@@ -1,5 +1,6 @@
 import 'server-only';
-import { mailConfigured, MailNotConfigured, sendMail } from './mailer';
+import { mailConfigured, sendMail } from './mailer';
+import { insertRow, supabaseConfigured } from './supabase';
 import { rateLimit } from './rate-limit';
 import type { Result } from './validate';
 
@@ -9,14 +10,16 @@ const json = (status: number, body: object, headers: Record<string, string> = {}
   Response.json(body, { status, headers: { 'Cache-Control': 'no-store', ...headers } });
 
 /**
- * Shared POST handler for the site's forms: size and type checks, honeypot, rate limit,
- * validation, then one email to the chapter inbox.
+ * Shared POST handler for the site's forms: size and type checks, honeypot, rate limit, validation,
+ * then the submission is saved to Supabase and/or emailed to the chapter inbox, whichever is configured.
+ * The request succeeds when at least one of them worked.
  */
 export async function handleForm<T>(
   req: Request,
   name: string,
   validate: (input: Record<string, unknown>) => Result<T>,
   toMail: (data: T) => { subject: string; text: string; replyTo: string },
+  toRow: (data: T) => { table: 'contact_messages' | 'join_requests'; row: Record<string, unknown> },
 ) {
   if (!req.headers.get('content-type')?.toLowerCase().startsWith('application/json')) {
     return json(415, { ok: false, error: 'Send the form as JSON.' });
@@ -47,17 +50,21 @@ export async function handleForm<T>(
   const result = validate(body);
   if (!result.ok) return json(400, { ok: false, errors: result.errors });
 
-  if (!mailConfigured()) {
+  const store = supabaseConfigured();
+  const mail = mailConfigured();
+  if (!store && !mail) {
     return json(503, { ok: false, error: `The ${name} form is not connected yet. Message us on Instagram instead.` });
   }
-  try {
-    await sendMail(toMail(result.data));
-    return json(200, { ok: true });
-  } catch (err) {
-    if (err instanceof MailNotConfigured) {
-      return json(503, { ok: false, error: `The ${name} form is not connected yet. Message us on Instagram instead.` });
-    }
-    console.error(`[${name} form] send failed`, err);
-    return json(502, { ok: false, error: 'The message could not be sent. Try again in a moment.' });
+
+  const jobs: Promise<unknown>[] = [];
+  if (store) {
+    const { table, row } = toRow(result.data);
+    jobs.push(insertRow(table, row));
   }
+  if (mail) jobs.push(sendMail(toMail(result.data)));
+  const outcomes = await Promise.allSettled(jobs);
+  outcomes.forEach(o => { if (o.status === 'rejected') console.error(`[${name} form]`, o.reason); });
+
+  if (outcomes.some(o => o.status === 'fulfilled')) return json(200, { ok: true });
+  return json(502, { ok: false, error: 'The message could not be sent. Try again in a moment.' });
 }

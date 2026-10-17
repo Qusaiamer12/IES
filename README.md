@@ -1,7 +1,8 @@
 # IEEE IES HU — chapter website
 
 Website of the IEEE Industrial Electronics Society student chapter at the Hashemite University.
-Next.js 15 (App Router, TypeScript), no database: content lives in `data/*.json`, forms are emailed to the chapter inbox.
+Next.js 15 (App Router, TypeScript), hosted on Vercel. Content lives in `data/*.json`; form submissions are saved to Supabase
+(and optionally emailed to the chapter inbox).
 
 ## Pages
 
@@ -44,16 +45,27 @@ npm run build && npm start &    # then:
 npm run preview:html            # writes preview/ies-hu-preview.html
 ```
 
-## Deploy (Vercel, free)
+## Deploy and forms
 
-1. Import this GitHub repository on vercel.com. The defaults for Next.js work as they are.
-2. In **Settings → Environment Variables** add the values from `.env.example`:
-   `NEXT_PUBLIC_SITE_URL`, `MAIL_TO`, `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS` (and optionally `MAIL_FROM`).
-   With Gmail, turn on 2-step verification and create an **App Password** for `SMTP_PASS`.
-3. Add the domain under **Settings → Domains**, then redeploy.
+**Vercel** (Hobby, free) builds every push to the production branch. Project settings:
 
-Until the SMTP variables are set, both forms answer "not connected yet" and point people to Instagram.
-The site needs a Node host for the form API, so GitHub Pages alone is not enough.
+| Variable | Value |
+|---|---|
+| `NEXT_PUBLIC_SITE_URL` | the public address, no trailing slash (update it when a custom domain is added) |
+| `SUPABASE_URL` | `https://<project-ref>.supabase.co` |
+| `SUPABASE_PUBLISHABLE_KEY` | Supabase → Project Settings → API keys → publishable key |
+| `MAIL_TO`, `SMTP_*`, `MAIL_FROM` | optional: also email each submission (Gmail: 2-step verification + App Password) |
+
+Change a variable → redeploy (Deployments → ⋯ → Redeploy). Add a domain under **Settings → Domains**.
+
+**Supabase** stores the forms in two tables, `contact_messages` and `join_requests`
+(open them in **Table Editor**). Row Level Security lets the public key only *insert* rows with `status = 'new'`;
+nobody can read them through the API, so submissions are visible only in the Supabase dashboard.
+Use the `status` column to track replies: `new / replied / archived` for messages, `new / contacted / accepted / declined` for join requests.
+The schema is in `supabase/migrations/`.
+
+If neither Supabase nor SMTP is configured, both forms answer "not connected yet" and point people to Instagram.
+A submission succeeds when at least one of them works.
 
 ## Add or change content
 
@@ -108,9 +120,10 @@ Shared copy (fields, benefits, publications, timeline, partners, FAQ) is in `lib
 ```
 app/            pages, API routes, sitemap, robots, icon, Open Graph image
 components/     header, footer, page blocks, events, team, forms, icons, card motifs
-lib/            site settings, data loading, content, validation, mailer, rate limit, vCard
+lib/            site settings, data loading, content, validation, Supabase, mailer, rate limit, vCard
 data/           members.json, events.json
 public/images/  logos and partner logos
+supabase/       database schema (migrations)
 tests/e2e.mjs   end-to-end checks (Playwright + axe)
 DESIGN_SPEC.md  brand and card spec · reference/ original card designs
 ```
@@ -121,4 +134,5 @@ DESIGN_SPEC.md  brand and card spec · reference/ original card designs
 - **تشغيل محلي:** `npm install` بعدها `npm run dev`.
 - **عضو جديد:** سطر بـ `data/members.json` وصورة بـ `public/members/`. رابط العضو `/m/<slug>` ما بيتغيّر أبدًا.
 - **فعالية جديدة:** سطر بـ `data/events.json`. بتنتقل لحالها من "القادمة" لـ "السابقة" بتاريخها.
-- **النشر:** على Vercel مجانًا، وحطّ إعدادات الإيميل (SMTP) عشان الفورمات توصل على إيميل الشعبة.
+- **النشر:** على Vercel، وأي push للفرع الرئيسي بينزل لحاله.
+- **الفورمات:** بتنحفظ بـ Supabase → Table Editor → `contact_messages` و `join_requests`. الإيميل (SMTP) اختياري.
