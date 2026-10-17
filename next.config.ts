@@ -14,6 +14,10 @@ const nextConfig: NextConfig = {
   async headers() {
     return [{ source: '/:path*', headers: securityHeaders }];
   },
+  async rewrites() {
+    // Projects that are self-contained HTML apps, served from public/ under a clean URL.
+    return [{ source: '/projects/pid-duel', destination: '/games/pid-duel.html' }];
+  },
   async redirects() {
     // Friendly aliases for the old page names.
     return [
