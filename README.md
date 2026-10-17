@@ -57,7 +57,8 @@ Project settings:
 | `NEXT_PUBLIC_SITE_URL` | the public address, no trailing slash (update it when a custom domain is added) |
 | `SUPABASE_URL` | `https://<project-ref>.supabase.co` |
 | `SUPABASE_PUBLISHABLE_KEY` | Supabase → Project Settings → API keys → publishable key |
-| `MAIL_TO`, `SMTP_*`, `MAIL_FROM` | optional: also email each submission (Gmail: 2-step verification + App Password) |
+| `MAIL_TO`, `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER` | set: every submission is emailed to `ies.2026.hu@gmail.com`, sent from that same Gmail account |
+| `SMTP_PASS` | a Gmail **App Password** for `ies.2026.hu@gmail.com` (Google Account → Security → 2-Step Verification → App passwords). Emails start once it is added |
 
 Change a variable → redeploy (Deployments → ⋯ → Redeploy). Add a domain under **Settings → Domains**.
 

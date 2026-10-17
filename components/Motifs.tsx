@@ -1,11 +1,11 @@
 import { useId } from 'react';
-import { iconPath, type IconName } from './Icon';
+import { iconPath, rem, type IconName } from './Icon';
 
 /** Section marker: the rank chevrons from the member card. */
 export function Eyebrow({ children }: { children: React.ReactNode }) {
   return (
     <span className="eyebrow">
-      <svg aria-hidden="true" width="14" height="16" viewBox="0 0 20 22" fill="none" stroke="#FF6B1A" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+      <svg aria-hidden="true" width="14" height="16" style={{ width: rem(14), height: rem(16) }} viewBox="0 0 20 22" fill="none" stroke="#FF6B1A" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
         <path d="M4 10l6-5 6 5" />
         <path d="M4 17l6-5 6 5" />
       </svg>
@@ -34,7 +34,7 @@ export function Stamp({ top, center, ring, label }: { top: string; center: strin
 }
 
 const Star = () => (
-  <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="#FFC21A">
+  <svg aria-hidden="true" width="20" height="20" style={{ width: rem(20), height: rem(20) }} viewBox="0 0 24 24" fill="#FFC21A">
     <path d="M12 2l2.9 6.6 7.1.6-5.4 4.7 1.6 7L12 17.2 5.8 20.9l1.6-7L2 9.2l7.1-.6z" />
   </svg>
 );
@@ -53,7 +53,7 @@ export function Sticker({ children }: { children: React.ReactNode }) {
 export function Hex({ icon, filled, size = 58 }: { icon: IconName; filled: boolean; size?: number }) {
   const line = filled ? '#FFC21A' : '#0B1530';
   return (
-    <svg className="hex" aria-hidden="true" width={size} height={Math.round((size * 72) / 64)} viewBox="0 0 64 72">
+    <svg className="hex" aria-hidden="true" width={size} height={Math.round((size * 72) / 64)} style={{ width: rem(size), height: rem((size * 72) / 64) }} viewBox="0 0 64 72">
       <polygon points="32,3 61,19.5 61,52.5 32,69 3,52.5 3,19.5" fill={filled ? '#0B1530' : 'none'} stroke={line} strokeWidth="3" strokeDasharray={filled ? undefined : '6 5'} />
       <svg x="20" y="24" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke={line} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
         {iconPath(icon)}

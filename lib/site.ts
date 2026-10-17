@@ -12,7 +12,7 @@ export const SITE = {
   ).replace(/\/+$/, ''),
   currentTerm: '2026/2027',
   founded: 2026,
-  email: null as string | null,
+  email: 'ies.2026.hu@gmail.com' as string | null,
   address: ['Faculty of Engineering', 'Department of Electrical Engineering', 'The Hashemite University', 'Zarqa, Jordan'],
   mapsUrl: 'https://www.google.com/maps/search/?api=1&query=Faculty+of+Engineering+The+Hashemite+University+Zarqa',
   social: {

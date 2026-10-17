@@ -24,7 +24,7 @@ export default function TeamPage() {
               <EmptyState icon="network" title={`Our ${SITE.currentTerm} committee is being announced`}>
                 The founding team will be introduced here soon, each member with their own page.
               </EmptyState>
-              <div className="btn-row" style={{ marginTop: 28 }}>
+              <div className="btn-row" style={{ marginTop: '1.75rem' }}>
                 <Link className="btn btn-dark btn-hard" href="/join">Want to be part of it? Join us <Arrow size={18} /></Link>
               </div>
             </>

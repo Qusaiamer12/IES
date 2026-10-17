@@ -1,8 +1,8 @@
 [
   {
     "slug": "jordan-ieee-day-2026",
-    "titleEn": "Jordan IEEE Day 2026",
-    "categoryEn": "IEEE Day",
+    "titleEn": "IEEE Jordan Day 2026",
+    "categoryEn": "IEEE Jordan Day 2026",
     "date": "2026-10-14",
     "locationEn": null,
     "summaryEn": "IES HU met students and IEEE members from across Jordan at its own booth.",
@@ -12,7 +12,7 @@
     ],
     "image": "/events/jordan-ieee-day-2026/booth.jpg",
     "link": null,
-    "imageAlt": "IES HU officers at the chapter's booth at Jordan IEEE Day 2026",
+    "imageAlt": "IES HU officers at the chapter's booth at IEEE Jordan Day 2026",
     "gallery": [
       {
         "src": "/events/jordan-ieee-day-2026/booth.jpg",
@@ -20,11 +20,11 @@
       },
       {
         "src": "/events/jordan-ieee-day-2026/venue.jpg",
-        "alt": "Students and IEEE members gathering between the booths at Jordan IEEE Day 2026"
+        "alt": "Students and IEEE members gathering between the booths at IEEE Jordan Day 2026"
       },
       {
         "src": "/events/jordan-ieee-day-2026/hall.jpg",
-        "alt": "A talk in the main hall at Jordan IEEE Day 2026"
+        "alt": "A talk in the main hall at IEEE Jordan Day 2026"
       }
     ]
   },

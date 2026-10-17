@@ -59,9 +59,12 @@ export type IconName = keyof typeof PATHS;
 
 export const iconPath = (name: IconName) => PATHS[name];
 
+/** Pixel size as rem, so icons scale with the root font size like the rest of the layout. */
+export const rem = (px: number) => `${px / 16}rem`;
+
 export function Icon({ name, size = 22, stroke = 'currentColor', width = 2, className }: { name: IconName; size?: number; stroke?: string; width?: number; className?: string }) {
   return (
-    <svg aria-hidden="true" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={stroke} strokeWidth={width} strokeLinecap="round" strokeLinejoin="round" className={className}>
+    <svg aria-hidden="true" width={size} height={size} style={{ width: rem(size), height: rem(size) }} viewBox="0 0 24 24" fill="none" stroke={stroke} strokeWidth={width} strokeLinecap="round" strokeLinejoin="round" className={className}>
       {PATHS[name]}
     </svg>
   );
