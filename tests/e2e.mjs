@@ -206,7 +206,7 @@ for (const [from, to] of [['/about', '/chapter'], ['/officers', '/team'], ['/mem
 }
 
 // Static extras
-for (const [p, type] of [['/robots.txt', 'text/plain'], ['/sitemap.xml', 'xml'], ['/opengraph-image', 'image/png'], ['/icon.svg', 'image/svg']]) {
+for (const [p, type] of [['/robots.txt', 'text/plain'], ['/sitemap.xml', 'xml'], ['/opengraph-image', 'image/png'], ['/icon.png', 'image/png'], ['/favicon.ico', 'image/'], ['/apple-icon.png', 'image/png'], ['/manifest.webmanifest', 'manifest']]) {
   const r = await fetch(BASE + p);
   ok(r.status === 200 && (r.headers.get('content-type') ?? '').includes(type), 'static', `${p} -> ${r.status} ${r.headers.get('content-type')}`);
 }

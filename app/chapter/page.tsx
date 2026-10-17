@@ -81,7 +81,7 @@ export default function ChapterPage() {
             <li><a className="link-node" href="https://www.ieee-ies.org/" target="_blank" rel="noopener"><span className="lg"><span className="word">IES</span></span><b>Industrial Electronics Society</b><small>Technical society</small></a></li>
             <li><a className="link-node" href="https://edu.ieee.org/jo-hu/" target="_blank" rel="noopener"><span className="lg"><img className="round" src="/images/ieee-hu-branch-logo.png" alt="" width={56} height={56} loading="lazy" /></span><b>IEEE HU Student Branch</b><small>Since 2002</small></a></li>
             <li><a className="link-node" href="https://hu.edu.jo/" target="_blank" rel="noopener"><span className="lg"><img className="round" src="/images/hu-logo.png" alt="" width={56} height={56} loading="lazy" /></span><b>The Hashemite University</b><small>Zarqa, Jordan</small></a></li>
-            <li><div className="link-node us"><span className="lg"><img src="/images/ies-hu-logo.jpg" alt="" width={96} height={56} loading="lazy" /></span><b>IES HU Chapter</b><small>Est. 2026</small></div></li>
+            <li><div className="link-node us"><span className="lg"><img src="/images/ies-hu-logo.png" alt="" width={100} height={56} loading="lazy" /></span><b>IES HU Chapter</b><small>Est. 2026</small></div></li>
           </ul>
         </div>
       </section>

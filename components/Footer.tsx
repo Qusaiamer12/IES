@@ -16,7 +16,7 @@ export function Footer() {
         <div className="foot-grid">
           <div>
             <div className="foot-logos">
-              <span className="p"><img src="/images/ies-hu-logo.jpg" alt="IEEE Industrial Electronics Society, HU Student Branch IES Chapter" width={83} height={48} loading="lazy" /></span>
+              <span className="p"><img src="/images/ies-hu-logo.png" alt="IEEE Industrial Electronics Society, HU Student Branch IES Chapter" width={86} height={48} loading="lazy" /></span>
               <span className="c"><img src="/images/ieee-hu-branch-logo.png" alt="IEEE Hashemite University Student Branch" width={56} height={56} loading="lazy" /></span>
               <span className="c"><img src="/images/hu-logo.png" alt="The Hashemite University" width={56} height={56} loading="lazy" /></span>
             </div>

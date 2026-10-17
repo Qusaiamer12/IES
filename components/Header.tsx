@@ -52,7 +52,7 @@ export function Header() {
       <header className="top">
         <div className="wrap top-in">
           <Link className="brand" href="/" aria-label="IEEE IES Hashemite University Student Chapter, home">
-            <img src="/images/ies-hu-logo.jpg" alt="" width={90} height={52} />
+            <img src="/images/ies-hu-logo.png" alt="" width={93} height={52} />
             <span className="brand-txt">HASHEMITE<br />UNIVERSITY</span>
           </Link>
           <nav className={`nav${open ? ' open' : ''}`} id="nav" aria-label="Main" onClick={e => { if ((e.target as HTMLElement).closest('a')) setOpen(false); }}>

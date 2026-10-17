@@ -19,12 +19,32 @@ export const metadata: Metadata = {
   twitter: { card: 'summary_large_image' },
 };
 
+// Structured data so search engines show the chapter's name and logo.
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'Organization',
+      '@id': `${SITE.url}/#org`,
+      name: SITE.name,
+      alternateName: [SITE.shortName, 'IES HU'],
+      url: SITE.url,
+      logo: `${SITE.url}/icon-512.png`,
+      ...(SITE.email ? { email: SITE.email } : {}),
+      sameAs: Object.values(SITE.social).filter(Boolean),
+      parentOrganization: { '@type': 'Organization', name: 'IEEE Industrial Electronics Society', url: 'https://www.ieee-ies.org/' },
+    },
+    { '@type': 'WebSite', '@id': `${SITE.url}/#site`, name: SITE.shortName, alternateName: SITE.name, url: SITE.url, publisher: { '@id': `${SITE.url}/#org` } },
+  ],
+};
+
 export const viewport: Viewport = { themeColor: '#0B1530', width: 'device-width', initialScale: 1, viewportFit: 'cover' };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={`${grotesk.variable} ${mono.variable} ${arabic.variable} ${marker.variable}`}>
       <body>
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, '\\u003c') }} />
         <Header />
         <main id="main" tabIndex={-1}>{children}</main>
         <Footer />
