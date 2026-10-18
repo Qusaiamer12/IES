@@ -5,6 +5,9 @@ import 'server-only';
 const url = () => process.env.SUPABASE_URL?.replace(/\/+$/, '');
 const key = () => process.env.SUPABASE_PUBLISHABLE_KEY;
 
+/** The database's spam guard refused the row (too many submissions from this email, or in total, in the last hour). */
+export class RateLimited extends Error {}
+
 export const supabaseConfigured = () => Boolean(url() && key());
 
 export async function insertRow(table: 'contact_messages' | 'join_requests', row: Record<string, unknown>) {
@@ -20,5 +23,9 @@ export async function insertRow(table: 'contact_messages' | 'join_requests', row
     cache: 'no-store',
     signal: AbortSignal.timeout(8000),
   });
-  if (!res.ok) throw new Error(`Supabase insert into ${table} failed: ${res.status} ${await res.text()}`);
+  if (!res.ok) {
+    const body = await res.text();
+    if (body.includes('"rate_limited"')) throw new RateLimited(`${table}: rate limited`);
+    throw new Error(`Supabase insert into ${table} failed: ${res.status} ${body}`);
+  }
 }

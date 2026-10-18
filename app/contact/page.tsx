@@ -1,10 +1,11 @@
 import type { Metadata } from 'next';
+import { pageMeta } from '@/lib/seo';
 import { PageHero } from '@/components/Blocks';
 import { ContactForm } from '@/components/Forms';
 import { Icon } from '@/components/Icon';
 import { SITE } from '@/lib/site';
 
-export const metadata: Metadata = { title: 'Contact', description: 'Contact the IEEE IES chapter at the Hashemite University: questions, ideas and partnerships.' };
+export const metadata: Metadata = pageMeta({ title: 'Contact', description: 'Contact the IEEE IES chapter at the Hashemite University: questions, ideas and partnerships.', path: '/contact' });
 
 export default function ContactPage() {
   return (

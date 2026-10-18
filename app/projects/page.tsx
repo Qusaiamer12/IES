@@ -1,11 +1,12 @@
 import type { Metadata } from 'next';
+import { pageMeta } from '@/lib/seo';
 import Link from 'next/link';
 import { Cta, PageHero, SectionHead } from '@/components/Blocks';
 import { Arrow, Icon } from '@/components/Icon';
 import { Edge, Eyebrow } from '@/components/Motifs';
 import { FIELDS } from '@/lib/content';
 
-export const metadata: Metadata = { title: 'Projects', description: 'Long-term projects by the IEEE IES chapter at the Hashemite University.' };
+export const metadata: Metadata = pageMeta({ title: 'Projects', description: 'Projects by the IEEE IES chapter at the Hashemite University, starting with PID Duel, our control-engineering game.', path: '/projects', image: '/projects/pid-duel.jpg' });
 
 export default function ProjectsPage() {
   return (

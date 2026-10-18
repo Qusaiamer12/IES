@@ -12,7 +12,11 @@ const nextConfig: NextConfig = {
   poweredByHeader: false,
   reactStrictMode: true,
   async headers() {
-    return [{ source: '/:path*', headers: securityHeaders }];
+    return [
+      { source: '/:path*', headers: securityHeaders },
+      // The game is indexed at its clean URL (/projects/pid-duel), not at the raw file.
+      { source: '/games/:path*', headers: [{ key: 'X-Robots-Tag', value: 'noindex' }] },
+    ];
   },
   async rewrites() {
     // Projects that are self-contained HTML apps, served from public/ under a clean URL.

@@ -1,12 +1,14 @@
 import type { Metadata } from 'next';
+import { pageMeta } from '@/lib/seo';
 import { Cta, PageHero, SectionHead } from '@/components/Blocks';
 import { Edge, Eyebrow } from '@/components/Motifs';
 import { FIELDS, PUBLICATIONS, SOURCES, TIMELINE } from '@/lib/content';
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMeta({
   title: 'The Chapter',
   description: 'IES HU is the IEEE Industrial Electronics Society student chapter at the Hashemite University, founded in 2026, the society’s 75th year.',
-};
+  path: '/chapter',
+});
 
 export default function ChapterPage() {
   return (

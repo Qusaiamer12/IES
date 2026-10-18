@@ -1,10 +1,11 @@
 import type { Metadata } from 'next';
+import { pageMeta } from '@/lib/seo';
 import { Cta, PageHero, SectionHead } from '@/components/Blocks';
 import { EventsGrid } from '@/components/Events';
 import { splitEvents } from '@/lib/data';
 
 export const revalidate = 3600;
-export const metadata: Metadata = { title: 'Events', description: 'Workshops, visits and IEEE days by the IEEE IES chapter at the Hashemite University.' };
+export const metadata: Metadata = pageMeta({ title: 'Events', description: 'Workshops, visits and IEEE days by the IEEE IES chapter at the Hashemite University.', path: '/events' });
 
 export default function EventsPage() {
   const { upcoming, past } = splitEvents();

@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { pageMeta } from '@/lib/seo';
 import Link from 'next/link';
 import { PageHero, SectionHead } from '@/components/Blocks';
 import { Edge, Hex } from '@/components/Motifs';
@@ -7,7 +8,7 @@ import { BENEFITS, FAQ } from '@/lib/content';
 import { JOIN_IEEE_URL } from '@/lib/site';
 import { Icon } from '@/components/Icon';
 
-export const metadata: Metadata = { title: 'Join Us', description: 'Join the IEEE IES chapter at the Hashemite University: what you get and how to sign up.' };
+export const metadata: Metadata = pageMeta({ title: 'Join Us', description: 'Join the IEEE IES chapter at the Hashemite University: what you get and how to sign up.', path: '/join' });
 
 export default function JoinPage() {
   return (

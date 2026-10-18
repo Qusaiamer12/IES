@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { pageMeta } from '@/lib/seo';
 import Link from 'next/link';
 import { Cta, PageHero } from '@/components/Blocks';
 import { Arrow } from '@/components/Icon';
@@ -7,7 +8,7 @@ import { TeamBrowser } from '@/components/Team';
 import { sortedMembers } from '@/lib/data';
 import { SITE } from '@/lib/site';
 
-export const metadata: Metadata = { title: 'Our Team', description: 'The students who run the IEEE IES chapter at the Hashemite University.' };
+export const metadata: Metadata = pageMeta({ title: 'Our Team', description: 'The students who run the IEEE IES chapter at the Hashemite University.', path: '/team' });
 
 export default function TeamPage() {
   const list = sortedMembers();

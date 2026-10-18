@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { pageMeta } from '@/lib/seo';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { Cta } from '@/components/Blocks';
@@ -15,11 +16,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const m = getMember((await params).slug);
   if (!m) return {};
   const title = `${m.nameEn}, ${roleOf(m).label}`;
-  return {
+  return pageMeta({
     title,
     description: `${m.nameEn} · ${roleOf(m).label} at IEEE IES HU · ${m.specialtyEn}.`,
-    openGraph: { title, type: 'profile', images: m.photo ? [{ url: m.photo }] : undefined },
-  };
+    path: `/m/${m.slug}`,
+    image: m.photo,
+    type: 'profile',
+  });
 }
 
 const LINKS: Record<string, { label: string; icon: IconName; href: (v: string) => string }> = {

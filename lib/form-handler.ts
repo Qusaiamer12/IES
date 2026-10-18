@@ -1,6 +1,6 @@
 import 'server-only';
 import { mailConfigured, sendMail } from './mailer';
-import { insertRow, supabaseConfigured } from './supabase';
+import { insertRow, RateLimited, supabaseConfigured } from './supabase';
 import { rateLimit } from './rate-limit';
 import type { Result } from './validate';
 
@@ -24,6 +24,7 @@ export async function handleForm<T>(
   if (!req.headers.get('content-type')?.toLowerCase().startsWith('application/json')) {
     return json(415, { ok: false, error: 'Send the form as JSON.' });
   }
+  if (Number(req.headers.get('content-length') ?? 0) > MAX_BODY) return json(413, { ok: false, error: 'The message is too long.' });
   const raw = await req.text();
   if (raw.length > MAX_BODY) return json(413, { ok: false, error: 'The message is too long.' });
 
@@ -39,7 +40,10 @@ export async function handleForm<T>(
   const body = input as Record<string, unknown>;
 
   // Bots fill the hidden "website" field; pretend success and drop the message.
-  if (typeof body.website === 'string' && body.website.trim() !== '') return json(200, { ok: true });
+  if (typeof body.website === 'string' && body.website.trim() !== '') {
+    console.warn(`[${name} form] honeypot filled, submission dropped`);
+    return json(200, { ok: true });
+  }
 
   const ip = (req.headers.get('x-forwarded-for') ?? '').split(',')[0].trim() || req.headers.get('x-real-ip') || 'unknown';
   const limit = rateLimit(`${name}:${ip}`);
@@ -50,7 +54,8 @@ export async function handleForm<T>(
   const result = validate(body);
   if (!result.ok) return json(400, { ok: false, errors: result.errors });
 
-  const store = supabaseConfigured();
+  // MAIL_DRY_RUN is for local testing: no emails and no database rows.
+  const store = supabaseConfigured() && process.env.MAIL_DRY_RUN !== '1';
   const mail = mailConfigured();
   if (!store && !mail) {
     return json(503, { ok: false, error: `The ${name} form is not connected yet. Message us on Instagram instead.` });
@@ -63,8 +68,11 @@ export async function handleForm<T>(
   }
   if (mail) jobs.push(sendMail(toMail(result.data)));
   const outcomes = await Promise.allSettled(jobs);
-  outcomes.forEach(o => { if (o.status === 'rejected') console.error(`[${name} form]`, o.reason); });
+  outcomes.forEach(o => { if (o.status === 'rejected') (o.reason instanceof RateLimited ? console.warn : console.error)(`[${name} form]`, o.reason); });
 
   if (outcomes.some(o => o.status === 'fulfilled')) return json(200, { ok: true });
+  if (outcomes.some(o => o.status === 'rejected' && o.reason instanceof RateLimited)) {
+    return json(429, { ok: false, error: 'Too many messages in the last hour. Try again later.' }, { 'Retry-After': '3600' });
+  }
   return json(502, { ok: false, error: 'The message could not be sent. Try again in a moment.' });
 }

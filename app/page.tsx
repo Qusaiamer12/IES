@@ -1,10 +1,15 @@
+import type { Metadata } from 'next';
 import Link from 'next/link';
+import { pageMeta } from '@/lib/seo';
+import { SITE } from '@/lib/site';
 import { Cta, SectionHead } from '@/components/Blocks';
 import { EventsGrid } from '@/components/Events';
 import { Arrow } from '@/components/Icon';
 import { Eyebrow, Stamp, Sticker } from '@/components/Motifs';
 import { PARTNERS } from '@/lib/content';
 import { splitEvents } from '@/lib/data';
+
+export const metadata: Metadata = pageMeta({ description: SITE.description, path: '/' });
 
 export const revalidate = 3600; // re-split upcoming/past events every hour
 

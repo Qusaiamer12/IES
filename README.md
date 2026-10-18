@@ -12,9 +12,10 @@ Next.js 15 (App Router, TypeScript), hosted on Vercel. Content lives in `data/*.
 |---|---|
 | `/` | Home: hero, IES at a glance, upcoming events, IES 75 years, branch partners |
 | `/chapter` | About the chapter and IEEE IES, publications, history, where we belong |
-| `/team` | Committee by term with role filters (shows "being announced" while `members.json` is empty) |
+| `/team` | Committee by term: Core Team, then Executive Team |
 | `/events`, `/events/<slug>` | Upcoming and past events, one page per event |
-| `/projects` | Projects (none launched yet) |
+| `/projects` | Projects: PID Duel, the control-engineering game built for IEEE Jordan Day 2026 |
+| `/projects/pid-duel` | The game itself (`public/games/pid-duel.html`, a self-contained page served under this URL) |
 | `/join` | Why join, benefits, join form, FAQ |
 | `/contact` | Contact form, address, Instagram |
 | `/m/<slug>` | Member profile. **NFC target**: this URL is written to the member's card |
@@ -27,7 +28,7 @@ Old names redirect: `/about` → `/chapter`, `/officers` → `/team`, `/membersh
 
 ```bash
 npm install
-cp .env.example .env.local      # then set MAIL_DRY_RUN=1 to test forms without sending email
+cp .env.example .env.local      # MAIL_DRY_RUN=1 tests the forms with no emails and no database rows
 npm run dev                     # http://localhost:3000
 ```
 

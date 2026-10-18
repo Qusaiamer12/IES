@@ -46,8 +46,8 @@ export function EventsGrid({ list, emptyTitle = 'No events announced yet', headi
   if (!list.length) {
     return (
       <EmptyState icon="calendar" title={emptyTitle}>
-        New events appear here as soon as they are announced. Follow{' '}
-        <a href={SITE.social.instagram!} target="_blank" rel="noopener">{SITE.instagramHandle}</a> on Instagram.
+        New events appear here as soon as they are announced.
+        {SITE.social.instagram && <> Follow <a href={SITE.social.instagram} target="_blank" rel="noopener">{SITE.instagramHandle}</a> on Instagram.</>}
       </EmptyState>
     );
   }

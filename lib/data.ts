@@ -56,15 +56,33 @@ export type ChapterEvent = {
 
 const SLUG = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 
-export const members: Member[] = (membersJson as Member[]).filter(m => SLUG.test(m.slug));
-export const events: ChapterEvent[] = (eventsJson as ChapterEvent[]).filter(e => SLUG.test(e.slug));
+function checked<T extends { slug: string }>(list: T[], file: string, extra?: (item: T) => string | null): T[] {
+  const seen = new Set<string>();
+  for (const item of list) {
+    const problem = !SLUG.test(item.slug) ? 'slug must be lowercase letters, digits and hyphens'
+      : seen.has(item.slug) ? 'slug is used twice'
+      : extra?.(item) ?? null;
+    if (problem) throw new Error(`${file}: "${item.slug}": ${problem}`);
+    seen.add(item.slug);
+  }
+  return list;
+}
+
+export const members: Member[] = checked(membersJson as Member[], 'data/members.json', m =>
+  !(m.role in ROLES) ? `unknown role "${m.role}" (use one of: ${Object.keys(ROLES).join(', ')})`
+  : !m.memberId || !m.nameEn ? 'memberId and nameEn are required' : null);
+export const events: ChapterEvent[] = checked(eventsJson as ChapterEvent[], 'data/events.json', e =>
+  !/^\d{4}-\d{2}-\d{2}$/.test(e.date) ? 'date must be YYYY-MM-DD' : !e.titleEn ? 'titleEn is required' : null);
 
 export const roleOf = (m: Member) => ROLES[m.role] ?? ROLES.member;
 
+const rank = (m: Member) => {
+  const i = ROLE_ORDER.indexOf(m.role);
+  return i < 0 ? ROLE_ORDER.indexOf('member') : i;
+};
+
 export function sortedMembers(list: Member[] = members) {
-  return [...list].sort(
-    (a, b) => ROLE_ORDER.indexOf(a.role) - ROLE_ORDER.indexOf(b.role) || a.memberId.localeCompare(b.memberId),
-  );
+  return [...list].sort((a, b) => rank(a) - rank(b) || a.memberId.localeCompare(b.memberId));
 }
 
 export const getMember = (slug: string) => members.find(m => m.slug === slug);

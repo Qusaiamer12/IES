@@ -22,8 +22,9 @@ function text(errors: Errors, key: string, raw: unknown, label: string, min: num
     if (required) errors[key] = `Enter your ${label}.`;
     return v;
   }
-  if (v.length < min) errors[key] = `${label[0].toUpperCase() + label.slice(1)} is too short.`;
-  else if (v.length > max) errors[key] = `${label[0].toUpperCase() + label.slice(1)} must be ${max} characters or fewer.`;
+  const len = [...v].length;
+  if (len < min) errors[key] = `${label[0].toUpperCase() + label.slice(1)} is too short.`;
+  else if (len > max) errors[key] = `${label[0].toUpperCase() + label.slice(1)} must be ${max} characters or fewer.`;
   return v;
 }
 
