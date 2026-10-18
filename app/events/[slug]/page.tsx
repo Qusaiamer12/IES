@@ -48,7 +48,7 @@ export default async function EventPage({ params }: Props) {
             ) : (
               <>
                 <p>{upcoming
-                  ? 'Time, venue and the full program will be announced on our Instagram.'
+                  ? 'The time and full program will be announced on our Instagram.'
                   : 'Photos and a short write-up from this event are on the way. Our Instagram has the highlights.'}</p>
                 {SITE.social.instagram && <div><a className="btn btn-dark btn-hard" href={SITE.social.instagram} target="_blank" rel="noopener"><Icon name="instagram" size={20} /> Follow {SITE.instagramHandle}</a></div>}
               </>

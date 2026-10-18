@@ -16,7 +16,7 @@ function fold(line: string) {
 }
 
 /** vCard 3.0 for a member. Only fields that are set are written. */
-export function buildVCard(m: Member, siteUrl: string) {
+export function buildVCard(m: Member, siteUrl: string, extra: { email?: string | null; photo?: string | null } = {}) {
   // Given name first, everything after it is the family name ("Raneem Abu Areda" -> Abu Areda; Raneem).
   const [given, ...family] = m.nameEn.trim().split(/\s+/);
   const lines = [
@@ -31,9 +31,12 @@ export function buildVCard(m: Member, siteUrl: string) {
   ];
   const l = m.links ?? {};
   if (l.email) lines.push(`EMAIL;TYPE=INTERNET:${esc(l.email)}`);
+  // The chapter inbox as the work address, so the saved contact can always reach the member through IES HU.
+  if (extra.email && extra.email !== l.email) lines.push(`EMAIL;TYPE=INTERNET,WORK:${esc(extra.email)}`);
   if (l.phone) lines.push(`TEL;TYPE=CELL:${esc(l.phone)}`);
   if (l.linkedin) lines.push(`X-SOCIALPROFILE;TYPE=linkedin:${l.linkedin}`);
   if (l.instagram) lines.push(`X-SOCIALPROFILE;TYPE=instagram:${l.instagram}`);
+  if (extra.photo) lines.push(`PHOTO;ENCODING=b;TYPE=JPEG:${extra.photo}`);
   lines.push('END:VCARD');
   return lines.map(fold).join('\r\n') + '\r\n';
 }

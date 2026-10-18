@@ -89,10 +89,19 @@ function StatusLine({ status }: { status: Status }) {
 }
 
 function Sent({ title, text, onReset }: { title: string; text: string; onReset: () => void }) {
+  // The card is shorter than the form it replaces, so without this it can end up above the screen on phones.
+  const heading = useRef<HTMLHeadingElement>(null);
+  useEffect(() => {
+    const h = heading.current;
+    if (!h) return;
+    const smooth = !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    h.closest('.sent')?.scrollIntoView({ block: 'center', behavior: smooth ? 'smooth' : 'auto' });
+    h.focus({ preventScroll: true });
+  }, []);
   return (
     <div className="sent" role="status">
       <span className="sent-ic"><Icon name="check" size={28} width={2.6} /></span>
-      <h3>{title}</h3>
+      <h3 ref={heading} tabIndex={-1}>{title}</h3>
       <p>{text}</p>
       <button type="button" className="btn btn-dark" onClick={onReset}>Send another</button>
     </div>

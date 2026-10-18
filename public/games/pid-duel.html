@@ -5,6 +5,13 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>PID Duel — IEEE IES · Hashemite University</title>
 <meta name="description" content="PID Duel: a two-player PID tuning game by the IEEE IES student chapter at the Hashemite University, built for IEEE Jordan Day 2026.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="IEEE IES HU">
+<meta property="og:title" content="PID Duel · IEEE IES HU">
+<meta property="og:description" content="A two-player PID tuning game by the IEEE IES student chapter at the Hashemite University, built for IEEE Jordan Day 2026.">
+<meta property="og:image" content="https://ies-hu.vercel.app/projects/pid-duel.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="https://ies-hu.vercel.app/projects/pid-duel">
 <link rel="icon" href="/favicon.ico" sizes="any">
 <link rel="icon" href="/icon.png" type="image/png">
 <link rel="apple-touch-icon" href="/apple-icon.png">
@@ -272,7 +279,7 @@ body.shk{animation:bsh .3s}
 .resBido .bArmR{transform:rotate(-20deg)}
 #annTxt{font-weight:800;font-size:15.5px;color:var(--navy);min-height:24px;max-width:420px;text-align:start}
 @media(max-width:760px){
- #bido{width:74px;left:8px;bottom:8px}
+ #bido{width:56px;left:6px;bottom:6px;z-index:5}
  #bbub{width:186px;padding:7px 9px}#bbub p{font-size:11.5px}
  .resBido{width:64px}#annTxt{font-size:13px}
 }
@@ -294,7 +301,7 @@ body.shk{animation:bsh .3s}
     <text x="60" y="58" class="s4">PID</text><text x="60" y="73" class="s5">DUEL</text>
   </svg>
   <div class="hmeta">
-    <a class="tag mono" href="/projects" style="text-decoration:none" title="IEEE IES HU website">IEEE IES &middot; HU CHAPTER</a>
+    <a class="tag" href="/projects" style="text-decoration:none" title="IEEE IES HU website">&#8594; رجوع لموقع IES HU</a>
     <button id="help" class="ic" title="كيف تلعب" aria-label="كيف تلعب">؟</button>
     <button id="snd" class="ic" title="الصوت" aria-label="الصوت"></button>
   </div>
@@ -358,7 +365,7 @@ body.shk{animation:bsh .3s}
 <div id="cd" class="ov" aria-hidden="true"></div>
 <div id="flash"></div>
 
-<div id="res" class="ov"><div class="box">
+<div id="res" class="ov"><div class="box" role="dialog" aria-modal="true" aria-labelledby="wt">
   <span class="kick" style="text-align:center">ROUND RESULT &middot; PID DUEL</span>
   <h3 id="wt"></h3>
   <div class="annRow"><div class="bidoRoot jump resBido" id="resBido"></div><p id="annTxt"></p></div>
@@ -378,7 +385,7 @@ body.shk{animation:bsh .3s}
 </div></div>
 
 <div id="bido" class="bidoRoot idle" role="button" aria-label="بيدو — تميمة IES"><div id="bbub"><span class="kick mono">BIDO // IES MASCOT</span><p id="btxt"></p></div></div>
-<div id="helpm" class="ov"><div class="box">
+<div id="helpm" class="ov"><div class="box" role="dialog" aria-modal="true" aria-label="كيف تلعب">
   <span class="kick" style="text-align:center">FIELD MANUAL</span>
   <h3>كيف تلعب — شرح الـ PID</h3>
   <h4>الهدف</h4>
@@ -1355,6 +1362,7 @@ function startCountdown(){
   if(S.run||S.counting)return;
   actx();
   S.counting=true;lockUI(true);
+  if(innerWidth<=940)$('duel').scrollIntoView({behavior:'smooth',block:'start'});
   const signs=(S.hard?[0,1,2,3]:[0]).map(()=>Math.random()<.5?-1:1);
   S.runCfg=makeCfg(pl(),S.hard,signs);
   ensurePlayers();

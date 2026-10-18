@@ -21,6 +21,14 @@ export function Header() {
   useEffect(() => setOpen(false), [pathname]);
   useEffect(() => {
     if (!open) return;
+    // The menu comes before its button in the page, so send keyboard users into it and keep the page still behind it.
+    document.querySelector<HTMLElement>('#nav a')?.focus();
+    const root = document.documentElement, prev = root.style.overflow;
+    root.style.overflow = 'hidden';
+    return () => { root.style.overflow = prev; };
+  }, [open]);
+  useEffect(() => {
+    if (!open) return;
     const onKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
         setOpen(false);

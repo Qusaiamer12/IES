@@ -113,9 +113,13 @@ and neither may the domain. Write `https://<domain>/m/<slug>` with the NFC Tools
   "summaryEn": "One sentence for the card.",
   "bodyEn": ["Paragraph one.", "Paragraph two."],
   "image": "/events/plc-workshop-2026.jpg",
+  "thumb": "/events/plc-workshop-2026-card.jpg",
   "link": null
 }
 ```
+
+`thumb` is optional: an ~800px copy of the image for the event cards (the full image is used on the event page).
+Optional `gallery` (`[{ "src": "...", "alt": "..." }]`) shows extra photos under the write-up when there are two or more.
 
 **Site settings** (email, social links, address, current term) are in `lib/site.ts`. Empty values stay hidden.
 Shared copy (fields, benefits, publications, timeline, partners, FAQ) is in `lib/content.ts`.
