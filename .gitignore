@@ -10,3 +10,6 @@ next-env.d.ts
 .env*.local
 test-results/
 preview/
+
+# throwaway test scripts
+/.*.mjs
