@@ -72,6 +72,19 @@ The schema is in `supabase/migrations/`.
 If neither Supabase nor SMTP is configured, both forms answer "not connected yet" and point people to Instagram.
 A submission succeeds when at least one of them works.
 
+## Backup copy (Render)
+
+The same site is also built as plain files and hosted on Render: **https://ies-hu.onrender.com** (Cloudflare network,
+independent of Vercel). Every push to the production branch updates both. Use it if a network can't reach `vercel.app`;
+every path works on both hosts, including `/m/<slug>` for the NFC cards.
+
+- Build: `npm run build:static` (see `scripts/build-static.mjs`), publish directory `out/`.
+- Render environment: `NEXT_PUBLIC_SITE_URL=https://ies-hu.onrender.com`, `NEXT_PUBLIC_NOINDEX=1` (kept out of search),
+  `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`, `NODE_VERSION=22`, `PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1`.
+- Its forms insert straight into Supabase (insert-only tables, throttled by the database), so they keep working even
+  when Vercel is down. No email notifications from the backup.
+- Upcoming/past events are decided at build time there; the next push rebuilds it.
+
 ## Add or change content
 
 **A member** — add an entry to `data/members.json`, put the photo in `public/members/<slug>.jpg`:

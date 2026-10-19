@@ -14,3 +14,4 @@ preview/
 # throwaway test scripts
 /.*.mjs
 /.api-parked
+/event-qr
