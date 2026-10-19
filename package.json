@@ -10,7 +10,8 @@
     "typecheck": "tsc --noEmit",
     "test:e2e": "node tests/e2e.mjs",
     "check": "npm run typecheck && npm run build",
-    "preview:html": "node scripts/snapshot.mjs preview"
+    "preview:html": "node scripts/snapshot.mjs preview",
+    "build:static": "node scripts/build-static.mjs"
   },
   "engines": {
     "node": ">=20"

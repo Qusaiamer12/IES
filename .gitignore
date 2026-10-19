@@ -13,3 +13,4 @@ preview/
 
 # throwaway test scripts
 /.*.mjs
+/.api-parked

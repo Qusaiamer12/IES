@@ -15,6 +15,7 @@ export const metadata: Metadata = {
   title: { default: `${SITE.shortName} · ${SITE.slogan}`, template: `%s · ${SITE.shortName}` },
   description: SITE.description,
   applicationName: SITE.shortName,
+  ...(process.env.NEXT_PUBLIC_NOINDEX === '1' ? { robots: { index: false, follow: false } } : {}),
   openGraph: { type: 'website', siteName: SITE.shortName, locale: 'en_US' },
   twitter: { card: 'summary_large_image' },
 };

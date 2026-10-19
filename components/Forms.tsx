@@ -3,7 +3,8 @@
 import { useEffect, useRef, useState } from 'react';
 import { FIELDS } from '@/lib/content';
 import { SITE } from '@/lib/site';
-import { CONTACT_TOPICS, IEEE_STATUS, YEARS, validateContact, validateJoin, type Result } from '@/lib/validate';
+import { contactRow, joinRow } from '@/lib/rows';
+import { CONTACT_TOPICS, IEEE_STATUS, YEARS, validateContact, validateJoin, type ContactData, type JoinData, type Result } from '@/lib/validate';
 import { Arrow, Icon } from './Icon';
 
 type Status = { kind: 'idle' | 'sending' | 'sent' } | { kind: 'error'; message: string };
@@ -18,7 +19,24 @@ function readForm(form: HTMLFormElement) {
   return out;
 }
 
-function useFormSubmit(endpoint: string, validate: (d: Record<string, unknown>) => Result<unknown>) {
+// The static backup site has no API routes, so its forms insert straight into Supabase with the publishable key
+// (the tables accept inserts only, and a database trigger throttles them). The main site posts to /api/*.
+const DIRECT = process.env.NEXT_PUBLIC_FORMS_DIRECT === '1'
+  ? { url: process.env.NEXT_PUBLIC_SUPABASE_URL ?? '', key: process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ?? '' }
+  : null;
+
+async function sendDirect(table: string, row: Record<string, unknown>) {
+  const res = await fetch(`${DIRECT!.url}/rest/v1/${table}`, {
+    method: 'POST',
+    headers: { apikey: DIRECT!.key, Authorization: `Bearer ${DIRECT!.key}`, 'Content-Type': 'application/json', Prefer: 'return=minimal' },
+    body: JSON.stringify(row),
+  });
+  if (res.ok) return { ok: true };
+  const text = await res.text().catch(() => '');
+  return { ok: false, error: text.includes('"rate_limited"') ? 'Too many messages in the last hour. Try again later.' : 'Something went wrong. Try again in a moment.' };
+}
+
+function useFormSubmit<T>(endpoint: string, validate: (d: Record<string, unknown>) => Result<T>, direct: { table: string; row: (d: T) => Record<string, unknown> }) {
   const [status, setStatus] = useState<Status>({ kind: 'idle' });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const formRef = useRef<HTMLFormElement>(null);
@@ -42,8 +60,15 @@ function useFormSubmit(endpoint: string, validate: (d: Record<string, unknown>) 
     setErrors({});
     setStatus({ kind: 'sending' });
     try {
-      const res = await fetch(endpoint, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
-      const body = await res.json().catch(() => ({}));
+      let res: { ok: boolean }, body: { ok?: boolean; error?: string; errors?: Record<string, string> };
+      if (DIRECT) {
+        // Same honeypot rule as the API: bots that fill the hidden field get a fake success.
+        body = typeof data.website === 'string' && data.website.trim() ? { ok: true } : await sendDirect(direct.table, direct.row(local.data));
+        res = { ok: !!body.ok };
+      } else {
+        res = await fetch(endpoint, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
+        body = await (res as Response).json().catch(() => ({}));
+      }
       if (res.ok && body.ok) {
         formRef.current?.reset();
         setStatus({ kind: 'sent' });
@@ -109,7 +134,7 @@ function Sent({ title, text, onReset }: { title: string; text: string; onReset: 
 }
 
 export function ContactForm() {
-  const f = useFormSubmit('/api/contact', validateContact);
+  const f = useFormSubmit<ContactData>('/api/contact', validateContact, { table: 'contact_messages', row: contactRow });
   // /contact?topic=partnership preselects the partnership topic (used by "Become a partner").
   useEffect(() => {
     if (new URLSearchParams(window.location.search).get('topic') !== 'partnership') return;
@@ -137,7 +162,7 @@ export function ContactForm() {
 }
 
 export function JoinForm() {
-  const f = useFormSubmit('/api/join', validateJoin);
+  const f = useFormSubmit<JoinData>('/api/join', validateJoin, { table: 'join_requests', row: joinRow });
   if (f.status.kind === 'sent') {
     return <Sent title="Request received" text={`Thanks for joining. The committee will reply by email. Meanwhile, follow ${SITE.instagramHandle} on Instagram.`} onReset={() => f.setStatus({ kind: 'idle' })} />;
   }

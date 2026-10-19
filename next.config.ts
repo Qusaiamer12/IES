@@ -8,6 +8,21 @@ const securityHeaders = [
   { key: 'Strict-Transport-Security', value: 'max-age=63072000; includeSubDomains' },
 ];
 
+// Friendly aliases for the old page names. The static backup build writes these as small redirect pages.
+export const ALIASES = [
+  { source: '/about', destination: '/chapter' },
+  { source: '/officers', destination: '/team' },
+  { source: '/membership', destination: '/join' },
+];
+
+// STATIC_EXPORT=1 builds the static backup site (scripts/build-static.mjs): plain files, no server features.
+const staticExport: NextConfig = {
+  output: 'export',
+  trailingSlash: true,
+  images: { unoptimized: true },
+  reactStrictMode: true,
+};
+
 const nextConfig: NextConfig = {
   poweredByHeader: false,
   reactStrictMode: true,
@@ -23,13 +38,8 @@ const nextConfig: NextConfig = {
     return [{ source: '/projects/pid-duel', destination: '/games/pid-duel.html' }];
   },
   async redirects() {
-    // Friendly aliases for the old page names.
-    return [
-      { source: '/about', destination: '/chapter', permanent: true },
-      { source: '/officers', destination: '/team', permanent: true },
-      { source: '/membership', destination: '/join', permanent: true },
-    ];
+    return ALIASES.map(a => ({ ...a, permanent: true }));
   },
 };
 
-export default nextConfig;
+export default process.env.STATIC_EXPORT === '1' ? staticExport : nextConfig;

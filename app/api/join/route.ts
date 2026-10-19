@@ -1,4 +1,5 @@
 import { handleForm } from '@/lib/form-handler';
+import { joinRow } from '@/lib/rows';
 import { validateJoin } from '@/lib/validate';
 
 export const runtime = 'nodejs';
@@ -19,11 +20,5 @@ export function POST(req: Request) {
       '',
       d.message || '(no message)',
     ].join('\n'),
-  }), d => ({
-    table: 'join_requests',
-    row: {
-      name: d.name, email: d.email, phone: d.phone || null, major: d.major, year: d.year,
-      ieee_member: d.ieeeMember, interests: d.interests, message: d.message || null,
-    },
-  }));
+  }), d => ({ table: 'join_requests', row: joinRow(d) }));
 }
