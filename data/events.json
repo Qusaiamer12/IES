@@ -11,10 +11,25 @@
       "The day brought IEEE members from across Jordan together for talks in the main hall and networking between the booths."
     ],
     "image": "/events/jordan-ieee-day-2026/booth.jpg",
+    "imageSize": [
+      1600,
+      1200
+    ],
     "thumb": "/events/jordan-ieee-day-2026/booth-card.jpg",
-    "link": null,
     "imageAlt": "IES HU officers at the chapter's booth at IEEE Jordan Day 2026",
     "gallery": [
+      {
+        "src": "/events/jordan-ieee-day-2026/award.jpg",
+        "alt": "A student receives an award on stage at IEEE Jordan Day 2026, flanked by IEEE Jordan Section officials"
+      },
+      {
+        "src": "/events/jordan-ieee-day-2026/section-hall.jpg",
+        "alt": "Participants fill the main hall at IEEE Jordan Day 2026, holding the Jordanian flag and the IEEE Jordan Section banner"
+      },
+      {
+        "src": "/events/jordan-ieee-day-2026/audience.jpg",
+        "alt": "Two students smile from the audience at IEEE Jordan Day 2026"
+      },
       {
         "src": "/events/jordan-ieee-day-2026/venue.jpg",
         "alt": "Students and IEEE members gathering between the booths at IEEE Jordan Day 2026"
@@ -23,7 +38,8 @@
         "src": "/events/jordan-ieee-day-2026/hall.jpg",
         "alt": "A talk in the main hall at IEEE Jordan Day 2026"
       }
-    ]
+    ],
+    "link": null
   },
   {
     "slug": "ieee-day-hu-2026",
@@ -33,7 +49,13 @@
     "locationEn": "The Hashemite University",
     "summaryEn": "The IEEE Day celebration at the Hashemite University.",
     "bodyEn": [],
-    "image": null,
+    "image": "/events/ieee-day-hu-2026/group.jpg",
+    "imageSize": [
+      1188,
+      616
+    ],
+    "thumb": "/events/ieee-day-hu-2026/group-card.jpg",
+    "imageAlt": "Students in IEEE Day shirts gather on the steps at the Hashemite University for a group photo, with RAS, EMBS and IES letters in front",
     "link": null
   }
 ]

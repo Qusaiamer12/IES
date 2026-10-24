@@ -131,7 +131,8 @@ and neither may the domain. Write `https://<domain>/m/<slug>` with the NFC Tools
 }
 ```
 
-`thumb` is optional: an ~800px copy of the image for the event cards (the full image is used on the event page).
+`imageSize` is the image's `[width, height]` (keeps the page from jumping while the photo loads; without it the cover
+is cropped to 4:3). `thumb` is optional: an ~800px copy of the image for the event cards (the full image is used on the event page).
 Optional `gallery` (`[{ "src": "...", "alt": "..." }]`) shows extra photos under the write-up when there are two or more.
 
 **Site settings** (email, social links, address, current term) are in `lib/site.ts`. Empty values stay hidden.

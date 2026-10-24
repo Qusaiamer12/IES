@@ -41,7 +41,10 @@ export default async function EventPage({ params }: Props) {
       <section className="sec sec-white">
         <div className="wrap">
           <article className="article">
-            {e.image && <div className="cover"><img src={e.image} alt={e.imageAlt ?? ''} /></div>}
+            {/* Phones: photo then text. Desktop: text beside the photo, so the page uses the full width. */}
+            <div className={`article-top${e.image ? ' has-cover' : ''}`}>
+            {e.image && <div className="cover"><img src={e.image} alt={e.imageAlt ?? ''} {...(e.imageSize ? { width: e.imageSize[0], height: e.imageSize[1] } : { className: 'crop' })} /></div>}
+            <div className="article-text">
             {e.summaryEn && <p className="article-lead">{e.summaryEn}</p>}
             {body.length ? (
               body.map((p, i) => <p key={i}>{p}</p>)
@@ -49,10 +52,14 @@ export default async function EventPage({ params }: Props) {
               <>
                 <p>{upcoming
                   ? 'The time and full program will be announced on our Instagram.'
+                  : e.image ? 'A short write-up from this event is on the way. Our Instagram has the highlights.'
                   : 'Photos and a short write-up from this event are on the way. Our Instagram has the highlights.'}</p>
                 {SITE.social.instagram && <div><a className="btn btn-dark btn-hard" href={SITE.social.instagram} target="_blank" rel="noopener"><Icon name="instagram" size={20} /> Follow {SITE.instagramHandle}</a></div>}
               </>
             )}
+            {e.link && <div><a className="btn btn-gold btn-hard" href={e.link} target="_blank" rel="noopener">Registration &amp; details <Arrow /></a></div>}
+            </div>
+            </div>
             {(e.gallery ?? []).length > 1 && (
               <section className="gallery" aria-labelledby="gallery-h">
                 <h2 id="gallery-h">Photos</h2>
@@ -65,7 +72,6 @@ export default async function EventPage({ params }: Props) {
                 </ul>
               </section>
             )}
-            {e.link && <div><a className="btn btn-gold btn-hard" href={e.link} target="_blank" rel="noopener">Registration &amp; details <Arrow /></a></div>}
             <div><Link className="back-link" href="/events"><Arrow size={18} /> All events</Link></div>
           </article>
         </div>

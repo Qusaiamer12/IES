@@ -49,6 +49,8 @@ export type ChapterEvent = {
   summaryEn?: string | null;
   bodyEn?: string[];
   image?: string | null;
+  /** [width, height] of `image` in pixels, so the event page reserves its space without cropping. */
+  imageSize?: [number, number];
   /** Smaller copy of `image` for event cards (about 800px wide). Optional. */
   thumb?: string | null;
   imageAlt?: string | null;
