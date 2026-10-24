@@ -5,6 +5,7 @@ name: CI
 
 on:
   push:
+    branches-ignore: ['dependabot/**'] # Dependabot branches are checked through their pull request
   pull_request:
 
 concurrency:
