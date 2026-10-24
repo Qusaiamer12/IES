@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { Cta, PageHero, SectionHead } from '@/components/Blocks';
 import { Arrow, Icon } from '@/components/Icon';
 import { Edge, Eyebrow } from '@/components/Motifs';
-import { FIELDS } from '@/lib/content';
+import { chapter } from '@/lib/content';
 
 export const metadata: Metadata = pageMeta({ title: 'Projects', description: 'Projects by the IEEE IES chapter at the Hashemite University, starting with PID Duel, our control-engineering game.', path: '/projects', image: '/projects/pid-duel.jpg' });
 
@@ -47,7 +47,7 @@ export default function ProjectsPage() {
             <h2 id="pa-h">The areas our projects come from</h2>
             <p>Every IES HU project sits inside the society’s field of interest.</p>
           </div>
-          <ul className="chips">{FIELDS.map(f => <li key={f} className="chip"><i />{f}</li>)}</ul>
+          <ul className="chips">{chapter.fields.map(f => <li key={f} className="chip"><i />{f}</li>)}</ul>
         </div>
         <Edge />
       </section>

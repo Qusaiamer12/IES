@@ -1,27 +1,18 @@
-// Site-wide settings. Anything still null is hidden on the site until it is filled in.
+// Site-wide settings. The editable values live in content/site.json (validated by lib/content at build time);
+// this module adds the site's public address, which depends on where it is deployed. Client components may import it.
+import siteJson from '@/content/site.json';
+import type { Site } from './content/schema';
+
+const settings = siteJson as Site;
+
 export const SITE = {
-  shortName: 'IEEE IES HU',
-  name: 'IEEE IES Student Chapter, The Hashemite University',
-  slogan: 'We Make Industry Move',
-  description:
-    'The IEEE Industrial Electronics Society student chapter at the Hashemite University. Students who learn automation, robotics, power electronics and embedded systems by building them.',
-  // Production URL, e.g. https://ieshu.org. Set NEXT_PUBLIC_SITE_URL on the host before writing NFC tags.
+  ...settings,
+  // Production URL, e.g. https://ies-hu.vercel.app. Set NEXT_PUBLIC_SITE_URL on the host before writing NFC tags.
   url: (
     process.env.NEXT_PUBLIC_SITE_URL ||
     (process.env.VERCEL_PROJECT_PRODUCTION_URL ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}` : 'http://localhost:3000')
   ).replace(/\/+$/, ''),
-  currentTerm: '2026/2027',
-  founded: 2026,
-  email: 'ies.2026.hu@gmail.com' as string | null,
-  address: ['Faculty of Engineering', 'Department of Electrical Engineering', 'The Hashemite University', 'Zarqa, Jordan'],
-  mapsUrl: 'https://www.google.com/maps/search/?api=1&query=Faculty+of+Engineering+The+Hashemite+University+Zarqa',
-  social: {
-    instagram: 'https://www.instagram.com/ieee.ies.hu/' as string | null,
-    linkedin: null as string | null,
-    facebook: null as string | null,
-  },
-  instagramHandle: '@ieee.ies.hu',
-} as const;
+};
 
 export const NAV = [
   { href: '/', label: 'Home' },

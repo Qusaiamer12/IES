@@ -1,0 +1,30 @@
+// Names of the icons in components/Icon.tsx. Content files (e.g. benefits in content/chapter.json) may only use these.
+export const ICON_NAMES = [
+  'star',
+  'flag',
+  'wrench',
+  'chip',
+  'doc',
+  'network',
+  'factory',
+  'cv',
+  'pen',
+  'nfc',
+  'menu',
+  'close',
+  'arrow',
+  'external',
+  'download',
+  'calendar',
+  'pin',
+  'mail',
+  'phone',
+  'plus',
+  'check',
+  'alert',
+  'instagram',
+  'linkedin',
+  'facebook',
+] as const;
+
+export type IconName = (typeof ICON_NAMES)[number];

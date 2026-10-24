@@ -1,4 +1,4 @@
-import { roleOf, type Member } from './data';
+import type { Member } from './content/model';
 
 const esc = (s: string) => s.replace(/\\/g, '\\\\').replace(/\r?\n/g, '\\n').replace(/([,;])/g, '\\$1');
 
@@ -25,7 +25,7 @@ export function buildVCard(m: Member, siteUrl: string, extra: { email?: string |
     `N:${esc(family.join(' '))};${esc(given)};;;`,
     `FN:${esc(m.nameEn)}`,
     `ORG:${esc('IEEE IES Student Chapter, The Hashemite University')}`,
-    `TITLE:${esc(roleOf(m).label)}`,
+    `TITLE:${esc(m.roleLabel)}`,
     `NOTE:${esc([m.nameAr, m.specialtyEn, m.memberId].filter(Boolean).join(' · '))}`,
     `URL:${siteUrl}/m/${m.slug}`,
   ];

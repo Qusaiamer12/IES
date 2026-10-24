@@ -1,0 +1,32 @@
+[
+  {
+    "name": "HUBOT",
+    "logo": "/images/partners/hubot.png",
+    "width": 320,
+    "height": 71
+  },
+  {
+    "name": "Islamic Educational College Schools",
+    "logo": "/images/partners/iecs.png",
+    "width": 360,
+    "height": 113
+  },
+  {
+    "name": "KaDan",
+    "logo": "/images/partners/kadan.png",
+    "width": 160,
+    "height": 160
+  },
+  {
+    "name": "Good Day",
+    "logo": "/images/partners/good-day.png",
+    "width": 320,
+    "height": 85
+  },
+  {
+    "name": "Zeidan",
+    "logo": "/images/partners/zeidan.png",
+    "width": 260,
+    "height": 126
+  }
+]

@@ -1,0 +1,189 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "fields": {
+      "minItems": 1,
+      "maxItems": 7,
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "description": "Areas the chapter works in. Also the interest options in the join form (max 7, the database allows 7)."
+    },
+    "benefits": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "icon": {
+            "type": "string",
+            "enum": [
+              "star",
+              "flag",
+              "wrench",
+              "chip",
+              "doc",
+              "network",
+              "factory",
+              "cv",
+              "pen",
+              "nfc",
+              "menu",
+              "close",
+              "arrow",
+              "external",
+              "download",
+              "calendar",
+              "pin",
+              "mail",
+              "phone",
+              "plus",
+              "check",
+              "alert",
+              "instagram",
+              "linkedin",
+              "facebook"
+            ]
+          },
+          "title": {
+            "type": "string",
+            "minLength": 1
+          },
+          "text": {
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "icon",
+          "title"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "publications": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "kind": {
+            "type": "string",
+            "minLength": 1
+          },
+          "since": {
+            "type": "integer",
+            "minimum": -9007199254740991,
+            "maximum": 9007199254740991
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": [
+          "kind",
+          "since",
+          "name"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "timeline": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "year": {
+            "type": "integer",
+            "minimum": -9007199254740991,
+            "maximum": 9007199254740991
+          },
+          "title": {
+            "type": "string",
+            "minLength": 1
+          },
+          "text": {
+            "type": "string",
+            "minLength": 1
+          },
+          "now": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "year",
+          "title",
+          "text"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "sources": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "label": {
+            "type": "string",
+            "minLength": 1
+          },
+          "href": {
+            "type": "string",
+            "format": "uri"
+          }
+        },
+        "required": [
+          "label",
+          "href"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "faq": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "q": {
+            "type": "string",
+            "minLength": 1
+          },
+          "a": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": [
+          "q",
+          "a"
+        ],
+        "additionalProperties": false
+      }
+    }
+  },
+  "required": [
+    "fields",
+    "benefits",
+    "publications",
+    "timeline",
+    "sources",
+    "faq"
+  ],
+  "additionalProperties": false
+}

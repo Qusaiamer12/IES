@@ -9,19 +9,23 @@
     "start": "next start",
     "typecheck": "tsc --noEmit",
     "test:e2e": "node tests/e2e.mjs",
-    "check": "npm run typecheck && npm run build",
+    "check": "npm run typecheck && npm test && npm run build",
     "preview:html": "node scripts/snapshot.mjs preview",
-    "build:static": "node scripts/build-static.mjs"
+    "build:static": "node scripts/build-static.mjs",
+    "test": "vitest run",
+    "content:check": "vitest run tests/unit/content.test.ts",
+    "content:schemas": "UPDATE_SCHEMAS=1 vitest run tests/unit/schemas.test.ts"
   },
   "engines": {
-    "node": ">=20"
+    "node": ">=22"
   },
   "dependencies": {
     "next": "15.5.25",
     "nodemailer": "7.0.13",
     "react": "19.1.9",
     "react-dom": "19.1.9",
-    "server-only": "^0.0.1"
+    "server-only": "^0.0.1",
+    "zod": "4.3.6"
   },
   "devDependencies": {
     "@axe-core/playwright": "4.13.0",
@@ -30,6 +34,7 @@
     "@types/react": "19.3.0",
     "@types/react-dom": "19.3.0",
     "playwright": "1.56.1",
-    "typescript": "5.9.3"
+    "typescript": "5.9.3",
+    "vitest": "3.2.7"
   }
 }

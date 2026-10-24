@@ -1,0 +1,57 @@
+[
+  {
+    "term": "2026/2027",
+    "validThru": "08/2027",
+    "members": [
+      {
+        "person": "noor-naser",
+        "role": "chair"
+      },
+      {
+        "person": "qusai-amer",
+        "role": "vice",
+        "year": "4th year"
+      },
+      {
+        "person": "tala-samhan",
+        "role": "secretary",
+        "year": "3rd year"
+      },
+      {
+        "person": "omar-omeir",
+        "role": "membership",
+        "year": "3rd year"
+      },
+      {
+        "person": "ahmed-alhunity",
+        "role": "events",
+        "year": "4th year"
+      },
+      {
+        "person": "raneem-abu-areda",
+        "role": "pr",
+        "year": "3rd year"
+      },
+      {
+        "person": "ahmad-ayyadi",
+        "role": "pr",
+        "year": "3rd year"
+      },
+      {
+        "person": "tasneem-mherat",
+        "role": "media",
+        "year": "3rd year"
+      },
+      {
+        "person": "shahed-hilal",
+        "role": "media",
+        "year": "3rd year"
+      },
+      {
+        "person": "hala-rawashdeh",
+        "role": "design",
+        "year": "3rd year"
+      }
+    ]
+  }
+]

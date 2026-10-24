@@ -1,0 +1,13 @@
+{
+  "json.schemas": [
+    { "fileMatch": ["/content/site.json"], "url": "./content/schemas/site.schema.json" },
+    { "fileMatch": ["/content/roles.json"], "url": "./content/schemas/roles.schema.json" },
+    { "fileMatch": ["/content/people.json"], "url": "./content/schemas/people.schema.json" },
+    { "fileMatch": ["/content/committees.json"], "url": "./content/schemas/committees.schema.json" },
+    { "fileMatch": ["/content/events.json"], "url": "./content/schemas/events.schema.json" },
+    { "fileMatch": ["/content/chapter.json"], "url": "./content/schemas/chapter.schema.json" },
+    { "fileMatch": ["/content/partners.json"], "url": "./content/schemas/partners.schema.json" }
+  ],
+  "files.insertFinalNewline": true,
+  "editor.tabSize": 2
+}

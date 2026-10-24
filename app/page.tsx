@@ -7,8 +7,7 @@ import { EventsGrid } from '@/components/Events';
 import { Stats } from '@/components/Stats';
 import { Arrow } from '@/components/Icon';
 import { Eyebrow, Stamp, Sticker } from '@/components/Motifs';
-import { PARTNERS } from '@/lib/content';
-import { splitEvents } from '@/lib/data';
+import { partners as PARTNERS, splitEvents } from '@/lib/content';
 
 export const metadata: Metadata = pageMeta({ description: SITE.description, path: '/' });
 

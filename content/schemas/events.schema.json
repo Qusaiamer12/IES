@@ -1,0 +1,167 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "properties": {
+      "slug": {
+        "type": "string",
+        "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$",
+        "description": "The event page is /events/<slug>, e.g. \"plc-workshop-2026\"."
+      },
+      "titleEn": {
+        "type": "string",
+        "minLength": 1
+      },
+      "categoryEn": {
+        "description": "Small label on the card, e.g. \"Workshop\".",
+        "anyOf": [
+          {
+            "type": "string",
+            "minLength": 1
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "date": {
+        "type": "string",
+        "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+        "description": "Events move from \"Coming up\" to \"Past\" after this date (Amman time)."
+      },
+      "locationEn": {
+        "anyOf": [
+          {
+            "type": "string",
+            "minLength": 1
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "summaryEn": {
+        "description": "One sentence for the card and the top of the page.",
+        "anyOf": [
+          {
+            "type": "string",
+            "minLength": 1
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "bodyEn": {
+        "default": [],
+        "description": "Paragraphs of the write-up.",
+        "type": "array",
+        "items": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "image": {
+        "description": "Cover photo, e.g. /events/<slug>/cover.jpg (max ~1600px wide).",
+        "anyOf": [
+          {
+            "type": "string",
+            "pattern": "^\\/[A-Za-z0-9._/-]+\\.(?:jpe?g|png|webp|svg)$"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "imageSize": {
+        "description": "[width, height] of image; keeps the page from jumping while it loads.",
+        "anyOf": [
+          {
+            "type": "array",
+            "items": [
+              {
+                "type": "integer",
+                "exclusiveMinimum": 0,
+                "maximum": 9007199254740991
+              },
+              {
+                "type": "integer",
+                "exclusiveMinimum": 0,
+                "maximum": 9007199254740991
+              }
+            ]
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "thumb": {
+        "description": "~800px copy of image for event cards.",
+        "anyOf": [
+          {
+            "type": "string",
+            "pattern": "^\\/[A-Za-z0-9._/-]+\\.(?:jpe?g|png|webp|svg)$"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "imageAlt": {
+        "description": "What the cover photo shows, for screen readers.",
+        "anyOf": [
+          {
+            "type": "string",
+            "minLength": 1
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "gallery": {
+        "default": [],
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "src": {
+              "type": "string",
+              "pattern": "^\\/[A-Za-z0-9._/-]+\\.(?:jpe?g|png|webp|svg)$"
+            },
+            "alt": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "required": [
+            "src",
+            "alt"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "link": {
+        "default": null,
+        "description": "Registration or details page.",
+        "anyOf": [
+          {
+            "type": "string",
+            "format": "uri"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      }
+    },
+    "required": [
+      "slug",
+      "titleEn",
+      "date"
+    ],
+    "additionalProperties": false
+  }
+}

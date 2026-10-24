@@ -4,8 +4,8 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { Cta, PageHero } from '@/components/Blocks';
 import { Arrow, Icon } from '@/components/Icon';
-import { events, getEvent, todayInAmman } from '@/lib/data';
-import { formatDay } from '@/lib/dates';
+import { events, getEvent } from '@/lib/content';
+import { formatDay, todayInAmman } from '@/lib/dates';
 import { SITE } from '@/lib/site';
 
 type Props = { params: Promise<{ slug: string }> };

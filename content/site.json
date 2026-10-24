@@ -1,0 +1,22 @@
+{
+  "shortName": "IEEE IES HU",
+  "name": "IEEE IES Student Chapter, The Hashemite University",
+  "slogan": "We Make Industry Move",
+  "description": "The IEEE Industrial Electronics Society student chapter at the Hashemite University. Students who learn automation, robotics, power electronics and embedded systems by building them.",
+  "founded": 2026,
+  "currentTerm": "2026/2027",
+  "email": "ies.2026.hu@gmail.com",
+  "address": [
+    "Faculty of Engineering",
+    "Department of Electrical Engineering",
+    "The Hashemite University",
+    "Zarqa, Jordan"
+  ],
+  "mapsUrl": "https://www.google.com/maps/search/?api=1&query=Faculty+of+Engineering+The+Hashemite+University+Zarqa",
+  "social": {
+    "instagram": "https://www.instagram.com/ieee.ies.hu/",
+    "linkedin": null,
+    "facebook": null
+  },
+  "instagramHandle": "@ieee.ies.hu"
+}

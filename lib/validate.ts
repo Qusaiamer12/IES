@@ -1,5 +1,8 @@
 // Form validation shared by the browser forms and the API routes.
-import { FIELDS } from './content';
+import chapter from '@/content/chapter.json';
+
+/** Interest options of the join form: the chapter's fields (content/chapter.json). */
+export const FIELDS: readonly string[] = chapter.fields;
 
 export const CONTACT_TOPICS = ['General question', 'Joining the chapter', 'Partnership or sponsorship', 'Event collaboration'] as const;
 export const YEARS = ['First year', 'Second year', 'Third year', 'Fourth year', 'Fifth year', 'Graduate'] as const;
@@ -70,7 +73,7 @@ export function validateJoin(input: Record<string, unknown>): Result<JoinData> {
   const phone = oneLine(str(input.phone));
   if (phone && !PHONE.test(phone)) errors.phone = 'Enter a valid phone number, like +962 7X XXX XXXX.';
   const rawInterests = Array.isArray(input.interests) ? input.interests : [];
-  const interests = rawInterests.filter((i): i is string => typeof i === 'string' && (FIELDS as readonly string[]).includes(i));
+  const interests = rawInterests.filter((i): i is string => typeof i === 'string' && FIELDS.includes(i));
   const data = {
     name: text(errors, 'name', input.name, 'full name', 2, 100),
     email: email(errors, input.email),

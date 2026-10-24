@@ -1,0 +1,56 @@
+[
+  {
+    "key": "chair",
+    "label": "Chair",
+    "core": true,
+    "accent": "#0B1530"
+  },
+  {
+    "key": "vice",
+    "label": "Vice Chair",
+    "core": true,
+    "accent": "#1449D6"
+  },
+  {
+    "key": "secretary",
+    "label": "Secretary",
+    "core": true,
+    "accent": "#2E3A59"
+  },
+  {
+    "key": "membership",
+    "label": "Membership Development",
+    "core": false,
+    "accent": "#0B7A75"
+  },
+  {
+    "key": "pr",
+    "label": "Public Relations",
+    "core": false,
+    "accent": "#C2410C"
+  },
+  {
+    "key": "events",
+    "label": "Event Coordinator",
+    "core": false,
+    "accent": "#B0185A"
+  },
+  {
+    "key": "media",
+    "label": "Social Media",
+    "core": false,
+    "accent": "#6A2BE0"
+  },
+  {
+    "key": "design",
+    "label": "Designer",
+    "core": false,
+    "accent": "#8B5E00"
+  },
+  {
+    "key": "member",
+    "label": "Member",
+    "core": false,
+    "accent": "#2E3A59"
+  }
+]

@@ -9,8 +9,8 @@ const BASE = process.env.BASE_URL || 'http://localhost:3000';
 const SHOTS = 'test-results';
 mkdirSync(SHOTS, { recursive: true });
 
-const members = JSON.parse(readFileSync(new URL('../data/members.json', import.meta.url)));
-const events = JSON.parse(readFileSync(new URL('../data/events.json', import.meta.url)));
+const members = JSON.parse(readFileSync(new URL('../content/people.json', import.meta.url)));
+const events = JSON.parse(readFileSync(new URL('../content/events.json', import.meta.url)));
 
 const ROUTES = [
   ['/', 'Home'],

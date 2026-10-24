@@ -18,3 +18,8 @@ export function dayParts(d: string) {
   const dt = parseDay(d);
   return dt ? { day: dt.getUTCDate(), month: MONTHS[dt.getUTCMonth()] } : null;
 }
+
+/** Today's date in Jordan as YYYY-MM-DD, so "upcoming" flips at local midnight, not UTC. */
+export function todayInAmman(now = new Date()) {
+  return new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Amman', year: 'numeric', month: '2-digit', day: '2-digit' }).format(now);
+}

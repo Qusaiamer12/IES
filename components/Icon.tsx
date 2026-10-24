@@ -1,4 +1,7 @@
-const PATHS = {
+import type { ReactNode } from 'react';
+import type { IconName } from '@/lib/icons';
+
+const PATHS: Record<IconName, ReactNode> = {
   star: <path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z" />,
   flag: <path d="M5 21V4h11l-2 4 2 4H5" />,
   wrench: <path d="M14.5 6.5a4 4 0 0 0-5.3 5.3L4 17l3 3 5.2-5.2a4 4 0 0 0 5.3-5.3l-2.5 2.5-2.5-.5-.5-2.5z" />,
@@ -55,7 +58,7 @@ const PATHS = {
   facebook: <path d="M14 21v-8h3l.5-3.5H14V7.8c0-1 .4-1.8 1.9-1.8H18V3.1A20 20 0 0 0 15.4 3C12.8 3 11 4.6 11 7.5v2H8V13h3v8" />,
 };
 
-export type IconName = keyof typeof PATHS;
+export type { IconName };
 
 export const iconPath = (name: IconName) => PATHS[name];
 

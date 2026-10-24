@@ -4,7 +4,9 @@ import Link from 'next/link';
 import { PageHero, SectionHead } from '@/components/Blocks';
 import { Edge, Hex } from '@/components/Motifs';
 import { JoinForm } from '@/components/Forms';
-import { BENEFITS, FAQ } from '@/lib/content';
+import { chapter } from '@/lib/content';
+
+const { benefits: BENEFITS, faq: FAQ } = chapter;
 import { JOIN_IEEE_URL } from '@/lib/site';
 import { Icon } from '@/components/Icon';
 
@@ -37,7 +39,7 @@ export default function JoinPage() {
           <SectionHead id="get-h" kicker="Benefits" title="What members get" />
           <ul className="benefits">
             {BENEFITS.map(b => (
-              <li key={b.title} className="benefit"><Hex icon={b.icon} filled size={52} /><div><h3>{b.title}</h3>{'text' in b && <p>{b.text}</p>}</div></li>
+              <li key={b.title} className="benefit"><Hex icon={b.icon} filled size={52} /><div><h3>{b.title}</h3>{b.text && <p>{b.text}</p>}</div></li>
             ))}
           </ul>
         </div>

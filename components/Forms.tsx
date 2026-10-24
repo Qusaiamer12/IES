@@ -1,10 +1,9 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { FIELDS } from '@/lib/content';
 import { SITE } from '@/lib/site';
 import { contactRow, joinRow } from '@/lib/rows';
-import { CONTACT_TOPICS, IEEE_STATUS, YEARS, validateContact, validateJoin, type ContactData, type JoinData, type Result } from '@/lib/validate';
+import { CONTACT_TOPICS, FIELDS, IEEE_STATUS, YEARS, validateContact, validateJoin, type ContactData, type JoinData, type Result } from '@/lib/validate';
 import { Arrow, Icon } from './Icon';
 
 type Status = { kind: 'idle' | 'sending' | 'sent' } | { kind: 'error'; message: string };

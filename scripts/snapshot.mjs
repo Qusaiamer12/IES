@@ -9,8 +9,8 @@ const BASE = process.env.BASE_URL || 'http://localhost:3000';
 const OUT = process.argv[2] || 'preview';
 mkdirSync(OUT, { recursive: true });
 
-const members = JSON.parse(readFileSync(new URL('../data/members.json', import.meta.url)));
-const events = JSON.parse(readFileSync(new URL('../data/events.json', import.meta.url)));
+const members = JSON.parse(readFileSync(new URL('../content/people.json', import.meta.url)));
+const events = JSON.parse(readFileSync(new URL('../content/events.json', import.meta.url)));
 
 // route -> page id used in the URL hash (letters, digits and hyphens only)
 const ROUTES = [

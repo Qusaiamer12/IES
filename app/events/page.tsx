@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { pageMeta } from '@/lib/seo';
 import { Cta, PageHero, SectionHead } from '@/components/Blocks';
 import { EventsGrid } from '@/components/Events';
-import { splitEvents } from '@/lib/data';
+import { splitEvents } from '@/lib/content';
 
 export const revalidate = 3600;
 export const metadata: Metadata = pageMeta({ title: 'Events', description: 'Workshops, visits and IEEE days by the IEEE IES chapter at the Hashemite University.', path: '/events' });

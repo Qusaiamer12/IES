@@ -1,0 +1,37 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "minItems": 1,
+  "type": "array",
+  "items": {
+    "type": "object",
+    "properties": {
+      "key": {
+        "type": "string",
+        "pattern": "^[a-z][a-z-]*$",
+        "description": "Id used in committees.json."
+      },
+      "label": {
+        "type": "string",
+        "minLength": 1,
+        "description": "Title shown on the site, e.g. \"Vice Chair\"."
+      },
+      "core": {
+        "type": "boolean",
+        "description": "true: listed in the Core Team. false: the Executive Team."
+      },
+      "accent": {
+        "type": "string",
+        "pattern": "^#[0-9A-Fa-f]{6}$",
+        "description": "Colour of the role label and dot."
+      }
+    },
+    "required": [
+      "key",
+      "label",
+      "core",
+      "accent"
+    ],
+    "additionalProperties": false
+  },
+  "description": "Officer positions, in the order the team page lists them."
+}

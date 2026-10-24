@@ -2,7 +2,9 @@ import type { Metadata } from 'next';
 import { pageMeta } from '@/lib/seo';
 import { Cta, PageHero, SectionHead } from '@/components/Blocks';
 import { Edge, Eyebrow } from '@/components/Motifs';
-import { FIELDS, PUBLICATIONS, SOURCES, TIMELINE } from '@/lib/content';
+import { chapter } from '@/lib/content';
+
+const { fields: FIELDS, publications: PUBLICATIONS, sources: SOURCES, timeline: TIMELINE } = chapter;
 
 export const metadata: Metadata = pageMeta({
   title: 'The Chapter',

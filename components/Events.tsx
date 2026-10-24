@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import type { ChapterEvent } from '@/lib/data';
+import type { ChapterEvent } from '@/lib/content/schema';
 import { dayParts, formatDay } from '@/lib/dates';
 import { SITE } from '@/lib/site';
 import { Arrow, Icon } from './Icon';

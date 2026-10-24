@@ -1,0 +1,74 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "properties": {
+      "term": {
+        "type": "string",
+        "pattern": "^\\d{4}\\/\\d{4}$"
+      },
+      "validThru": {
+        "description": "Card validity for this term.",
+        "anyOf": [
+          {
+            "type": "string",
+            "pattern": "^\\d{2}\\/\\d{4}$"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "members": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "person": {
+              "type": "string",
+              "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$",
+              "description": "The slug of someone in people.json."
+            },
+            "role": {
+              "type": "string",
+              "description": "A key from roles.json."
+            },
+            "year": {
+              "description": "Study year during this term, e.g. \"3rd year\".",
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "badges": {
+              "default": [],
+              "description": "Extra tags for this term, e.g. \"workshop\".",
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          },
+          "required": [
+            "person",
+            "role"
+          ],
+          "additionalProperties": false
+        }
+      }
+    },
+    "required": [
+      "term",
+      "members"
+    ],
+    "additionalProperties": false
+  },
+  "description": "One entry per term. Add a new term; never edit or delete an old one."
+}

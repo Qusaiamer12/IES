@@ -5,13 +5,13 @@ import { Cta, PageHero } from '@/components/Blocks';
 import { Arrow } from '@/components/Icon';
 import { EmptyState } from '@/components/Motifs';
 import { TeamBrowser } from '@/components/Team';
-import { sortedMembers } from '@/lib/data';
+import { allMembers } from '@/lib/content';
 import { SITE } from '@/lib/site';
 
 export const metadata: Metadata = pageMeta({ title: 'Our Team', description: 'The students who run the IEEE IES chapter at the Hashemite University.', path: '/team' });
 
 export default function TeamPage() {
-  const list = sortedMembers();
+  const list = allMembers;
   return (
     <>
       <PageHero kicker="Our team" title="Our Team" word="TEAM" lead="The students who run IES HU, term after term." />

@@ -1,0 +1,57 @@
+# Runs on every push and pull request. A change is safe to deploy when this is green:
+# content is valid, types check, unit tests pass, the site builds (main and static backup),
+# and the end-to-end checks pass against the running site.
+name: CI
+
+on:
+  push:
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Install
+        run: npm ci
+        env:
+          PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: '1'
+
+      - name: Types
+        run: npm run typecheck
+
+      - name: Unit tests and content checks
+        run: npm test
+
+      - name: Build (main site)
+        run: npm run build
+
+      - name: End-to-end checks
+        run: |
+          npx playwright install --with-deps chromium
+          MAIL_DRY_RUN=1 npm start > server.log 2>&1 &
+          for i in $(seq 1 60); do curl -sf -o /dev/null http://localhost:3000 && break; sleep 1; done
+          npm run test:e2e
+
+      - name: Build (static backup)
+        run: npm run build:static
+        env:
+          NEXT_PUBLIC_SITE_URL: https://ies-hu.onrender.com
+          NEXT_PUBLIC_NOINDEX: '1'
+          NEXT_PUBLIC_SUPABASE_URL: https://example.supabase.co
+          NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: ci-placeholder
+
+      - name: Server log
+        if: failure()
+        run: cat server.log || true

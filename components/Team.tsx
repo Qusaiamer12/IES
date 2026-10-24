@@ -2,16 +2,16 @@
 
 import Link from 'next/link';
 import { useState } from 'react';
-import { accentOf, initials, roleOf, type Member } from '@/lib/data';
+import { initials, type Member } from '@/lib/content/model';
 
 export function MemberTile({ m }: { m: Member }) {
   return (
-    <Link className="mtile" href={`/m/${m.slug}`} style={{ '--acc': accentOf(m) } as React.CSSProperties}>
+    <Link className="mtile" href={`/m/${m.slug}`} style={{ '--acc': m.accent } as React.CSSProperties}>
       <div className="mt-photo">
         {m.photo ? <img src={m.photo} alt="" loading="lazy" width={400} height={400} /> : <div className="ini" aria-hidden="true">{initials(m.nameEn)}</div>}
       </div>
       <div className="mt-body">
-        <span className="mt-role"><i aria-hidden="true" />{roleOf(m).label}</span>
+        <span className="mt-role"><i aria-hidden="true" />{m.roleLabel}</span>
         <span className="mt-name">{m.nameEn}</span>
         <span className="mt-spec">{m.specialtyEn}</span>
       </div>
@@ -19,14 +19,13 @@ export function MemberTile({ m }: { m: Member }) {
   );
 }
 
-/** Committee for a term: the Core Team first, then the Executive Team. Members arrive already sorted. */
+/** Committee for a term: the Core Team first, then the Executive Team. Members arrive sorted, newest term first. */
 export function TeamBrowser({ members, currentTerm }: { members: Member[]; currentTerm: string }) {
-  const termOf = (m: Member) => m.term || currentTerm;
-  const terms = [...new Set(members.map(termOf))].sort().reverse();
-  const [term, setTerm] = useState(terms[0] ?? currentTerm);
-  const inTerm = members.filter(m => termOf(m) === term);
-  const core = inTerm.filter(m => roleOf(m).core);
-  const executive = inTerm.filter(m => !roleOf(m).core);
+  const terms = [...new Set(members.map(m => m.term))];
+  const [term, setTerm] = useState(terms.includes(currentTerm) ? currentTerm : terms[0]);
+  const inTerm = members.filter(m => m.term === term);
+  const core = inTerm.filter(m => m.core);
+  const executive = inTerm.filter(m => !m.core);
 
   return (
     <>

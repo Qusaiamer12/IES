@@ -1,38 +1,22 @@
 [
   {
-    "validThru": "08/2027",
-    "founding": true,
-    "motto": null,
-    "badges": [],
-    "term": "2026/2027",
-    "highlights": [],
-    "links": {
-      "linkedin": null,
-      "instagram": null,
-      "email": null,
-      "phone": null
-    },
     "slug": "noor-naser",
+    "memberId": "IES-001",
     "nameEn": "Noor Naser",
     "nameAr": "نور نصر",
-    "role": "chair",
     "specialtyEn": "Industrial Engineering",
-    "year": null,
-    "memberId": "IES-001",
+    "photo": null,
     "bio": null,
-    "photo": null
+    "highlights": [],
+    "links": {}
   },
   {
     "slug": "qusai-amer",
+    "memberId": "IES-002",
     "nameEn": "Qusai Amer",
     "nameAr": "قصي عامر",
-    "role": "vice",
     "specialtyEn": "Mechatronics Engineering",
-    "year": "4th year",
-    "memberId": "IES-002",
-    "validThru": "08/2027",
-    "founding": true,
-    "motto": null,
+    "photo": "/members/qusai-amer.jpg",
     "bio": "Mechatronics Engineering student at the Hashemite University, combining a passion for aerospace engineering with applying artificial intelligence to entrepreneurship.\n\nI work at the intersection of engineering, software and AI to build real products, from embedded systems and automation to language models. I like taking an idea from a concept on paper to a working prototype in the real world. My strengths include prompt engineering and using AI tools to speed up design, development and decision-making.",
     "highlights": [
       "Founder & Chief Technical Officer, CircuBand: a mechatronics and biomedical engineering startup. Ranked Best Startup Idea in Jordan at the Startup World Cup 2026 qualifiers.",
@@ -40,22 +24,18 @@
       "Creator, Nawat Automated Agriculture Project: an automated farming system addressing water and agriculture challenges in Jordan, developed in collaboration with the Jordan Engineers Association and the RAM Center (entrepreneurs’ center).",
       "Developer, Qjo Large Language Model (LLM): developing a proprietary LLM and building its identity and architecture as a complete AI product."
     ],
-    "badges": [],
-    "photo": "/members/qusai-amer.jpg",
-    "term": "2026/2027",
     "links": {
-      "linkedin": "https://www.linkedin.com/in/qusai-amer-265003319",
-      "instagram": null,
-      "email": null,
-      "phone": null
+      "linkedin": "https://www.linkedin.com/in/qusai-amer-265003319"
     }
   },
   {
-    "validThru": "08/2027",
-    "founding": true,
-    "motto": null,
-    "badges": [],
-    "term": "2026/2027",
+    "slug": "tala-samhan",
+    "memberId": "IES-003",
+    "nameEn": "Tala Samhan",
+    "nameAr": "تالا سمحان",
+    "specialtyEn": "Industrial Engineering",
+    "photo": "/members/tala-samhan.jpg",
+    "bio": "I’m Tala Samhan, a third-year Industrial Engineering student; I studied pharmacy for a year before switching. My interests are varied: I love reading books and handicrafts like beadwork, sewing and pottery, anything creative, and I really love design. My role in the society is team secretary.",
     "highlights": [
       "Completed volunteer hours at several organizations before university.",
       "At university, joined the Turbo team in the activities committee, then its media team, and is now the committee’s secretary.",
@@ -63,185 +43,108 @@
       "Currently deputy promotion lead for the Next Step project."
     ],
     "links": {
-      "linkedin": "https://www.linkedin.com/in/tala-samhan-819786388",
-      "instagram": null,
-      "email": null,
-      "phone": null
-    },
-    "slug": "tala-samhan",
-    "nameEn": "Tala Samhan",
-    "nameAr": "تالا سمحان",
-    "role": "secretary",
-    "specialtyEn": "Industrial Engineering",
-    "year": "3rd year",
-    "memberId": "IES-003",
-    "bio": "I’m Tala Samhan, a third-year Industrial Engineering student; I studied pharmacy for a year before switching. My interests are varied: I love reading books and handicrafts like beadwork, sewing and pottery, anything creative, and I really love design. My role in the society is team secretary.",
-    "photo": "/members/tala-samhan.jpg"
+      "linkedin": "https://www.linkedin.com/in/tala-samhan-819786388"
+    }
   },
   {
-    "validThru": "08/2027",
-    "founding": true,
-    "motto": null,
-    "badges": [],
-    "term": "2026/2027",
-    "highlights": [],
-    "links": {
-      "linkedin": "https://www.linkedin.com/in/omar-omeir-081749353",
-      "instagram": null,
-      "email": null,
-      "phone": null
-    },
     "slug": "omar-omeir",
+    "memberId": "IES-004",
     "nameEn": "Omar Omeir",
     "nameAr": "عمر عمير",
-    "role": "membership",
     "specialtyEn": "Computer Engineering",
-    "year": "3rd year",
-    "memberId": "IES-004",
+    "photo": "/members/omar-omeir.jpg",
     "bio": "I study Computer Engineering and I’m interested in embedded systems. As Membership Development officer, I try to bring people into the community by talking and connecting with them.",
-    "photo": "/members/omar-omeir.jpg"
+    "highlights": [],
+    "links": {
+      "linkedin": "https://www.linkedin.com/in/omar-omeir-081749353"
+    }
   },
   {
     "slug": "ahmed-alhunity",
+    "memberId": "IES-005",
     "nameEn": "Ahmed Alhunity",
     "nameAr": "أحمد الحنيطي",
-    "role": "events",
     "specialtyEn": "Mechatronics Engineering",
-    "year": "4th year",
-    "memberId": "IES-005",
-    "validThru": "08/2027",
-    "founding": true,
+    "photo": "/members/ahmed-alhunity.jpg",
     "bio": "Ahmed Alhunity is a fourth-year Mechatronics Engineering student at The Hashemite University and an Event Coordinator at IEEE IES. His interests include robotics, home automation, and smart technologies. He also has practical experience in team supervision, purchasing, and sales. He aims to combine his technical, organizational, and leadership skills to contribute to impactful projects and the engineering community.",
     "highlights": [],
-    "badges": [],
-    "photo": "/members/ahmed-alhunity.jpg",
-    "term": "2026/2027",
     "links": {
-      "linkedin": "https://www.linkedin.com/in/ahmed-alhunity-23b3a33a2",
-      "instagram": null,
-      "email": null,
-      "phone": null
+      "linkedin": "https://www.linkedin.com/in/ahmed-alhunity-23b3a33a2"
     }
   },
   {
     "slug": "raneem-abu-areda",
+    "memberId": "IES-006",
     "nameEn": "Raneem Abu Areda",
     "nameAr": "رنيم أبو عريضة",
-    "role": "pr",
     "specialtyEn": "Electrical Engineering",
-    "year": "3rd year",
-    "memberId": "IES-006",
-    "validThru": "08/2027",
-    "founding": true,
+    "photo": "/members/raneem-abu-areda.jpg",
     "bio": "I am a third-year electrical engineering student at the Hashemite University with a strong passion for embedded systems, microcontrollers, and robotics. Currently, I serve as the Technical Team Leader for the ELCOM committee, where I lead technical initiatives, combining hardware development with active student community engagement.",
     "highlights": [
       "Line-Follower Robotics Competitor, designing and programming ESP32-based robots with custom PID and sensor calibration algorithms.",
       "Completed Computer Vision Training, applying OpenCV and Python to image processing tasks."
     ],
-    "badges": [],
-    "photo": "/members/raneem-abu-areda.jpg",
-    "term": "2026/2027",
     "links": {
-      "linkedin": "https://www.linkedin.com/in/raneem-baker-abu-areda-2500b5320",
-      "instagram": null,
-      "email": null,
-      "phone": null
+      "linkedin": "https://www.linkedin.com/in/raneem-baker-abu-areda-2500b5320"
     }
   },
   {
     "slug": "ahmad-ayyadi",
+    "memberId": "IES-007",
     "nameEn": "Ahmad Ayyadi",
     "nameAr": "أحمد عيادي",
-    "role": "pr",
     "specialtyEn": "Mechatronics Engineering",
-    "year": "3rd year",
-    "memberId": "IES-007",
-    "validThru": "08/2027",
-    "founding": true,
+    "photo": "/members/ahmad-ayyadi.jpg",
     "bio": "I'm a mechatronics engineering student at the Hashemite University, passionate about technology, innovation, and robotics. I enjoy teamwork, organizing, and connecting with people. As a Public Relations officer at IEEE IES HU, I build partnerships with organizations and help make our events run smoothly.",
     "highlights": [
       "Volunteered at the Swaileh Innovation Incubator (Makani project): supported hands-on sessions, organized youth groups, followed up on their attendance, and handled session logistics."
     ],
-    "badges": [],
-    "photo": "/members/ahmad-ayyadi.jpg",
-    "term": "2026/2027",
     "links": {
-      "linkedin": "https://www.linkedin.com/in/ahmad-ayyadi-a03385333",
-      "instagram": null,
-      "email": null,
-      "phone": null
+      "linkedin": "https://www.linkedin.com/in/ahmad-ayyadi-a03385333"
     }
   },
   {
     "slug": "tasneem-mherat",
+    "memberId": "IES-008",
     "nameEn": "Tasneem Mherat",
     "nameAr": "تسنيم المهيرات",
-    "role": "media",
     "specialtyEn": "Mechatronics Engineering",
-    "year": "3rd year",
-    "memberId": "IES-008",
-    "validThru": "08/2027",
-    "founding": true,
+    "photo": "/members/tasneem-mherat.jpg",
     "bio": "Mechatronics engineering student at the Hashemite University, blending a technical background in robotics with innovative digital marketing and content creation ideas. Dedicated to driving growth, enhancing social media reach, and bringing creative, out of the box strategies to technical communities.",
     "highlights": [
       "Competitions & Events Ambassador/Volunteer: served as a volunteer and ambassador for the Micromouse Robotics Contest (MMRC), IEEE HTU RAS, including registration and organizing teams to be at the arena at the scheduled time, and contributed to social media with reels that improved the reach of the Robo League competition with IEEE HU RAS.",
       "Orex Graphic Designer: created social media templates and creative branding assets for the Orex student engineering initiative."
     ],
-    "badges": [],
-    "photo": "/members/tasneem-mherat.jpg",
-    "term": "2026/2027",
     "links": {
-      "linkedin": "https://www.linkedin.com/in/tasneem-mherat",
-      "instagram": null,
-      "email": null,
-      "phone": null
+      "linkedin": "https://www.linkedin.com/in/tasneem-mherat"
     }
   },
   {
     "slug": "shahed-hilal",
+    "memberId": "IES-009",
     "nameEn": "Shahed Hilal",
     "nameAr": "شهد هلال",
-    "role": "media",
     "specialtyEn": "Cybersecurity",
-    "year": "3rd year",
-    "memberId": "IES-009",
-    "validThru": "08/2027",
-    "founding": true,
+    "photo": "/members/shahed-hilal.jpg",
     "bio": "I joined the society as a social media officer and I hope to gain experience in the field and to make friends who share my goals.",
     "highlights": [
       "Member of the event organisation team in Cyber-eto."
     ],
-    "badges": [],
-    "photo": "/members/shahed-hilal.jpg",
-    "term": "2026/2027",
     "links": {
-      "linkedin": "https://www.linkedin.com/in/shahed-hilal-811025343",
-      "instagram": null,
-      "email": null,
-      "phone": null
+      "linkedin": "https://www.linkedin.com/in/shahed-hilal-811025343"
     }
   },
   {
-    "validThru": "08/2027",
-    "founding": true,
-    "motto": null,
-    "badges": [],
-    "term": "2026/2027",
-    "highlights": [],
-    "links": {
-      "linkedin": "https://www.linkedin.com/in/hala-rawashdeh-8792a0373",
-      "instagram": null,
-      "email": null,
-      "phone": null
-    },
     "slug": "hala-rawashdeh",
+    "memberId": "IES-010",
     "nameEn": "Hala Rawashdeh",
     "nameAr": "حلا رواشدة",
-    "role": "design",
     "specialtyEn": "Industrial Engineering",
-    "year": "3rd year",
-    "memberId": "IES-010",
+    "photo": "/members/hala-rawashdeh.jpg",
     "bio": "I’m a third-year Industrial Engineering student at the Hashemite University. I’m interested in data analysis, problem-solving, and design. As a Designer in the society, I help create designs and visual content for our activities and events. I enjoy being part of a team, learning new things, and using my creativity to bring ideas to life.",
-    "photo": "/members/hala-rawashdeh.jpg"
+    "highlights": [],
+    "links": {
+      "linkedin": "https://www.linkedin.com/in/hala-rawashdeh-8792a0373"
+    }
   }
 ]

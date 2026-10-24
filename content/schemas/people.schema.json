@@ -1,0 +1,147 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "properties": {
+      "slug": {
+        "type": "string",
+        "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$",
+        "description": "Permanent id: the member page is /m/<slug> and it is written to the NFC card. Never change it."
+      },
+      "memberId": {
+        "type": "string",
+        "pattern": "^IES-\\d{3,}$",
+        "description": "Chapter member number, printed on the card. Never reuse one."
+      },
+      "nameEn": {
+        "type": "string",
+        "minLength": 1
+      },
+      "nameAr": {
+        "anyOf": [
+          {
+            "type": "string",
+            "minLength": 1
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "specialtyEn": {
+        "type": "string",
+        "minLength": 1,
+        "description": "Major, e.g. \"Mechatronics Engineering\"."
+      },
+      "photo": {
+        "default": null,
+        "description": "Portrait 4:5 (e.g. 640×800), in public/members/<slug>.jpg. null shows initials.",
+        "anyOf": [
+          {
+            "type": "string",
+            "pattern": "^\\/[A-Za-z0-9._/-]+\\.(?:jpe?g|png|webp|svg)$"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "bio": {
+        "default": null,
+        "description": "As the member submitted it. A blank line starts a new paragraph.",
+        "anyOf": [
+          {
+            "type": "string",
+            "minLength": 1
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "highlights": {
+        "default": [],
+        "description": "One achievement per item.",
+        "type": "array",
+        "items": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "motto": {
+        "default": null,
+        "anyOf": [
+          {
+            "type": "string",
+            "minLength": 1
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "links": {
+        "description": "Only what the member agreed to publish.",
+        "default": {},
+        "type": "object",
+        "properties": {
+          "linkedin": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uri"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "instagram": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uri"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "email": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "email",
+                "pattern": "^(?!\\.)(?!.*\\.\\.)([A-Za-z0-9_'+\\-\\.]*)[A-Za-z0-9_+-]@([A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,}$"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "phone": {
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "required": [
+      "slug",
+      "memberId",
+      "nameEn",
+      "specialtyEn"
+    ],
+    "additionalProperties": false
+  },
+  "description": "Everyone who has served on a committee. People are never deleted, so old NFC cards keep working."
+}
