@@ -4,6 +4,7 @@ import { pageMeta } from '@/lib/seo';
 import { SITE } from '@/lib/site';
 import { Cta, SectionHead } from '@/components/Blocks';
 import { EventsGrid } from '@/components/Events';
+import { Stats } from '@/components/Stats';
 import { Arrow } from '@/components/Icon';
 import { Eyebrow, Stamp, Sticker } from '@/components/Motifs';
 import { PARTNERS } from '@/lib/content';
@@ -50,12 +51,12 @@ export default function Home() {
       </section>
 
       <div className="wrap stats-wrap">
-        <ul className="stats" aria-label="IES at a glance">
-          <li className="stat hot"><b>75</b><span>Years of IES</span><small>1951 – 2026</small></li>
-          <li className="stat"><b>100+</b><span>Countries with IES members</span><small>IES, 2021</small></li>
-          <li className="stat"><b>6</b><span>IES journals &amp; magazines</span><small>Since 1953</small></li>
-          <li className="stat"><b>2026</b><span>Our chapter founded</span><small>Founding term 2026/27</small></li>
-        </ul>
+        <Stats label="IES at a glance" items={[
+          { value: 75, label: 'Years of IES', note: '1951 – 2026', hot: true },
+          { value: 100, suffix: '+', label: 'Countries with IES members', note: 'IES, 2021' },
+          { value: 6, label: 'IES journals & magazines', note: 'Since 1953' },
+          { value: 2026, from: 1951, label: 'Our chapter founded', note: 'Founding term 2026/27' },
+        ]} />
       </div>
 
       <section className="sec sec-white" aria-labelledby="ev-h">

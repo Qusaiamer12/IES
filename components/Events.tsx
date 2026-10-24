@@ -51,5 +51,7 @@ export function EventsGrid({ list, emptyTitle = 'No events announced yet', headi
       </EmptyState>
     );
   }
-  return <div className="events">{list.map(e => <EventCard key={e.slug} e={e} headingLevel={headingLevel} />)}</div>;
+  // One or two cards fill the row (a lone card turns into a wide side-by-side card) instead of leaving empty columns.
+  const fill = list.length < 3 ? ` events-${list.length}` : '';
+  return <div className={`events${fill}`}>{list.map(e => <EventCard key={e.slug} e={e} headingLevel={headingLevel} />)}</div>;
 }
