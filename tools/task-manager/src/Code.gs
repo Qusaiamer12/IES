@@ -1,0 +1,667 @@
+/**
+ * IES HU Tasks — the team's task manager. Google Apps Script backend; all data lives in the Google Sheet CONFIG.SHEET_ID.
+ *
+ * How it fits together
+ *   - doGet() serves Index.html (the whole UI). The UI calls the api_* functions below with google.script.run.
+ *   - Every api_* function except login takes the session token first and checks it (withUser_).
+ *   - The spreadsheet is the database: one tab per table (SCHEMA). Columns are found by their header name, so people may
+ *     reorder columns or add their own; missing columns are added automatically (ensureSchema_).
+ *   - Writes run under a script lock, so two people saving at the same moment cannot overwrite each other's rows.
+ *   - Tasks are updated with patches (only the fields that changed), so two people editing different fields both win.
+ *
+ * Deployed as a web app that runs as the account that deployed it, open to anyone with the link; members sign in with
+ * a personal code that an admin gives them (no Google sign-in or permission screens for members).
+ */
+
+// ------------------------------------------------------------------------------------------------ data model
+
+const SCHEMA = {
+  Tasks: ['ID', 'Title', 'Description', 'Status', 'Priority', 'Team', 'Assignees', 'AssigneeNames', 'Due', 'Labels',
+    'Checklist', 'Blocked', 'CreatedBy', 'CreatedAt', 'UpdatedAt', 'CompletedAt', 'Archived'],
+  Members: ['ID', 'Name', 'Email', 'Role', 'Team', 'Admin', 'Active', 'Notify', 'CodeSalt', 'CodeHash', 'CreatedAt'],
+  Comments: ['ID', 'TaskID', 'AuthorID', 'AuthorName', 'Text', 'CreatedAt'],
+  Activity: ['Time', 'ActorID', 'ActorName', 'TaskID', 'Action', 'Details'],
+  Settings: ['Key', 'Value', 'Notes'],
+};
+const BOOL_COLUMNS = ['Blocked', 'Archived', 'Admin', 'Active', 'Notify'];
+const STATUSES = ['todo', 'doing', 'review', 'done'];
+const PRIORITIES = ['low', 'medium', 'high', 'urgent'];
+const DEFAULT_SETTINGS = [
+  ['teams', 'Core Team, Membership, Public Relations, Events, Social Media, Design', 'Comma-separated list shown in the app'],
+  ['digest', false, 'TRUE: email each member their due and overdue tasks every morning'],
+  ['digestHour', 8, 'Hour of the daily reminder (0-23, in the time zone of Config.gs)'],
+];
+const CODE_ALPHABET = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789'; // no 0/O, 1/I/L
+
+// ------------------------------------------------------------------------------------------------ web app
+
+function doGet() {
+  return HtmlService.createHtmlOutputFromFile('Index')
+    .setTitle(CONFIG.APP_NAME)
+    .addMetaTag('viewport', 'width=device-width, initial-scale=1, viewport-fit=cover')
+    .setFaviconUrl(CONFIG.FAVICON_URL);
+}
+
+// ------------------------------------------------------------------------------------------------ public API
+
+/** Before sign-in: the app name and who can sign in (names only). */
+function api_publicInfo() {
+  return {
+    appName: CONFIG.APP_NAME,
+    members: table_('Members').items
+      .filter(m => bool_(m.Active) && m.CodeHash)
+      .map(m => ({ id: m.ID, name: m.Name }))
+      .sort((a, b) => a.name.localeCompare(b.name)),
+  };
+}
+
+function api_login(memberId, code) {
+  const cache = CacheService.getScriptCache();
+  const key = 'fail:' + memberId;
+  const fails = Number(cache.get(key) || 0);
+  if (fails >= 5) throw new Error('LOCKED');
+  const m = table_('Members').items.find(x => x.ID === memberId && bool_(x.Active));
+  if (!m || !m.CodeHash || codeHash_(m.CodeSalt, code) !== m.CodeHash) {
+    cache.put(key, String(fails + 1), 900);
+    throw new Error('BAD_CODE');
+  }
+  cache.remove(key);
+  return { token: makeToken_(m), me: memberView_(m, m) };
+}
+
+/** Everything the app needs after sign-in. */
+function api_bootstrap(token) {
+  return withUser_(token, me => ({
+    me: memberView_(me, me),
+    members: membersFor_(me),
+    tasks: tasksView_(),
+    settings: settingsView_(),
+    statuses: STATUSES,
+    priorities: PRIORITIES,
+    serverTime: iso_(),
+  }));
+}
+
+/** Tasks changed since `since` (an ISO time from an earlier call), plus the current member list. */
+function api_changes(token, since) {
+  return withUser_(token, me => ({
+    tasks: tasksView_().filter(t => !since || t.updatedAt > since),
+    archivedIds: table_('Tasks').items.filter(t => bool_(t.Archived) && (!since || t.UpdatedAt > since)).map(t => t.ID),
+    members: membersFor_(me),
+    serverTime: iso_(),
+  }));
+}
+
+/** Creates a task (no id) or updates the given fields of one (with id). Returns the saved task. */
+function api_saveTask(token, patch) {
+  return withUser_(token, me => withLock_(() => {
+    const T = table_('Tasks', true);
+    const now = iso_();
+    const existing = patch && patch.id ? T.items.find(t => t.ID === patch.id) : null;
+    if (patch && patch.id && !existing) throw new Error('NOT_FOUND');
+    const fields = cleanTaskPatch_(patch || {}, !existing);
+    const rec = existing ? Object.assign({}, existing) : {
+      ID: nextId_(T.items, 'T-'), Status: 'todo', Priority: 'medium', Blocked: false, Archived: false,
+      CreatedBy: me.ID, CreatedAt: now,
+    };
+    const before = existing ? taskView_(existing) : null;
+    Object.keys(fields).forEach(k => { rec[k] = fields[k]; });
+    if (fields.Assignees !== undefined) rec.AssigneeNames = namesOf_(fields.Assignees).join(', ');
+    if (fields.Status !== undefined) {
+      if (fields.Status === 'done' && (!before || before.status !== 'done')) rec.CompletedAt = now;
+      if (fields.Status !== 'done') rec.CompletedAt = '';
+    }
+    rec.UpdatedAt = now;
+    writeRecord_('Tasks', rec, existing);
+    const after = taskView_(rec);
+    logTaskChanges_(me, before, after);
+    notifyAssigned_(me, before, after);
+    return Object.assign(after, { comments: commentCount_(after.id) });
+  }));
+}
+
+/** Archive (or restore) a task. The creator or an admin. */
+function api_archiveTask(token, id, archived) {
+  return withUser_(token, me => withLock_(() => {
+    const t = table_('Tasks', true).items.find(x => x.ID === id);
+    if (!t) throw new Error('NOT_FOUND');
+    if (!bool_(me.Admin) && t.CreatedBy !== me.ID) throw new Error('FORBIDDEN');
+    const rec = Object.assign({}, t, { Archived: !!archived, UpdatedAt: iso_() });
+    writeRecord_('Tasks', rec, t);
+    log_(me, id, archived ? 'archived' : 'restored', '');
+    return taskView_(rec);
+  }));
+}
+
+/** Delete a task and its comments for good. Admins only; archiving is the normal way to remove a task. */
+function api_deleteTask(token, id) {
+  return withUser_(token, me => withLock_(() => {
+    requireAdmin_(me);
+    const T = table_('Tasks', true);
+    const t = T.items.find(x => x.ID === id);
+    if (!t) throw new Error('NOT_FOUND');
+    T.sh.deleteRow(t._row);
+    const C = table_('Comments', true);
+    C.items.filter(c => c.TaskID === id).map(c => c._row).sort((a, b) => b - a).forEach(r => C.sh.deleteRow(r));
+    resetMemo_('Tasks'); resetMemo_('Comments');
+    log_(me, id, 'deleted', t.Title);
+    return { id: id };
+  }));
+}
+
+/** Comments and history of one task. */
+function api_taskDetail(token, id) {
+  return withUser_(token, () => ({
+    comments: table_('Comments').items.filter(c => c.TaskID === id).map(commentView_)
+      .sort((a, b) => a.createdAt.localeCompare(b.createdAt)),
+    activity: table_('Activity').items.filter(a => a.TaskID === id)
+      .map(a => ({ time: a.Time, actor: a.ActorName, action: a.Action, details: a.Details }))
+      .sort((a, b) => b.time.localeCompare(a.time)).slice(0, 60),
+  }));
+}
+
+function api_addComment(token, taskId, text) {
+  return withUser_(token, me => withLock_(() => {
+    const body = str_(text).trim();
+    if (!body || body.length > 2000) throw new Error('BAD_INPUT:text');
+    const T = table_('Tasks', true);
+    const t = T.items.find(x => x.ID === taskId);
+    if (!t) throw new Error('NOT_FOUND');
+    const C = table_('Comments', true);
+    const c = { ID: nextId_(C.items, 'C-'), TaskID: taskId, AuthorID: me.ID, AuthorName: me.Name, Text: body, CreatedAt: iso_() };
+    writeRecord_('Comments', c, null);
+    writeRecord_('Tasks', Object.assign({}, t, { UpdatedAt: c.CreatedAt }), t);
+    log_(me, taskId, 'commented', body.slice(0, 120));
+    const to = split_(t.Assignees).concat([t.CreatedBy]).filter(id => id !== me.ID);
+    notify_(to, `${me.Name} commented on “${t.Title}”`, `<p><b>${esc_(me.Name)}</b>:</p><blockquote>${esc_(body)}</blockquote>`, t.ID);
+    return commentView_(c);
+  }));
+}
+
+/** Members change their own sign-in code. */
+function api_changeCode(token, current, next) {
+  return withUser_(token, me => withLock_(() => {
+    if (codeHash_(me.CodeSalt, current) !== me.CodeHash) throw new Error('BAD_CODE');
+    const n = normCode_(next);
+    if (n.length < 6 || n.length > 32) throw new Error('BAD_INPUT:code');
+    const M = table_('Members', true);
+    const m = M.items.find(x => x.ID === me.ID);
+    const salt = salt_();
+    const rec = Object.assign({}, m, { CodeSalt: salt, CodeHash: codeHash_(salt, n) });
+    writeRecord_('Members', rec, m);
+    return { token: makeToken_(rec) };
+  }));
+}
+
+/** Change your own email-notification preference. */
+function api_setNotify(token, notify) {
+  return withUser_(token, me => withLock_(() => {
+    const m = table_('Members', true).items.find(x => x.ID === me.ID);
+    writeRecord_('Members', Object.assign({}, m, { Notify: !!notify }), m);
+    return { notify: !!notify };
+  }));
+}
+
+// ------------------------------------------------------------------------------------------------ admin API
+
+/** Create (no id) or update a member. A new member gets a sign-in code, returned once. */
+function api_saveMember(token, input) {
+  return withUser_(token, me => withLock_(() => {
+    requireAdmin_(me);
+    const M = table_('Members', true);
+    const existing = input && input.id ? M.items.find(m => m.ID === input.id) : null;
+    if (input && input.id && !existing) throw new Error('NOT_FOUND');
+    const name = str_(input.name).trim();
+    const email = str_(input.email).trim().toLowerCase();
+    if (!name || name.length > 80) throw new Error('BAD_INPUT:name');
+    if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) throw new Error('BAD_INPUT:email');
+    if (email && M.items.some(m => m.Email && String(m.Email).toLowerCase() === email && (!existing || m.ID !== existing.ID))) {
+      throw new Error('BAD_INPUT:email-taken');
+    }
+    const admin = !!input.admin, active = input.active !== false;
+    if (existing && existing.ID === me.ID && (!admin || !active)) throw new Error('BAD_INPUT:self');
+    let code = null;
+    const rec = existing ? Object.assign({}, existing) : { ID: nextId_(M.items, 'M-'), CreatedAt: iso_() };
+    Object.assign(rec, {
+      Name: name, Email: email, Role: str_(input.role).trim().slice(0, 60), Team: str_(input.team).trim().slice(0, 60),
+      Admin: admin, Active: active, Notify: input.notify !== false,
+    });
+    if (!existing) {
+      code = newCode_();
+      rec.CodeSalt = salt_();
+      rec.CodeHash = codeHash_(rec.CodeSalt, code);
+    }
+    writeRecord_('Members', rec, existing);
+    if (existing && !active) log_(me, '', 'member deactivated', name);
+    if (!existing) log_(me, '', 'member added', name);
+    if (code && input.sendCode && email) sendCode_(rec, code);
+    return { member: memberView_(rec, me), code: code };
+  }));
+}
+
+/** Give a member a new sign-in code (signs them out everywhere). Returned once; optionally emailed. */
+function api_resetCode(token, memberId, sendByEmail) {
+  return withUser_(token, me => withLock_(() => {
+    requireAdmin_(me);
+    const M = table_('Members', true);
+    const m = M.items.find(x => x.ID === memberId);
+    if (!m) throw new Error('NOT_FOUND');
+    const code = newCode_();
+    const salt = salt_();
+    const rec = Object.assign({}, m, { CodeSalt: salt, CodeHash: codeHash_(salt, code) });
+    writeRecord_('Members', rec, m);
+    log_(me, '', 'code reset', m.Name);
+    if (sendByEmail && rec.Email) sendCode_(rec, code);
+    return { code: code };
+  }));
+}
+
+function api_saveSettings(token, input) {
+  return withUser_(token, me => withLock_(() => {
+    requireAdmin_(me);
+    const teams = (Array.isArray(input.teams) ? input.teams : []).map(t => str_(t).trim()).filter(Boolean).slice(0, 30);
+    const hour = Math.max(0, Math.min(23, Number(input.digestHour) || 8));
+    setSetting_('teams', teams.join(', '));
+    setSetting_('digest', !!input.digest);
+    setSetting_('digestHour', hour);
+    installDigest_(!!input.digest, hour);
+    return settingsView_();
+  }));
+}
+
+// ------------------------------------------------------------------------------------------------ reminders
+
+/** Runs every morning when reminders are on: emails each member their overdue tasks and those due within 2 days. */
+function dailyDigest() {
+  const today = today_();
+  const soon = addDays_(today, 2);
+  const open = table_('Tasks').items.filter(t => !bool_(t.Archived) && t.Status !== 'done' && t.Due && t.Due <= soon);
+  table_('Members').items.filter(m => bool_(m.Active) && bool_(m.Notify) && m.Email).forEach(m => {
+    const mine = open.filter(t => split_(t.Assignees).indexOf(m.ID) >= 0).sort((a, b) => a.Due.localeCompare(b.Due));
+    if (!mine.length) return;
+    const rows = mine.map(t => `<li><b>${esc_(t.Title)}</b> — ${t.Due < today ? '<span style="color:#C0262D">overdue</span>' : t.Due === today ? 'due today' : 'due ' + t.Due}</li>`).join('');
+    sendMail_(m.Email, `${CONFIG.APP_NAME}: ${mine.length} task${mine.length > 1 ? 's' : ''} need${mine.length > 1 ? '' : 's'} you`, `<p>Hi ${esc_(m.Name)},</p><ul>${rows}</ul>`);
+  });
+}
+
+function installDigest_(enable, hour) {
+  ScriptApp.getProjectTriggers().filter(t => t.getHandlerFunction() === 'dailyDigest').forEach(t => ScriptApp.deleteTrigger(t));
+  if (enable) ScriptApp.newTrigger('dailyDigest').timeBased().atHour(hour).everyDays(1).inTimezone(CONFIG.TIME_ZONE).create();
+}
+
+// ------------------------------------------------------------------------------------------------ setup helpers (run from the editor)
+
+/**
+ * First installation only, for a brand-new spreadsheet with no admin: creates an admin and writes their sign-in code
+ * to the execution log (View → Logs). Edit the name and email below, select setupFirstAdmin, press Run.
+ */
+function setupFirstAdmin() {
+  const name = 'Admin', email = '';
+  const M = table_('Members', true);
+  if (M.items.some(m => bool_(m.Admin) && m.CodeHash)) throw new Error('An admin already exists. Ask them to reset your code.');
+  const code = newCode_();
+  const salt = salt_();
+  writeRecord_('Members', { ID: nextId_(M.items, 'M-'), Name: name, Email: email, Role: '', Team: '', Admin: true, Active: true,
+    Notify: true, CodeSalt: salt, CodeHash: codeHash_(salt, code), CreatedAt: iso_() }, null);
+  Logger.log('Admin sign-in code: ' + code);
+}
+
+// ------------------------------------------------------------------------------------------------ views
+
+function taskView_(t) {
+  return {
+    id: t.ID, title: str_(t.Title), description: str_(t.Description), status: STATUSES.indexOf(t.Status) >= 0 ? t.Status : 'todo',
+    priority: PRIORITIES.indexOf(t.Priority) >= 0 ? t.Priority : 'medium', team: str_(t.Team), assignees: split_(t.Assignees),
+    due: str_(t.Due), labels: split_(t.Labels), checklist: parseChecklist_(t.Checklist), blocked: bool_(t.Blocked),
+    createdBy: str_(t.CreatedBy), createdAt: str_(t.CreatedAt), updatedAt: str_(t.UpdatedAt), completedAt: str_(t.CompletedAt),
+    archived: bool_(t.Archived),
+  };
+}
+
+function tasksView_() {
+  const counts = {};
+  table_('Comments').items.forEach(c => { counts[c.TaskID] = (counts[c.TaskID] || 0) + 1; });
+  return table_('Tasks').items.filter(t => !bool_(t.Archived))
+    .map(t => Object.assign(taskView_(t), { comments: counts[t.ID] || 0 }));
+}
+
+function memberView_(m, viewer) {
+  const full = bool_(viewer.Admin) || viewer.ID === m.ID;
+  return {
+    id: m.ID, name: str_(m.Name), role: str_(m.Role), team: str_(m.Team), admin: bool_(m.Admin), active: bool_(m.Active),
+    email: full ? str_(m.Email) : '', notify: full ? bool_(m.Notify) : false, hasCode: !!m.CodeHash,
+  };
+}
+
+function membersFor_(viewer) {
+  return table_('Members').items.filter(m => bool_(viewer.Admin) || bool_(m.Active)).map(m => memberView_(m, viewer));
+}
+
+function commentView_(c) {
+  return { id: c.ID, taskId: c.TaskID, authorId: c.AuthorID, author: str_(c.AuthorName), text: str_(c.Text), createdAt: str_(c.CreatedAt) };
+}
+
+function settingsView_() {
+  return {
+    teams: split_(getSetting_('teams')),
+    digest: bool_(getSetting_('digest')),
+    digestHour: Number(getSetting_('digestHour')) || 8,
+    appName: CONFIG.APP_NAME,
+    appUrl: appUrl_(),
+    sheetUrl: ss_().getUrl(),
+  };
+}
+
+// ------------------------------------------------------------------------------------------------ validation
+
+function cleanTaskPatch_(p, isNew) {
+  const out = {};
+  const has = k => Object.prototype.hasOwnProperty.call(p, k);
+  if (isNew || has('title')) {
+    const v = str_(p.title).trim();
+    if (!v || v.length > 200) throw new Error('BAD_INPUT:title');
+    out.Title = v;
+  }
+  if (has('description')) {
+    const v = str_(p.description);
+    if (v.length > 5000) throw new Error('BAD_INPUT:description');
+    out.Description = v;
+  }
+  if (has('status')) {
+    if (STATUSES.indexOf(p.status) < 0) throw new Error('BAD_INPUT:status');
+    out.Status = p.status;
+  }
+  if (has('priority')) {
+    if (PRIORITIES.indexOf(p.priority) < 0) throw new Error('BAD_INPUT:priority');
+    out.Priority = p.priority;
+  }
+  if (has('team')) out.Team = str_(p.team).trim().slice(0, 60);
+  if (has('assignees')) {
+    const ids = table_('Members').items.filter(m => bool_(m.Active)).map(m => m.ID);
+    const list = (Array.isArray(p.assignees) ? p.assignees : []).map(String);
+    if (list.some(id => ids.indexOf(id) < 0)) throw new Error('BAD_INPUT:assignees');
+    out.Assignees = list.filter((id, i) => list.indexOf(id) === i).join(',');
+  }
+  if (has('due')) {
+    const v = str_(p.due);
+    if (v && !/^\d{4}-\d{2}-\d{2}$/.test(v)) throw new Error('BAD_INPUT:due');
+    out.Due = v;
+  }
+  if (has('labels')) {
+    const list = (Array.isArray(p.labels) ? p.labels : []).map(l => str_(l).trim().replace(/,/g, ' ')).filter(Boolean);
+    if (list.length > 10 || list.some(l => l.length > 30)) throw new Error('BAD_INPUT:labels');
+    out.Labels = list.join(',');
+  }
+  if (has('checklist')) {
+    const list = Array.isArray(p.checklist) ? p.checklist : [];
+    if (list.length > 50) throw new Error('BAD_INPUT:checklist');
+    out.Checklist = JSON.stringify(list.map(i => ({ t: str_(i && i.t).trim().slice(0, 200), d: !!(i && i.d) })).filter(i => i.t));
+  }
+  if (has('blocked')) out.Blocked = !!p.blocked;
+  return out;
+}
+
+// ------------------------------------------------------------------------------------------------ activity and notifications
+
+function logTaskChanges_(me, before, after) {
+  if (!before) return log_(me, after.id, 'created', after.title);
+  const changes = [];
+  if (before.title !== after.title) changes.push('title');
+  if (before.status !== after.status) changes.push(`status: ${before.status} → ${after.status}`);
+  if (before.priority !== after.priority) changes.push(`priority: ${before.priority} → ${after.priority}`);
+  if (before.due !== after.due) changes.push(`due: ${before.due || '—'} → ${after.due || '—'}`);
+  if (before.team !== after.team) changes.push(`team: ${before.team || '—'} → ${after.team || '—'}`);
+  if (before.assignees.join() !== after.assignees.join()) changes.push('assignees: ' + (namesOf_(after.assignees).join(', ') || '—'));
+  if (before.blocked !== after.blocked) changes.push(after.blocked ? 'blocked' : 'unblocked');
+  if (before.description !== after.description) changes.push('description');
+  if (JSON.stringify(before.checklist) !== JSON.stringify(after.checklist)) {
+    changes.push(`checklist ${after.checklist.filter(i => i.d).length}/${after.checklist.length}`);
+  }
+  if (before.labels.join() !== after.labels.join()) changes.push('labels');
+  if (changes.length) log_(me, after.id, 'updated', changes.join(' · '));
+}
+
+function notifyAssigned_(me, before, after) {
+  const added = after.assignees.filter(id => !before || before.assignees.indexOf(id) < 0).filter(id => id !== me.ID);
+  if (!added.length) return;
+  const due = after.due ? `<p>Due: <b>${after.due}</b></p>` : '';
+  const desc = after.description ? `<p>${esc_(after.description).replace(/\n/g, '<br>')}</p>` : '';
+  notify_(added, `${me.Name} assigned you: “${after.title}”`, `${desc}${due}`, after.id);
+}
+
+function notify_(memberIds, subject, html, taskId) {
+  const members = table_('Members').items;
+  memberIds.filter((id, i) => memberIds.indexOf(id) === i).forEach(id => {
+    const m = members.find(x => x.ID === id);
+    if (m && bool_(m.Active) && bool_(m.Notify) && m.Email) sendMail_(m.Email, subject, html, taskId);
+  });
+}
+
+function sendCode_(m, code) {
+  sendMail_(m.Email, `Your ${CONFIG.APP_NAME} sign-in code`,
+    `<p>Hi ${esc_(m.Name)},</p><p>Your sign-in code is <b style="font-size:18px;letter-spacing:2px">${code}</b>.</p>` +
+    '<p>Open the app, choose your name and enter the code. You can change it from the menu after signing in.</p>');
+}
+
+function sendMail_(to, subject, html, taskId) {
+  try {
+    if (MailApp.getRemainingDailyQuota() < 1) return;
+    const link = appUrl_() ? `<p><a href="${appUrl_()}${taskId ? '#task=' + taskId : ''}" style="background:#FFC21A;color:#0B1530;padding:10px 16px;border-radius:999px;text-decoration:none;font-weight:bold">Open ${esc_(CONFIG.APP_NAME)}</a></p>` : '';
+    MailApp.sendEmail({
+      to: to, subject: subject, name: CONFIG.APP_NAME,
+      htmlBody: `<div style="font-family:Arial,sans-serif;color:#0B1530;max-width:560px">${html}${link}<p style="color:#5A6478;font-size:12px">${esc_(CONFIG.APP_NAME)} · IEEE IES HU</p></div>`,
+    });
+  } catch (e) {
+    console.error('mail failed', e); // never block saving because of email
+  }
+}
+
+function log_(me, taskId, action, details) {
+  writeRecord_('Activity', { Time: iso_(), ActorID: me.ID, ActorName: me.Name, TaskID: taskId, Action: action, Details: str_(details).slice(0, 500) }, null);
+}
+
+// ------------------------------------------------------------------------------------------------ auth
+
+function withUser_(token, fn) {
+  const me = verifyToken_(token);
+  return fn(me);
+}
+
+function requireAdmin_(me) {
+  if (!bool_(me.Admin)) throw new Error('FORBIDDEN');
+}
+
+function makeToken_(m) {
+  const payload = [m.ID, Date.now() + CONFIG.SESSION_DAYS * 864e5, String(m.CodeHash).slice(0, 12)].join('|');
+  return payload + '|' + hmac_(payload);
+}
+
+/** A token is "memberId|expiry|codeHashPrefix|signature". Resetting a member's code signs them out everywhere. */
+function verifyToken_(token) {
+  const parts = str_(token).split('|');
+  if (parts.length !== 4) throw new Error('AUTH');
+  const payload = parts.slice(0, 3).join('|');
+  if (hmac_(payload) !== parts[3] || Number(parts[1]) < Date.now()) throw new Error('AUTH');
+  const m = table_('Members').items.find(x => x.ID === parts[0]);
+  if (!m || !bool_(m.Active) || String(m.CodeHash).slice(0, 12) !== parts[2]) throw new Error('AUTH');
+  return m;
+}
+
+function codeHash_(salt, code) { return sha256_(salt + ':' + normCode_(code)); }
+function normCode_(c) { return str_(c).toUpperCase().replace(/[^A-Z0-9]/g, ''); }
+function salt_() { return Utilities.getUuid().replace(/-/g, ''); }
+
+function newCode_() {
+  const bytes = Utilities.computeDigest(Utilities.DigestAlgorithm.SHA_256, Utilities.getUuid() + Utilities.getUuid(), Utilities.Charset.UTF_8);
+  let s = '';
+  for (let i = 0; i < 8; i++) s += CODE_ALPHABET[(bytes[i] & 255) % CODE_ALPHABET.length];
+  return s.slice(0, 4) + '-' + s.slice(4);
+}
+
+function secret_() {
+  const props = PropertiesService.getScriptProperties();
+  let s = props.getProperty('TOKEN_SECRET');
+  if (!s) { s = Utilities.getUuid() + Utilities.getUuid(); props.setProperty('TOKEN_SECRET', s); }
+  return s;
+}
+
+function hex_(bytes) { return bytes.map(b => ('0' + (b & 255).toString(16)).slice(-2)).join(''); }
+function sha256_(s) { return hex_(Utilities.computeDigest(Utilities.DigestAlgorithm.SHA_256, s, Utilities.Charset.UTF_8)); }
+function hmac_(s) { return hex_(Utilities.computeHmacSha256Signature(s, secret_(), Utilities.Charset.UTF_8)); }
+
+// ------------------------------------------------------------------------------------------------ spreadsheet as a database
+
+// Per-execution cache. Apps Script starts every call with fresh globals, so this never goes stale between calls.
+var MEMO_ = {};
+
+function ss_() {
+  if (!MEMO_.ss) MEMO_.ss = CONFIG.SHEET_ID ? SpreadsheetApp.openById(CONFIG.SHEET_ID) : SpreadsheetApp.getActiveSpreadsheet();
+  return MEMO_.ss;
+}
+function resetMemo_(name) { delete MEMO_['t:' + name]; }
+
+/** Reads a tab into objects keyed by column name. `fresh` re-reads it (use inside the lock before writing). */
+function table_(name, fresh) {
+  const key = 't:' + name;
+  if (MEMO_[key] && !fresh) return MEMO_[key];
+  ensureSchema_();
+  const sh = ss_().getSheetByName(name);
+  const lastRow = sh.getLastRow(), lastCol = sh.getLastColumn();
+  const header = sh.getRange(1, 1, 1, lastCol).getValues()[0].map(h => String(h).trim());
+  const rows = lastRow > 1 ? sh.getRange(2, 1, lastRow - 1, lastCol).getValues() : [];
+  const items = [];
+  rows.forEach((r, i) => {
+    if (r.every(v => v === '' || v === null)) return; // blank rows left by people editing the sheet
+    const o = { _row: i + 2, _raw: r };
+    SCHEMA[name].forEach(c => { const j = header.indexOf(c); o[c] = j < 0 ? '' : cell_(r[j]); });
+    items.push(o);
+  });
+  return (MEMO_[key] = { sh: sh, header: header, items: items });
+}
+
+/** Writes one record (insert when `existing` is null). Unknown columns people added to the sheet are preserved. */
+function writeRecord_(name, rec, existing) {
+  const T = table_(name);
+  const row = existing ? existing._raw.slice() : T.header.map(() => '');
+  SCHEMA[name].forEach(c => {
+    const j = T.header.indexOf(c);
+    if (j >= 0 && rec[c] !== undefined) row[j] = toCell_(rec[c]);
+  });
+  if (existing) {
+    T.sh.getRange(existing._row, 1, 1, row.length).setValues([row]);
+    const i = T.items.indexOf(existing);
+    T.items[i] = Object.assign({}, rec, { _row: existing._row, _raw: row });
+  } else {
+    T.sh.appendRow(row);
+    T.items.push(Object.assign({}, rec, { _row: T.sh.getLastRow(), _raw: row }));
+  }
+}
+
+/** Creates missing tabs and columns, and formats them. Cached, so it costs nothing on most calls. */
+function ensureSchema_() {
+  if (MEMO_.schemaOk) return;
+  const cache = CacheService.getScriptCache();
+  const cacheKey = 'schema-v1:' + ss_().getId();
+  if (cache.get(cacheKey)) { MEMO_.schemaOk = true; return; }
+  const ss = ss_();
+  Object.keys(SCHEMA).forEach(name => {
+    let sh = ss.getSheetByName(name);
+    if (!sh) sh = ss.insertSheet(name);
+    const lastCol = Math.max(sh.getLastColumn(), 1);
+    const header = sh.getRange(1, 1, 1, lastCol).getValues()[0].map(h => String(h).trim());
+    const used = header.filter(Boolean).length;
+    const missing = SCHEMA[name].filter(c => header.indexOf(c) < 0);
+    if (missing.length) sh.getRange(1, used + 1, 1, missing.length).setValues([missing]);
+    const width = used + missing.length;
+    sh.setFrozenRows(1);
+    sh.getRange(1, 1, 1, width).setFontWeight('bold').setBackground('#0B1530').setFontColor('#FFFFFF');
+    const full = sh.getRange(1, 1, 1, width).getValues()[0].map(String);
+    const rows = Math.max(sh.getMaxRows() - 1, 1);
+    full.forEach((h, i) => {
+      const col = sh.getRange(2, i + 1, rows, 1);
+      if (BOOL_COLUMNS.indexOf(h) >= 0) col.setDataValidation(SpreadsheetApp.newDataValidation().requireCheckbox().build());
+      else if (h !== 'Value') col.setNumberFormat('@'); // keep dates, ids and codes as text
+    });
+    if (name === 'Tasks') {
+      const status = full.indexOf('Status') + 1, prio = full.indexOf('Priority') + 1;
+      sh.getRange(2, status, rows, 1).setDataValidation(SpreadsheetApp.newDataValidation().requireValueInList(STATUSES, true).build());
+      sh.getRange(2, prio, rows, 1).setDataValidation(SpreadsheetApp.newDataValidation().requireValueInList(PRIORITIES, true).build());
+    }
+    if (name === 'Members') {
+      // The code columns are hashes, not codes; hide them so nobody worries about them.
+      ['CodeSalt', 'CodeHash'].forEach(c => { const j = full.indexOf(c); if (j >= 0) sh.hideColumns(j + 1); });
+    }
+  });
+  const settings = ss.getSheetByName('Settings');
+  const keys = settings.getLastRow() > 1 ? settings.getRange(2, 1, settings.getLastRow() - 1, 1).getValues().map(r => String(r[0])) : [];
+  DEFAULT_SETTINGS.filter(s => keys.indexOf(s[0]) < 0).forEach(s => settings.appendRow(s));
+  cache.put(cacheKey, '1', 21600);
+  MEMO_.schemaOk = true;
+}
+
+function getSetting_(key) {
+  const s = table_('Settings').items.find(x => x.Key === key);
+  return s ? s.Value : (DEFAULT_SETTINGS.find(d => d[0] === key) || [])[1];
+}
+
+function setSetting_(key, value) {
+  const S = table_('Settings', true);
+  const s = S.items.find(x => x.Key === key);
+  writeRecord_('Settings', Object.assign({}, s || { Key: key, Notes: '' }, { Value: value }), s || null);
+}
+
+function withLock_(fn) {
+  const lock = LockService.getScriptLock();
+  lock.waitLock(20000);
+  try { return fn(); } finally { lock.releaseLock(); }
+}
+
+function nextId_(items, prefix) {
+  const max = items.reduce((n, x) => {
+    const m = /^[A-Z]+-(\d+)$/.exec(String(x.ID));
+    return m ? Math.max(n, Number(m[1])) : n;
+  }, 0);
+  return prefix + String(max + 1).padStart(4, '0');
+}
+
+// ------------------------------------------------------------------------------------------------ small helpers
+
+function cell_(v) {
+  if (Object.prototype.toString.call(v) === '[object Date]') {
+    // Someone typed a date into the sheet by hand: keep calendar dates as YYYY-MM-DD, times as ISO.
+    const day = Utilities.formatDate(v, CONFIG.TIME_ZONE, 'yyyy-MM-dd');
+    const time = Utilities.formatDate(v, CONFIG.TIME_ZONE, 'HH:mm:ss');
+    return time === '00:00:00' ? day : v.toISOString();
+  }
+  // A cell written as text by toCell_ may come back with its protective apostrophe.
+  if (typeof v === 'string' && /^'[=+\-@]/.test(v)) return v.slice(1);
+  return v;
+}
+
+/** Text that starts like a formula is stored as text, so nobody can run spreadsheet formulas through the app. */
+function toCell_(v) {
+  if (typeof v === 'string' && /^[=+\-@]/.test(v)) return "'" + v;
+  return v;
+}
+
+function bool_(v) { return v === true || String(v).toUpperCase() === 'TRUE'; }
+function str_(v) { return v === null || v === undefined ? '' : String(v); }
+function split_(v) { return str_(v).split(',').map(s => s.trim()).filter(Boolean); }
+function iso_() { return new Date().toISOString(); }
+function today_() { return Utilities.formatDate(new Date(), CONFIG.TIME_ZONE, 'yyyy-MM-dd'); }
+function addDays_(day, n) {
+  const d = new Date(day + 'T12:00:00Z');
+  d.setUTCDate(d.getUTCDate() + n);
+  return d.toISOString().slice(0, 10);
+}
+function esc_(s) { return str_(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
+function namesOf_(ids) {
+  const list = Array.isArray(ids) ? ids : split_(ids);
+  const members = table_('Members').items;
+  return list.map(id => (members.find(m => m.ID === id) || {}).Name).filter(Boolean);
+}
+function parseChecklist_(v) {
+  try { const a = JSON.parse(str_(v) || '[]'); return Array.isArray(a) ? a.map(i => ({ t: str_(i.t), d: !!i.d })) : []; } catch (e) { return []; }
+}
+function commentCount_(taskId) { return table_('Comments').items.filter(c => c.TaskID === taskId).length; }
+function appUrl_() { try { return ScriptApp.getService().getUrl() || ''; } catch (e) { return ''; } }

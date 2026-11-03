@@ -68,6 +68,7 @@ supabase/migrations/     Database schema, in order. The database is changed only
 scripts/                 build-static.mjs (backup build), snapshot.mjs (single-file preview)
 tests/unit/              Vitest: logic, content integrity, NFC guard, form options vs database
 tests/e2e.mjs            Playwright + axe: every page, both widths, forms, accessibility, headers
+tools/task-manager/      The committee's task manager: Google Apps Script web app + Google Sheet (see its README)
 docs/                    This documentation, decisions, design spec, brand assets, project history
 ```
 

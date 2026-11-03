@@ -11,5 +11,6 @@ Before reversing one, read it: the reason may still hold. To change a decision, 
 | [0004](0004-insert-only-forms.md) | Forms write to an insert-only Supabase table |
 | [0005](0005-two-hosts.md) | A primary host and an independent static backup |
 | [0006](0006-desktop-scale.md) | Desktop renders at a 75% scale and grows with the screen |
+| [0007](0007-task-manager-on-sheets.md) | The team task manager runs on Apps Script with a Google Sheet as database |
 
 Format: **Context** (the situation), **Decision**, **Consequences** (what it costs and what it buys).

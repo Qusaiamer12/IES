@@ -8,6 +8,7 @@ society's 75th year). Every committee member has a page at `/m/<slug>`, and that
 | **Live site** | https://ies-hu.vercel.app |
 | **Backup copy** | https://ies-hu.onrender.com (independent host, same content) |
 | **Form submissions** | Supabase project `ies-hu` → Table Editor → `join_requests`, `contact_messages` |
+| **Team task manager** | Google Apps Script + Google Sheet → [tools/task-manager](tools/task-manager/README.md) |
 
 This repository is meant to be inherited, term after term. Start here:
 

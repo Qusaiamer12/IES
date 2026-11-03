@@ -14,7 +14,10 @@
     "build:static": "node scripts/build-static.mjs",
     "test": "vitest run",
     "content:check": "vitest run tests/unit/content.test.ts",
-    "content:schemas": "UPDATE_SCHEMAS=1 vitest run tests/unit/schemas.test.ts"
+    "content:schemas": "UPDATE_SCHEMAS=1 vitest run tests/unit/schemas.test.ts",
+    "tasks:dev": "node tools/task-manager/dev/server.mjs",
+    "tasks:test": "node --test --test-concurrency=1 tools/task-manager/dev/backend.test.mjs tools/task-manager/dev/ui.test.mjs",
+    "tasks:build": "node tools/task-manager/build.mjs"
   },
   "engines": {
     "node": ">=22"

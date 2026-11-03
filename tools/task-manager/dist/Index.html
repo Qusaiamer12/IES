@@ -1,0 +1,958 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<title>IES HU Tasks</title>
+<base target="_top">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap">
+<style>
+:root{
+  --navy:#0B1530;--navy-2:#16244A;--ink:#0B1530;--ink-2:#4A5468;--ink-3:#6B7385;--line:#DDE2EA;--paper:#F4F6FA;--white:#fff;
+  --gold:#FFC21A;--orange:#FF6B1A;--blue:#1449D6;--green:#13795B;--red:#C0262D;
+  --p-low:#6B7385;--p-medium:#1449D6;--p-high:#E2570B;--p-urgent:#C0262D;
+  --radius:14px;--shadow:0 1px 2px rgba(11,21,48,.06),0 6px 18px rgba(11,21,48,.06);
+  --font:'IBM Plex Sans Arabic',system-ui,-apple-system,'Segoe UI',sans-serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--paper);color:var(--ink);font:15px/1.5 var(--font);-webkit-font-smoothing:antialiased}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+a{color:var(--blue)}
+:focus-visible{outline:3px solid var(--blue);outline-offset:2px;border-radius:6px}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.hidden{display:none!important}
+
+/* ---------- buttons, inputs */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:40px;padding:8px 16px;border-radius:999px;border:1.5px solid var(--navy);background:var(--white);color:var(--navy);font-weight:600;white-space:nowrap}
+.btn:hover{background:var(--paper)}
+.btn-primary{background:var(--gold);border-color:var(--gold)}
+.btn-primary:hover{background:#FFD45C}
+.btn-dark{background:var(--navy);color:#fff}
+.btn-dark:hover{background:var(--navy-2)}
+.btn-ghost{border-color:transparent;background:transparent}
+.btn-danger{border-color:var(--red);color:var(--red)}
+.btn-sm{min-height:32px;padding:4px 12px;font-size:13px}
+.btn:disabled{opacity:.5;cursor:default}
+.icon-btn{display:inline-grid;place-items:center;width:38px;height:38px;border-radius:999px;border:0;background:transparent;color:inherit}
+.icon-btn:hover{background:rgba(11,21,48,.07)}
+.field{display:flex;flex-direction:column;gap:6px}
+.field>span{font-size:13px;font-weight:600;color:var(--ink-2)}
+.input,select.input,textarea.input{width:100%;min-height:40px;padding:8px 12px;border:1.5px solid var(--line);border-radius:10px;background:#fff}
+.input:focus{border-color:var(--blue);outline:none}
+textarea.input{min-height:96px;resize:vertical}
+.check{display:inline-flex;align-items:center;gap:8px;cursor:pointer}
+.check input{width:18px;height:18px;accent-color:var(--navy)}
+
+/* ---------- layout */
+.topbar{position:sticky;top:0;z-index:20;background:var(--navy);color:#fff}
+.topbar-in{display:flex;align-items:center;gap:12px;padding:10px 20px;max-width:1500px;margin:0 auto}
+.brand{display:flex;align-items:center;gap:10px;font-weight:700;letter-spacing:.2px;white-space:nowrap}
+.brand-mark{display:grid;place-items:center;width:34px;height:34px;border-radius:10px;background:var(--gold);color:var(--navy);font-weight:800;font-size:13px}
+.brand small{display:block;font-weight:500;color:#B9C3D6;font-size:12px;line-height:1.1}
+.tabs{display:flex;gap:4px;margin-inline-start:12px;overflow-x:auto;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tab{border:0;background:transparent;color:#C9D2E3;padding:8px 14px;border-radius:999px;font-weight:600;white-space:nowrap}
+.tab:hover{color:#fff;background:rgba(255,255,255,.08)}
+.tab[aria-current="page"]{background:#fff;color:var(--navy)}
+.top-actions{margin-inline-start:auto;display:flex;align-items:center;gap:8px}
+.topbar .icon-btn:hover{background:rgba(255,255,255,.12)}
+.avatar{display:inline-grid;place-items:center;width:30px;height:30px;border-radius:999px;color:#fff;font-size:12px;font-weight:700;flex:none;border:2px solid #fff}
+.avatars{display:flex}
+.avatars .avatar{margin-inline-start:-8px}
+.avatars .avatar:first-child{margin-inline-start:0}
+.main{max-width:1500px;margin:0 auto;padding:18px 20px 90px}
+.toolbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:16px}
+.toolbar .input{width:auto;min-width:150px;min-height:38px}
+.toolbar .search{flex:1 1 220px;max-width:340px}
+.page-title{font-size:22px;margin:0 0 14px;font-weight:700}
+.muted{color:var(--ink-3)}
+.empty{padding:40px 20px;text-align:center;color:var(--ink-3);border:2px dashed var(--line);border-radius:var(--radius);background:#fff}
+
+/* ---------- board */
+.board{display:grid;grid-template-columns:repeat(4,minmax(240px,1fr));gap:14px;align-items:start}
+.col{background:#E9EDF4;border-radius:var(--radius);padding:10px;min-height:200px;transition:background .15s}
+.col.drop{background:#DCE6FB;outline:2px dashed var(--blue)}
+.col-head{display:flex;align-items:center;gap:8px;padding:4px 6px 10px;font-weight:700}
+.col-head .dot{width:10px;height:10px;border-radius:99px}
+.col-head .count{margin-inline-start:auto;background:#fff;border-radius:999px;padding:0 9px;font-size:13px;color:var(--ink-2)}
+.col-add{width:100%;border:1.5px dashed #B8C2D3;background:transparent;border-radius:10px;padding:8px;color:var(--ink-2);font-weight:600;margin-top:6px}
+.col-add:hover{background:#fff}
+.cards{display:flex;flex-direction:column;gap:10px}
+.card{position:relative;background:#fff;border-radius:12px;padding:12px 12px 10px;box-shadow:var(--shadow);border-inline-start:4px solid var(--p-medium);cursor:pointer;text-align:start;width:100%;border-top:0;border-bottom:0;border-inline-end:0}
+.card:hover{box-shadow:0 2px 4px rgba(11,21,48,.08),0 10px 24px rgba(11,21,48,.1)}
+.card.dragging{opacity:.4}
+.card h3{margin:4px 0 8px;font-size:15px;line-height:1.35;font-weight:600;overflow-wrap:anywhere}
+.card.done h3{text-decoration:line-through;color:var(--ink-3)}
+.p-low{border-inline-start-color:var(--p-low)}.p-medium{border-inline-start-color:var(--p-medium)}.p-high{border-inline-start-color:var(--p-high)}.p-urgent{border-inline-start-color:var(--p-urgent)}
+.card-top,.card-meta{display:flex;flex-wrap:wrap;align-items:center;gap:6px}
+.card-meta{font-size:12.5px;color:var(--ink-3);justify-content:space-between}
+.meta-items{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.meta-items span{display:inline-flex;align-items:center;gap:4px}
+.chip{display:inline-flex;align-items:center;gap:4px;padding:1px 9px;border-radius:999px;background:var(--paper);color:var(--ink-2);font-size:12px;font-weight:600}
+.chip.blocked{background:#FDE8E9;color:var(--red)}
+.chip.label{background:#EEF2FF;color:#3346A6}
+.due.overdue{color:var(--red);font-weight:700}
+.due.today{color:#A84306;font-weight:700}
+
+/* ---------- list */
+.table-wrap{background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{padding:10px 12px;text-align:start;border-bottom:1px solid var(--line);vertical-align:middle}
+th{font-size:12.5px;color:var(--ink-2);font-weight:700;background:#FAFBFD;white-space:nowrap}
+th button{border:0;background:transparent;font-weight:700;color:inherit;padding:0}
+tbody tr{cursor:pointer}
+tbody tr:hover{background:#F7F9FD}
+.prio{display:inline-flex;align-items:center;gap:6px;font-weight:600}
+.prio i{width:8px;height:8px;border-radius:99px;display:inline-block}
+.status-pill{display:inline-block;padding:2px 10px;border-radius:999px;font-size:12.5px;font-weight:700}
+.st-todo{background:#EEF1F6;color:#4A5468}.st-doing{background:#E3ECFF;color:#1449D6}.st-review{background:#FFF1D6;color:#8A5A00}.st-done{background:#DFF3EA;color:#13795B}
+
+/* ---------- my tasks */
+.group{margin-bottom:22px}
+.group h2{font-size:16px;margin:0 0 10px;display:flex;align-items:center;gap:8px}
+.group h2 .count{background:#fff;border-radius:999px;padding:0 9px;font-size:13px;color:var(--ink-2)}
+.grid-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px}
+
+/* ---------- calendar */
+.cal-head{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.cal-head h2{margin:0;font-size:18px;min-width:170px;text-align:center}
+.cal{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px}
+.cal .dow{font-size:12px;font-weight:700;color:var(--ink-2);text-align:center;padding:4px}
+.day{min-height:104px;background:#fff;border-radius:10px;padding:6px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:4px}
+.day.other{opacity:.45}
+.day.today{outline:2px solid var(--gold)}
+.day .n{font-size:12px;font-weight:700;color:var(--ink-3)}
+.day button{border:0;text-align:start;font-size:12px;padding:2px 6px;border-radius:6px;background:var(--paper);overflow:hidden;white-space:nowrap;text-overflow:ellipsis;border-inline-start:3px solid var(--p-medium)}
+.day button.is-done{text-decoration:line-through;opacity:.6}
+
+/* ---------- dashboard */
+.kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:16px}
+.kpi{background:#fff;border-radius:var(--radius);padding:16px;box-shadow:var(--shadow)}
+.kpi b{display:block;font-size:30px;line-height:1.1}
+.kpi span{color:var(--ink-2);font-size:13px;font-weight:600}
+.kpi.warn b{color:var(--red)}
+.panels{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.panel{background:#fff;border-radius:var(--radius);padding:16px;box-shadow:var(--shadow)}
+.panel h2{font-size:16px;margin:0 0 12px}
+.bar-row{display:grid;grid-template-columns:minmax(90px,150px) 1fr auto;gap:10px;align-items:center;margin-bottom:9px;font-size:14px}
+.bar{height:10px;background:var(--paper);border-radius:99px;overflow:hidden;display:flex}
+.bar i{display:block;height:100%}
+
+/* ---------- team admin */
+.admin-grid{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,1fr);gap:14px;align-items:start}
+.badge{display:inline-block;font-size:11.5px;font-weight:700;padding:1px 8px;border-radius:999px;background:var(--paper);color:var(--ink-2)}
+.badge.admin{background:#FFF1D6;color:#8A5A00}
+.badge.off{background:#FDE8E9;color:var(--red)}
+
+/* ---------- drawer & modals */
+.scrim{position:fixed;inset:0;background:rgba(11,21,48,.45);z-index:40}
+.drawer{position:fixed;top:0;bottom:0;inset-inline-end:0;width:min(560px,100vw);background:#fff;z-index:41;display:flex;flex-direction:column;box-shadow:0 0 40px rgba(0,0,0,.25)}
+.drawer-head{display:flex;align-items:center;gap:8px;padding:12px 16px;border-bottom:1px solid var(--line)}
+.drawer-head .id{font-weight:700;color:var(--ink-3);font-size:13px}
+.drawer-body{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:14px}
+.drawer-foot{display:flex;gap:8px;padding:12px 16px;border-top:1px solid var(--line);background:#FAFBFD;flex-wrap:wrap}
+.title-input{font-size:20px;font-weight:700;border:0;border-bottom:2px solid var(--line);border-radius:0;padding:6px 0;width:100%}
+.title-input:focus{outline:none;border-color:var(--blue)}
+.seg{display:flex;flex-wrap:wrap;gap:6px}
+.seg button{border:1.5px solid var(--line);background:#fff;border-radius:999px;padding:5px 12px;font-weight:600;font-size:13px}
+.seg button[aria-pressed="true"]{background:var(--navy);border-color:var(--navy);color:#fff}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.people{display:flex;flex-wrap:wrap;gap:6px}
+.person{display:inline-flex;align-items:center;gap:6px;border:1.5px solid var(--line);border-radius:999px;padding:3px 10px 3px 4px;background:#fff;font-size:13px;font-weight:600}
+[dir="rtl"] .person{padding:3px 4px 3px 10px}
+.person .avatar{width:24px;height:24px;font-size:10px;border:0}
+.person[aria-pressed="true"]{border-color:var(--navy);background:#EEF2FF}
+.checklist{display:flex;flex-direction:column;gap:6px}
+.cl-item{display:flex;align-items:center;gap:8px}
+.cl-item input[type=text]{flex:1;border:0;border-bottom:1px solid transparent;padding:4px 0;background:transparent}
+.cl-item input[type=text]:focus{outline:none;border-color:var(--line)}
+.cl-item.done input[type=text]{text-decoration:line-through;color:var(--ink-3)}
+.progress{height:6px;background:var(--paper);border-radius:99px;overflow:hidden}
+.progress i{display:block;height:100%;background:var(--green)}
+.section-title{font-size:13px;font-weight:700;color:var(--ink-2);margin:6px 0 0;text-transform:uppercase;letter-spacing:.04em}
+.comment{background:var(--paper);border-radius:10px;padding:10px 12px}
+.comment b{font-size:13px}
+.comment time{font-size:12px;color:var(--ink-3);margin-inline-start:6px}
+.comment p{margin:4px 0 0;white-space:pre-wrap;overflow-wrap:anywhere}
+.activity{list-style:none;margin:0;padding:0;font-size:13px;color:var(--ink-2);display:flex;flex-direction:column;gap:6px}
+.activity time{color:var(--ink-3);font-size:12px}
+.modal{position:fixed;z-index:51;top:50%;left:50%;transform:translate(-50%,-50%);width:min(440px,calc(100vw - 32px));max-height:calc(100vh - 32px);overflow:auto;background:#fff;border-radius:18px;padding:22px;box-shadow:0 20px 60px rgba(0,0,0,.3);display:flex;flex-direction:column;gap:14px}
+.modal h2{margin:0;font-size:19px}
+.modal-scrim{z-index:50}
+.code-box{font:700 28px/1 ui-monospace,Menlo,monospace;letter-spacing:4px;text-align:center;padding:16px;border-radius:12px;background:var(--paper);direction:ltr;user-select:all}
+.menu{position:absolute;inset-inline-end:16px;top:58px;background:#fff;color:var(--ink);border-radius:14px;box-shadow:0 12px 40px rgba(0,0,0,.2);min-width:240px;padding:8px;z-index:30}
+.menu button,.menu a{display:flex;width:100%;align-items:center;gap:10px;border:0;background:transparent;padding:10px 12px;border-radius:10px;text-align:start;color:inherit;text-decoration:none}
+.menu button:hover,.menu a:hover{background:var(--paper)}
+.menu .who{padding:8px 12px 10px;border-bottom:1px solid var(--line);margin-bottom:6px}
+.menu .who b{display:block}
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--navy);color:#fff;padding:10px 18px;border-radius:999px;z-index:60;box-shadow:0 8px 30px rgba(0,0,0,.3);font-weight:600;max-width:calc(100vw - 32px)}
+.toast.error{background:var(--red)}
+.loading{display:grid;place-items:center;min-height:60vh;color:var(--ink-3)}
+.spinner{width:34px;height:34px;border-radius:99px;border:3px solid var(--line);border-top-color:var(--navy);animation:spin 1s linear infinite;margin:0 auto 10px}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ---------- login */
+.login{min-height:100vh;display:grid;place-items:center;padding:20px;background:var(--navy);background-image:linear-gradient(115deg,var(--navy) 0 62%,var(--gold) 62% 64%,var(--navy) 64% 68%,var(--orange) 68%)}
+.login-card{width:min(420px,100%);background:#fff;border-radius:22px;padding:28px;box-shadow:0 30px 80px rgba(0,0,0,.35);display:flex;flex-direction:column;gap:16px}
+.login-card h1{margin:0;font-size:24px}
+.login-card .brand-mark{width:46px;height:46px;font-size:15px}
+.error{color:var(--red);font-weight:600;font-size:14px;min-height:1.2em}
+.lang-switch{align-self:flex-start;font-size:13px}
+
+/* ---------- small screens */
+@media (max-width:900px){
+  .board{grid-template-columns:repeat(4,85vw);overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:8px}
+  .col{scroll-snap-align:start}
+  .kpis{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .panels,.admin-grid{grid-template-columns:1fr}
+  .tabs{position:fixed;bottom:0;left:0;right:0;margin:0;background:var(--navy);padding:8px 10px calc(8px + env(safe-area-inset-bottom));z-index:25;justify-content:space-between;box-shadow:0 -6px 20px rgba(0,0,0,.2)}
+  .tab{padding:8px 10px;font-size:13px}
+  .brand small{display:none}
+  .topbar-in{padding:10px 14px}
+  .main{padding:14px 14px 100px}
+  .day{min-height:70px}
+  .day button{font-size:10.5px;padding:1px 4px}
+  .row2{grid-template-columns:1fr}
+  .new-label{display:none}
+  .toolbar{gap:8px}
+  .toolbar .search{flex:1 1 100%;max-width:none}
+  .toolbar .input{flex:1 1 28%;min-width:0;font-size:14px;padding-inline:8px}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+<div id="app"><div class="loading"><div><div class="spinner"></div><span id="boot-msg">…</span></div></div></div>
+<div id="layer"></div>
+<div id="toast" class="toast hidden" role="status" aria-live="polite"></div>
+
+<script>
+(function () {
+'use strict';
+
+// =============================================================================== i18n
+const T = {
+  ar: {
+    appSub: 'إدارة مهام الفريق', loading: 'جاري التحميل…', signIn: 'تسجيل الدخول', whoAreYou: 'مين إنت؟', chooseName: 'اختار اسمك',
+    code: 'رمز الدخول', codeHelp: 'الرمز اللي أعطاك إياه المسؤول، مثل ABCD-2345', enter: 'دخول', noCode: 'ما عندك رمز؟ اطلبه من مسؤول الفريق.',
+    board: 'اللوحة', list: 'القائمة', mine: 'مهامي', calendar: 'التقويم', dashboard: 'الإحصائيات', team: 'الفريق',
+    newTask: 'مهمة جديدة', search: 'ابحث…', allTeams: 'كل اللجان', everyone: 'الكل', anyPriority: 'كل الأولويات', clear: 'مسح الفلاتر', showDone: 'إظهار المنجز',
+    todo: 'للتنفيذ', doing: 'قيد التنفيذ', review: 'مراجعة', done: 'منجز',
+    low: 'منخفضة', medium: 'متوسطة', high: 'عالية', urgent: 'عاجلة',
+    addHere: '+ إضافة مهمة', blocked: 'متوقفة', noTasks: 'ما في مهام هون.', untitled: 'بدون عنوان',
+    title: 'العنوان', status: 'الحالة', priority: 'الأولوية', teamField: 'اللجنة', assignees: 'المسؤولين', due: 'الموعد النهائي', labels: 'وسوم',
+    labelsHelp: 'افصل بينها بفاصلة', description: 'الوصف', checklist: 'قائمة خطوات', addStep: 'أضف خطوة واضغط Enter', isBlocked: 'متوقفة (في عائق)',
+    save: 'حفظ', saving: 'جاري الحفظ…', cancel: 'إلغاء', close: 'إغلاق', saved: 'انحفظ', created: 'انضافت المهمة',
+    comments: 'التعليقات', addComment: 'اكتب تعليق…', post: 'إرسال', activity: 'السجل', archive: 'أرشفة', restore: 'استرجاع', delete: 'حذف نهائي',
+    archived: 'انأرشفت المهمة', deleted: 'انحذفت المهمة', confirmDelete: 'حذف المهمة وتعليقاتها نهائيًا؟ ما في رجعة.', confirmArchive: 'أرشفة المهمة؟ بتختفي من اللوحة وبتضل محفوظة بالشيت.',
+    yes: 'أكيد', unsaved: 'في تغييرات ما انحفظت. تسكّر بدون حفظ؟', none: '—',
+    overdue: 'متأخرة', today: 'اليوم', thisWeek: 'هذا الأسبوع', later: 'لاحقًا', noDate: 'بدون موعد', doneRecently: 'أنجزتها مؤخرًا',
+    open: 'مفتوحة', dueWeek: 'موعدها خلال أسبوع', doneWeek: 'انأنجزت آخر 7 أيام', byStatus: 'حسب الحالة', workload: 'الضغط على الأعضاء', byTeam: 'تقدّم اللجان',
+    openTasks: 'مفتوحة', members: 'الأعضاء', addMember: 'إضافة عضو', edit: 'تعديل', newCode: 'رمز جديد', name: 'الاسم', email: 'الإيميل', role: 'المنصب',
+    admin: 'مسؤول', active: 'فعّال', notifyMail: 'إشعارات بالإيميل', sendCodeMail: 'ابعتله الرمز على الإيميل', inactive: 'موقوف',
+    memberSaved: 'انحفظ العضو', codeFor: 'رمز الدخول لـ', codeOnce: 'الرمز بيظهر مرة وحدة بس. ابعته للعضو بشكل خاص.', copy: 'نسخ', copied: 'انتسخ',
+    settings: 'الإعدادات', teams: 'اللجان', teamsHelp: 'لجنة بكل سطر', digest: 'تذكير يومي بالإيميل', digestHelp: 'كل عضو بيوصله إيميل الصبح بمهامه المتأخرة واللي موعدها قريب.',
+    digestHour: 'الساعة', openSheet: 'فتح الشيت على درايف', settingsSaved: 'انحفظت الإعدادات', resetConfirm: 'إعطاء رمز جديد؟ الرمز القديم بيوقف وبيطلع من كل الأجهزة.',
+    changeCode: 'تغيير رمز الدخول', currentCode: 'الرمز الحالي', newCodeLabel: 'الرمز الجديد (6 أحرف أو أرقام على الأقل)', confirmCode: 'أعد كتابة الرمز الجديد',
+    codeChanged: 'تغيّر الرمز', mismatch: 'الرمزين مش متطابقين', language: 'English', signOut: 'تسجيل الخروج', myNotify: 'إشعارات الإيميل',
+    on: 'شغّالة', off: 'مطفية', months: ['كانون الثاني','شباط','آذار','نيسان','أيار','حزيران','تموز','آب','أيلول','تشرين الأول','تشرين الثاني','كانون الأول'],
+    dows: ['أحد','اثنين','ثلاثاء','أربعاء','خميس','جمعة','سبت'], prev: 'السابق', next: 'التالي', thisMonth: 'هذا الشهر',
+    err: { AUTH: 'انتهت الجلسة، سجّل دخول من جديد.', BAD_CODE: 'الرمز غلط.', LOCKED: 'محاولات كثيرة. جرّب بعد 15 دقيقة.', FORBIDDEN: 'ما عندك صلاحية لهاد.',
+      NOT_FOUND: 'المهمة مش موجودة (يمكن انحذفت).', title: 'اكتب عنوان (لحد 200 حرف).', due: 'تاريخ غير صالح.', assignees: 'في عضو مش موجود أو موقوف.',
+      email: 'إيميل غير صالح.', 'email-taken': 'الإيميل مستخدم لعضو ثاني.', name: 'اكتب الاسم.', self: 'ما بتقدر تشيل صلاحيتك أو توقف حسابك.', code: 'الرمز لازم يكون 6 أحرف أو أرقام على الأقل.',
+      text: 'التعليق فاضي أو طويل كتير.', generic: 'صار خطأ. جرّب كمان مرة.', offline: 'ما في اتصال. تأكد من الإنترنت.' },
+  },
+  en: {
+    appSub: 'Team task manager', loading: 'Loading…', signIn: 'Sign in', whoAreYou: 'Who are you?', chooseName: 'Choose your name',
+    code: 'Sign-in code', codeHelp: 'The code an admin gave you, e.g. ABCD-2345', enter: 'Sign in', noCode: 'No code? Ask a team admin.',
+    board: 'Board', list: 'List', mine: 'My tasks', calendar: 'Calendar', dashboard: 'Dashboard', team: 'Team',
+    newTask: 'New task', search: 'Search…', allTeams: 'All teams', everyone: 'Everyone', anyPriority: 'Any priority', clear: 'Clear filters', showDone: 'Show done',
+    todo: 'To do', doing: 'In progress', review: 'Review', done: 'Done',
+    low: 'Low', medium: 'Medium', high: 'High', urgent: 'Urgent',
+    addHere: '+ Add task', blocked: 'Blocked', noTasks: 'No tasks here.', untitled: 'Untitled',
+    title: 'Title', status: 'Status', priority: 'Priority', teamField: 'Team', assignees: 'Assignees', due: 'Due date', labels: 'Labels',
+    labelsHelp: 'Separate with commas', description: 'Description', checklist: 'Checklist', addStep: 'Add a step and press Enter', isBlocked: 'Blocked (something is in the way)',
+    save: 'Save', saving: 'Saving…', cancel: 'Cancel', close: 'Close', saved: 'Saved', created: 'Task created',
+    comments: 'Comments', addComment: 'Write a comment…', post: 'Post', activity: 'History', archive: 'Archive', restore: 'Restore', delete: 'Delete',
+    archived: 'Task archived', deleted: 'Task deleted', confirmDelete: 'Delete this task and its comments for good? This cannot be undone.', confirmArchive: 'Archive this task? It leaves the board but stays in the sheet.',
+    yes: 'Yes', unsaved: 'You have unsaved changes. Close without saving?', none: '—',
+    overdue: 'Overdue', today: 'Today', thisWeek: 'This week', later: 'Later', noDate: 'No date', doneRecently: 'Done recently',
+    open: 'Open', dueWeek: 'Due within a week', doneWeek: 'Done in the last 7 days', byStatus: 'By status', workload: 'Workload', byTeam: 'Team progress',
+    openTasks: 'open', members: 'Members', addMember: 'Add member', edit: 'Edit', newCode: 'New code', name: 'Name', email: 'Email', role: 'Role',
+    admin: 'Admin', active: 'Active', notifyMail: 'Email notifications', sendCodeMail: 'Email them the code', inactive: 'Inactive',
+    memberSaved: 'Member saved', codeFor: 'Sign-in code for', codeOnce: 'This code is shown only once. Send it to the member privately.', copy: 'Copy', copied: 'Copied',
+    settings: 'Settings', teams: 'Teams', teamsHelp: 'One team per line', digest: 'Daily email reminder', digestHelp: 'Every morning each member gets their overdue and soon-due tasks.',
+    digestHour: 'Hour', openSheet: 'Open the sheet in Drive', settingsSaved: 'Settings saved', resetConfirm: 'Give a new code? The old one stops working on every device.',
+    changeCode: 'Change sign-in code', currentCode: 'Current code', newCodeLabel: 'New code (at least 6 letters or digits)', confirmCode: 'Type the new code again',
+    codeChanged: 'Code changed', mismatch: 'The codes don’t match', language: 'العربية', signOut: 'Sign out', myNotify: 'Email notifications',
+    on: 'On', off: 'Off', months: ['January','February','March','April','May','June','July','August','September','October','November','December'],
+    dows: ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'], prev: 'Previous', next: 'Next', thisMonth: 'This month',
+    err: { AUTH: 'Your session ended. Please sign in again.', BAD_CODE: 'Wrong code.', LOCKED: 'Too many attempts. Try again in 15 minutes.', FORBIDDEN: 'You don’t have permission for that.',
+      NOT_FOUND: 'Task not found (it may have been deleted).', title: 'Enter a title (up to 200 characters).', due: 'Invalid date.', assignees: 'An assignee is missing or inactive.',
+      email: 'Invalid email.', 'email-taken': 'Another member uses this email.', name: 'Enter a name.', self: 'You can’t remove your own admin role or deactivate yourself.', code: 'The code needs at least 6 letters or digits.',
+      text: 'The comment is empty or too long.', generic: 'Something went wrong. Please try again.', offline: 'No connection. Check your internet.' },
+  },
+};
+
+// =============================================================================== state
+const store = (() => { try { return window.localStorage; } catch (e) { return null; } })();
+const memory = {};
+const saved = {
+  get: k => { try { return store ? store.getItem(k) : memory[k] ?? null; } catch (e) { return memory[k] ?? null; } },
+  set: (k, v) => { try { store ? store.setItem(k, v) : (memory[k] = v); } catch (e) { memory[k] = v; } },
+  del: k => { try { store ? store.removeItem(k) : delete memory[k]; } catch (e) { delete memory[k]; } },
+};
+
+const S = {
+  lang: saved.get('ies-tasks-lang') || 'ar',
+  token: saved.get('ies-tasks-token'),
+  me: null, members: [], tasks: new Map(), settings: null, statuses: ['todo', 'doing', 'review', 'done'], priorities: ['low', 'medium', 'high', 'urgent'],
+  view: saved.get('ies-tasks-view') || 'board',
+  filters: { q: '', team: '', who: '', prio: '', showDone: false },
+  sort: { key: 'due', dir: 1 },
+  cal: null, lastSync: null, menu: false,
+};
+const t = k => (T[S.lang][k] ?? T.en[k] ?? k);
+const errText = code => T[S.lang].err[code] || T[S.lang].err.generic;
+
+// =============================================================================== server calls
+function api(fn, ...args) {
+  return new Promise((resolve, reject) => {
+    const withToken = fn === 'api_publicInfo' || fn === 'api_login' ? args : [S.token, ...args];
+    google.script.run
+      .withSuccessHandler(resolve)
+      .withFailureHandler(e => {
+        const msg = String((e && e.message) || e);
+        const m = /(AUTH|BAD_CODE|LOCKED|FORBIDDEN|NOT_FOUND|BAD_INPUT:[\w-]+)/.exec(msg);
+        const code = m ? m[1].replace('BAD_INPUT:', '') : (/network|NetworkError|Failed to fetch/i.test(msg) ? 'offline' : 'generic');
+        if (code === 'AUTH' && fn !== 'api_login') signOut(true);
+        reject(Object.assign(new Error(msg), { code }));
+      })[fn](...withToken);
+  });
+}
+
+// =============================================================================== helpers
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const ICON = {
+  cal: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>',
+  check: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.5l5 5L20 6.5"/></svg>',
+  chat: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"><path d="M4 5h16v11H9l-5 4z"/></svg>',
+  plus: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>',
+  x: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>',
+  user: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg>',
+  sync: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M20 12a8 8 0 0 1-14 5.3M4 12a8 8 0 0 1 14-5.3M18 3v4h-4M6 21v-4h4"/></svg>',
+  chev: d => `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="${d}"/></svg>`,
+};
+const COLORS = ['#1449D6', '#E2570B', '#13795B', '#6A2BE0', '#B0185A', '#0B7A75', '#8B5E00', '#2E3A59'];
+const colorOf = id => COLORS[[...String(id)].reduce((n, c) => n + c.charCodeAt(0), 0) % COLORS.length];
+const initials = name => String(name || '?').trim().split(/\s+/).map(w => w[0]).join('').slice(0, 2).toUpperCase();
+const member = id => S.members.find(m => m.id === id);
+const avatar = id => { const m = member(id); return m ? `<span class="avatar" style="background:${colorOf(id)}" title="${esc(m.name)}">${esc(initials(m.name))}</span>` : ''; };
+const todayStr = () => new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Amman', year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date());
+const addDays = (d, n) => { const x = new Date(d + 'T12:00:00Z'); x.setUTCDate(x.getUTCDate() + n); return x.toISOString().slice(0, 10); };
+const fmtDay = d => { if (!d) return ''; const [y, m, day] = d.split('-').map(Number); return `${day} ${t('months')[m - 1].slice(0, S.lang === 'ar' ? 20 : 3)}${y !== Number(todayStr().slice(0, 4)) ? ' ' + y : ''}`; };
+const fmtTime = iso => { if (!iso) return ''; try { return new Intl.DateTimeFormat(S.lang === 'ar' ? 'ar-JO-u-nu-latn' : 'en-GB', { dateStyle: 'medium', timeStyle: 'short', timeZone: 'Asia/Amman' }).format(new Date(iso)); } catch (e) { return iso; } };
+const dueClass = tk => !tk.due || tk.status === 'done' ? '' : tk.due < todayStr() ? 'overdue' : tk.due === todayStr() ? 'today' : '';
+const prioColor = p => `var(--p-${p})`;
+const statusColor = { todo: '#6B7385', doing: '#1449D6', review: '#D99A00', done: '#13795B' };
+
+function toast(msg, error) {
+  const el = $('#toast');
+  el.textContent = msg;
+  el.className = 'toast' + (error ? ' error' : '');
+  clearTimeout(toast.t);
+  toast.t = setTimeout(() => el.classList.add('hidden'), error ? 5000 : 2400);
+}
+const fail = e => toast(errText(e.code), true);
+
+function applyLang() {
+  document.documentElement.lang = S.lang;
+  document.documentElement.dir = S.lang === 'ar' ? 'rtl' : 'ltr';
+}
+
+// =============================================================================== boot & sign-in
+function boot() {
+  applyLang();
+  $('#boot-msg').textContent = t('loading');
+  if (S.token) return loadAll().catch(() => showLogin());
+  showLogin();
+}
+
+function showLogin(errorMsg) {
+  api('api_publicInfo').then(info => {
+    $('#app').innerHTML = `
+      <main class="login">
+        <form class="login-card" id="login-form" novalidate>
+          <button type="button" class="btn btn-sm btn-ghost lang-switch" data-action="lang">${t('language')}</button>
+          <div class="brand"><span class="brand-mark">IES</span><div><div>${esc(info.appName)}</div><small style="color:var(--ink-3)">${t('appSub')}</small></div></div>
+          <h1>${t('signIn')}</h1>
+          <label class="field"><span>${t('whoAreYou')}</span>
+            <select class="input" id="login-who" required><option value="">${t('chooseName')}</option>
+              ${info.members.map(m => `<option value="${esc(m.id)}" ${saved.get('ies-tasks-last') === m.id ? 'selected' : ''}>${esc(m.name)}</option>`).join('')}
+            </select></label>
+          <label class="field"><span>${t('code')}</span>
+            <input class="input" id="login-code" autocomplete="current-password" inputmode="text" autocapitalize="characters" spellcheck="false" placeholder="XXXX-XXXX" dir="ltr" required>
+            <small class="muted">${t('codeHelp')}</small></label>
+          <p class="error" id="login-error" role="alert">${esc(errorMsg || '')}</p>
+          <button class="btn btn-dark" type="submit">${t('enter')}</button>
+          <p class="muted" style="margin:0;font-size:13px">${t('noCode')}</p>
+        </form>
+      </main>`;
+    $('#login-form').addEventListener('submit', e => {
+      e.preventDefault();
+      const who = $('#login-who').value, code = $('#login-code').value;
+      if (!who || !code) return ($('#login-error').textContent = errText('BAD_CODE'));
+      const btn = e.target.querySelector('[type=submit]');
+      btn.disabled = true;
+      api('api_login', who, code).then(r => {
+        S.token = r.token;
+        saved.set('ies-tasks-token', r.token);
+        saved.set('ies-tasks-last', who);
+        return loadAll();
+      }).catch(err => { btn.disabled = false; $('#login-error').textContent = errText(err.code); });
+    });
+  }).catch(e => { $('#app').innerHTML = `<div class="loading"><p>${esc(errText(e.code))}</p></div>`; });
+}
+
+function signOut(expired) {
+  S.token = null; S.me = null;
+  saved.del('ies-tasks-token');
+  clearInterval(S.poll);
+  $('#layer').innerHTML = '';
+  showLogin(expired ? errText('AUTH') : '');
+}
+
+function loadAll() {
+  return api('api_bootstrap').then(d => {
+    S.me = d.me; S.members = d.members; S.settings = d.settings; S.statuses = d.statuses; S.priorities = d.priorities;
+    S.tasks = new Map(d.tasks.map(x => [x.id, x]));
+    S.lastSync = d.serverTime;
+    if (S.view === 'team' && !S.me.admin) S.view = 'board';
+    render();
+    clearInterval(S.poll);
+    S.poll = setInterval(() => { if (document.visibilityState === 'visible') sync(); }, 45000);
+    try { google.script.url.getLocation(loc => { const m = /task=([\w-]+)/.exec(loc.hash || ''); if (m && S.tasks.has(m[1])) openTask(m[1]); }); } catch (e) {}
+  });
+}
+
+function sync(manual) {
+  if (!S.token) return;
+  return api('api_changes', S.lastSync).then(d => {
+    d.tasks.forEach(x => S.tasks.set(x.id, x));
+    d.archivedIds.forEach(id => S.tasks.delete(id));
+    S.members = d.members;
+    S.lastSync = d.serverTime;
+    renderMain();
+    if (manual) toast('✓');
+  }).catch(e => { if (manual) fail(e); });
+}
+
+// =============================================================================== render: shell
+const VIEWS = ['board', 'list', 'mine', 'calendar', 'dashboard', 'team'];
+
+function render() {
+  applyLang();
+  const me = S.me;
+  $('#app').innerHTML = `
+    <header class="topbar"><div class="topbar-in">
+      <div class="brand"><span class="brand-mark">IES</span><div>${esc(S.settings.appName)}<small>${t('appSub')}</small></div></div>
+      <nav class="tabs" aria-label="Views">
+        ${VIEWS.filter(v => v !== 'team' || me.admin).map(v => `<button class="tab" data-action="view" data-view="${v}" ${S.view === v ? 'aria-current="page"' : ''}>${t(v)}</button>`).join('')}
+      </nav>
+      <div class="top-actions">
+        <button class="icon-btn" data-action="sync" title="Sync" aria-label="Sync">${ICON.sync}</button>
+        <button class="btn btn-primary btn-sm" data-action="new">${ICON.plus}<span class="new-label">${t('newTask')}</span></button>
+        <button class="icon-btn" data-action="menu" aria-haspopup="true" aria-expanded="${S.menu}" aria-label="Menu"><span class="avatar" style="background:${colorOf(me.id)}">${esc(initials(me.name))}</span></button>
+      </div>
+    </div>
+    ${S.menu ? `<div class="menu" role="menu">
+      <div class="who"><b>${esc(me.name)}</b><span class="muted" style="font-size:13px">${esc(me.role || '')}${me.admin ? ' · ' + t('admin') : ''}</span></div>
+      <button role="menuitem" data-action="lang">🌐 ${t('language')}</button>
+      <button role="menuitem" data-action="notify">✉️ ${t('myNotify')}: ${me.notify ? t('on') : t('off')}</button>
+      <button role="menuitem" data-action="change-code">🔑 ${t('changeCode')}</button>
+      ${me.admin ? `<a role="menuitem" href="${esc(S.settings.sheetUrl)}" target="_blank" rel="noopener">📊 ${t('openSheet')}</a>` : ''}
+      <button role="menuitem" data-action="signout">↩ ${t('signOut')}</button>
+    </div>` : ''}
+    </header>
+    <main class="main" id="main"></main>`;
+  renderMain();
+}
+
+function renderMain() {
+  const el = $('#main');
+  if (!el) return;
+  const views = { board: viewBoard, list: viewList, mine: viewMine, calendar: viewCalendar, dashboard: viewDashboard, team: viewTeam };
+  el.innerHTML = (views[S.view] || viewBoard)();
+  if (S.view === 'board') wireDrag();
+}
+
+// =============================================================================== filters
+function toolbar(opts = {}) {
+  const f = S.filters;
+  const teams = S.settings.teams;
+  const active = S.members.filter(m => m.active);
+  return `<div class="toolbar">
+    <input class="input search" type="search" placeholder="${t('search')}" value="${esc(f.q)}" data-filter="q" aria-label="${t('search')}">
+    <select class="input" data-filter="team" aria-label="${t('teamField')}"><option value="">${t('allTeams')}</option>${teams.map(x => `<option ${f.team === x ? 'selected' : ''}>${esc(x)}</option>`).join('')}</select>
+    <select class="input" data-filter="who" aria-label="${t('assignees')}"><option value="">${t('everyone')}</option>${active.map(m => `<option value="${m.id}" ${f.who === m.id ? 'selected' : ''}>${esc(m.name)}</option>`).join('')}</select>
+    <select class="input" data-filter="prio" aria-label="${t('priority')}"><option value="">${t('anyPriority')}</option>${S.priorities.map(p => `<option value="${p}" ${f.prio === p ? 'selected' : ''}>${t(p)}</option>`).join('')}</select>
+    ${opts.showDone ? `<label class="check"><input type="checkbox" data-filter="showDone" ${f.showDone ? 'checked' : ''}>${t('showDone')}</label>` : ''}
+    ${f.q || f.team || f.who || f.prio ? `<button class="btn btn-ghost btn-sm" data-action="clear-filters">${t('clear')}</button>` : ''}
+  </div>`;
+}
+
+function filtered(list) {
+  const f = S.filters, q = f.q.trim().toLowerCase();
+  return list.filter(x =>
+    (!q || (x.title + ' ' + x.description + ' ' + x.labels.join(' ') + ' ' + x.id).toLowerCase().includes(q)) &&
+    (!f.team || x.team === f.team) && (!f.who || x.assignees.includes(f.who)) && (!f.prio || x.priority === f.prio));
+}
+const allTasks = () => [...S.tasks.values()];
+const prioRank = p => S.priorities.indexOf(p);
+const byDueThenPrio = (a, b) => (a.due || '9999').localeCompare(b.due || '9999') || prioRank(b.priority) - prioRank(a.priority);
+
+// =============================================================================== views
+function card(x) {
+  const done = x.checklist.filter(i => i.d).length;
+  const due = x.due ? `<span class="due ${dueClass(x)}">${ICON.cal}${esc(fmtDay(x.due))}</span>` : '';
+  return `<article class="card p-${x.priority} ${x.status === 'done' ? 'done' : ''}" role="button" tabindex="0" draggable="true" data-action="open" data-id="${esc(x.id)}">
+    <div class="card-top">${x.team ? `<span class="chip">${esc(x.team)}</span>` : ''}${x.blocked ? `<span class="chip blocked">${t('blocked')}</span>` : ''}${x.labels.slice(0, 3).map(l => `<span class="chip label">${esc(l)}</span>`).join('')}</div>
+    <h3>${esc(x.title || t('untitled'))}</h3>
+    <div class="card-meta"><span class="meta-items">${due}${x.checklist.length ? `<span>${ICON.check}${done}/${x.checklist.length}</span>` : ''}${x.comments ? `<span>${ICON.chat}${x.comments}</span>` : ''}</span>
+    <span class="avatars">${x.assignees.slice(0, 4).map(avatar).join('')}</span></div>
+  </article>`;
+}
+
+function viewBoard() {
+  const list = filtered(allTasks());
+  return toolbar() + `<div class="board">${S.statuses.map(s => {
+    const items = list.filter(x => x.status === s).sort((a, b) => s === 'done' ? b.completedAt.localeCompare(a.completedAt) : byDueThenPrio(a, b));
+    const shown = s === 'done' ? items.slice(0, 30) : items;
+    return `<section class="col" data-status="${s}" aria-label="${t(s)}">
+      <div class="col-head"><span class="dot" style="background:${statusColor[s]}"></span>${t(s)}<span class="count">${items.length}</span></div>
+      <div class="cards">${shown.map(card).join('')}</div>
+      ${s !== 'done' ? `<button class="col-add" data-action="new" data-status="${s}">${t('addHere')}</button>` : ''}
+    </section>`;
+  }).join('')}</div>`;
+}
+
+function viewList() {
+  let list = filtered(allTasks()).filter(x => S.filters.showDone || x.status !== 'done');
+  const k = S.sort.key, d = S.sort.dir;
+  const val = { title: x => x.title.toLowerCase(), due: x => x.due || '9999', priority: x => -prioRank(x.priority), status: x => S.statuses.indexOf(x.status), team: x => x.team };
+  list.sort((a, b) => { const va = val[k](a), vb = val[k](b); return (va < vb ? -1 : va > vb ? 1 : 0) * d || byDueThenPrio(a, b); });
+  const th = (key, label) => `<th><button data-action="sort" data-key="${key}">${label}${S.sort.key === key ? (S.sort.dir > 0 ? ' ▲' : ' ▼') : ''}</button></th>`;
+  return toolbar({ showDone: true }) + (list.length ? `<div class="table-wrap"><table>
+    <thead><tr>${th('title', t('title'))}${th('status', t('status'))}${th('priority', t('priority'))}${th('team', t('teamField'))}<th>${t('assignees')}</th>${th('due', t('due'))}</tr></thead>
+    <tbody>${list.map(x => `<tr data-action="open" data-id="${esc(x.id)}" tabindex="0">
+      <td><b>${esc(x.title)}</b>${x.blocked ? ` <span class="chip blocked">${t('blocked')}</span>` : ''}<div class="muted" style="font-size:12px">${esc(x.id)}</div></td>
+      <td><span class="status-pill st-${x.status}">${t(x.status)}</span></td>
+      <td><span class="prio"><i style="background:${prioColor(x.priority)}"></i>${t(x.priority)}</span></td>
+      <td>${esc(x.team || t('none'))}</td>
+      <td><span class="avatars">${x.assignees.map(avatar).join('')}</span></td>
+      <td><span class="due ${dueClass(x)}">${esc(fmtDay(x.due) || t('none'))}</span></td>
+    </tr>`).join('')}</tbody></table></div>` : `<div class="empty">${t('noTasks')}</div>`);
+}
+
+function viewMine() {
+  const today = todayStr(), week = addDays(today, 7), weekAgo = addDays(today, -7);
+  const mine = allTasks().filter(x => x.assignees.includes(S.me.id));
+  const open = mine.filter(x => x.status !== 'done');
+  const groups = [
+    ['overdue', open.filter(x => x.due && x.due < today)],
+    ['today', open.filter(x => x.due === today)],
+    ['thisWeek', open.filter(x => x.due > today && x.due <= week)],
+    ['later', open.filter(x => x.due > week)],
+    ['noDate', open.filter(x => !x.due)],
+    ['doneRecently', mine.filter(x => x.status === 'done' && x.completedAt.slice(0, 10) >= weekAgo)],
+  ].filter(g => g[1].length);
+  if (!groups.length) return `<h1 class="page-title">${t('mine')}</h1><div class="empty">${t('noTasks')}</div>`;
+  return `<h1 class="page-title">${t('mine')}</h1>` + groups.map(([k, items]) => `<section class="group"><h2>${t(k)} <span class="count">${items.length}</span></h2>
+    <div class="grid-cards">${items.sort(byDueThenPrio).map(card).join('')}</div></section>`).join('');
+}
+
+function viewCalendar() {
+  const today = todayStr();
+  if (!S.cal) S.cal = { y: Number(today.slice(0, 4)), m: Number(today.slice(5, 7)) - 1 };
+  const { y, m } = S.cal;
+  const first = new Date(Date.UTC(y, m, 1));
+  const start = new Date(first); start.setUTCDate(1 - first.getUTCDay());
+  const list = filtered(allTasks());
+  const cells = [];
+  for (let i = 0; i < 42; i++) {
+    const d = new Date(start); d.setUTCDate(start.getUTCDate() + i);
+    const ds = d.toISOString().slice(0, 10);
+    const items = list.filter(x => x.due === ds).sort((a, b) => prioRank(b.priority) - prioRank(a.priority));
+    cells.push(`<div class="day ${d.getUTCMonth() !== m ? 'other' : ''} ${ds === today ? 'today' : ''}"><span class="n">${d.getUTCDate()}</span>
+      ${items.slice(0, 4).map(x => `<button data-action="open" data-id="${esc(x.id)}" class="${x.status === 'done' ? 'is-done' : ''}" style="border-inline-start-color:${prioColor(x.priority)}" title="${esc(x.title)}">${esc(x.title)}</button>`).join('')}
+      ${items.length > 4 ? `<span class="muted" style="font-size:11px">+${items.length - 4}</span>` : ''}</div>`);
+    if (i >= 34 && d.getUTCMonth() !== m && d.getUTCDay() === 6) break;
+  }
+  const flip = S.lang === 'ar' ? ['M9 6l6 6-6 6', 'M15 6l-6 6 6 6'] : ['M15 6l-6 6 6 6', 'M9 6l6 6-6 6'];
+  return toolbar() + `<div class="cal-head">
+      <button class="icon-btn" data-action="cal" data-step="-1" aria-label="${t('prev')}">${ICON.chev(flip[0])}</button>
+      <h2>${t('months')[m]} ${y}</h2>
+      <button class="icon-btn" data-action="cal" data-step="1" aria-label="${t('next')}">${ICON.chev(flip[1])}</button>
+      <button class="btn btn-sm" data-action="cal" data-step="0">${t('thisMonth')}</button>
+    </div>
+    <div class="cal">${t('dows').map(d => `<div class="dow">${d}</div>`).join('')}${cells.join('')}</div>`;
+}
+
+function viewDashboard() {
+  const today = todayStr(), week = addDays(today, 7), weekAgo = addDays(today, -7);
+  const all = allTasks(), open = all.filter(x => x.status !== 'done');
+  const overdue = open.filter(x => x.due && x.due < today).length;
+  const dueWeek = open.filter(x => x.due && x.due >= today && x.due <= week).length;
+  const doneWeek = all.filter(x => x.status === 'done' && x.completedAt.slice(0, 10) >= weekAgo).length;
+  const maxStatus = Math.max(1, ...S.statuses.map(s => all.filter(x => x.status === s).length));
+  const load = S.members.filter(m => m.active).map(m => {
+    const mine = open.filter(x => x.assignees.includes(m.id));
+    return { m, n: mine.length, late: mine.filter(x => x.due && x.due < today).length };
+  }).sort((a, b) => b.n - a.n);
+  const maxLoad = Math.max(1, ...load.map(l => l.n));
+  const teams = [...new Set(S.settings.teams.concat(all.map(x => x.team).filter(Boolean)))].map(name => {
+    const list = all.filter(x => x.team === name);
+    return { name, total: list.length, done: list.filter(x => x.status === 'done').length };
+  }).filter(x => x.total);
+  return `<h1 class="page-title">${t('dashboard')}</h1>
+    <div class="kpis">
+      <div class="kpi"><b>${open.length}</b><span>${t('open')}</span></div>
+      <div class="kpi ${overdue ? 'warn' : ''}"><b>${overdue}</b><span>${t('overdue')}</span></div>
+      <div class="kpi"><b>${dueWeek}</b><span>${t('dueWeek')}</span></div>
+      <div class="kpi"><b>${doneWeek}</b><span>${t('doneWeek')}</span></div>
+    </div>
+    <div class="panels">
+      <section class="panel"><h2>${t('byStatus')}</h2>${S.statuses.map(s => { const n = all.filter(x => x.status === s).length; return `<div class="bar-row"><span>${t(s)}</span><span class="bar"><i style="width:${n / maxStatus * 100}%;background:${statusColor[s]}"></i></span><b>${n}</b></div>`; }).join('')}</section>
+      <section class="panel"><h2>${t('workload')}</h2>${load.length ? load.map(l => `<div class="bar-row"><span>${esc(l.m.name)}</span><span class="bar"><i style="width:${(l.n - l.late) / maxLoad * 100}%;background:var(--blue)"></i><i style="width:${l.late / maxLoad * 100}%;background:var(--red)"></i></span><b>${l.n}${l.late ? ` <span class="due overdue">(${l.late})</span>` : ''}</b></div>`).join('') : `<p class="muted">${t('noTasks')}</p>`}</section>
+      <section class="panel" style="grid-column:1/-1"><h2>${t('byTeam')}</h2>${teams.length ? teams.map(x => `<div class="bar-row"><span>${esc(x.name)}</span><span class="bar"><i style="width:${x.done / x.total * 100}%;background:var(--green)"></i></span><b>${x.done}/${x.total}</b></div>`).join('') : `<p class="muted">${t('noTasks')}</p>`}</section>
+    </div>`;
+}
+
+function viewTeam() {
+  if (!S.me.admin) return '';
+  const st = S.settings;
+  return `<h1 class="page-title">${t('team')}</h1><div class="admin-grid">
+    <section class="panel"><div style="display:flex;align-items:center;gap:10px;margin-bottom:10px"><h2 style="margin:0">${t('members')}</h2>
+      <button class="btn btn-primary btn-sm" data-action="member" style="margin-inline-start:auto">${ICON.plus}${t('addMember')}</button></div>
+      <div class="table-wrap" style="box-shadow:none"><table><thead><tr><th>${t('name')}</th><th>${t('role')}</th><th>${t('email')}</th><th></th></tr></thead><tbody>
+      ${S.members.slice().sort((a, b) => Number(b.active) - Number(a.active) || a.name.localeCompare(b.name)).map(m => `<tr style="cursor:default">
+        <td><span style="display:inline-flex;align-items:center;gap:8px">${avatar(m.id)}<b>${esc(m.name)}</b></span> ${m.admin ? `<span class="badge admin">${t('admin')}</span>` : ''}${m.active ? '' : ` <span class="badge off">${t('inactive')}</span>`}</td>
+        <td>${esc([m.role, m.team].filter(Boolean).join(' · ') || t('none'))}</td><td dir="ltr" style="text-align:start">${esc(m.email || t('none'))}</td>
+        <td style="white-space:nowrap"><button class="btn btn-sm" data-action="member" data-id="${m.id}">${t('edit')}</button> <button class="btn btn-sm" data-action="reset-code" data-id="${m.id}">${t('newCode')}</button></td>
+      </tr>`).join('')}</tbody></table></div></section>
+    <section class="panel"><h2>${t('settings')}</h2><form id="settings-form" class="drawer-body" style="padding:0">
+      <label class="field"><span>${t('teams')}</span><textarea class="input" name="teams" rows="7">${esc(st.teams.join('\n'))}</textarea><small class="muted">${t('teamsHelp')}</small></label>
+      <label class="check"><input type="checkbox" name="digest" ${st.digest ? 'checked' : ''}>${t('digest')}</label>
+      <small class="muted">${t('digestHelp')}</small>
+      <label class="field"><span>${t('digestHour')}</span><select class="input" name="digestHour">${Array.from({ length: 24 }, (_, h) => `<option value="${h}" ${h === st.digestHour ? 'selected' : ''}>${String(h).padStart(2, '0')}:00</option>`).join('')}</select></label>
+      <button class="btn btn-dark" type="submit">${t('save')}</button>
+      <a href="${esc(st.sheetUrl)}" target="_blank" rel="noopener">${t('openSheet')} ↗</a>
+    </form></section></div>`;
+}
+
+// =============================================================================== drag & drop (desktop)
+function wireDrag() {
+  document.querySelectorAll('.card[draggable]').forEach(c => {
+    c.addEventListener('dragstart', e => { e.dataTransfer.setData('text/plain', c.dataset.id); c.classList.add('dragging'); });
+    c.addEventListener('dragend', () => c.classList.remove('dragging'));
+  });
+  document.querySelectorAll('.col').forEach(col => {
+    col.addEventListener('dragover', e => { e.preventDefault(); col.classList.add('drop'); });
+    col.addEventListener('dragleave', e => { if (!col.contains(e.relatedTarget)) col.classList.remove('drop'); });
+    col.addEventListener('drop', e => {
+      e.preventDefault(); col.classList.remove('drop');
+      const id = e.dataTransfer.getData('text/plain'), status = col.dataset.status, x = S.tasks.get(id);
+      if (!x || x.status === status) return;
+      const prev = x.status;
+      S.tasks.set(id, Object.assign({}, x, { status }));
+      renderMain();
+      api('api_saveTask', { id, status }).then(saved => { S.tasks.set(id, saved); renderMain(); })
+        .catch(err => { S.tasks.set(id, Object.assign({}, x, { status: prev })); renderMain(); fail(err); });
+    });
+  });
+}
+
+// =============================================================================== task drawer
+let D = null; // the open drawer: { id, orig, draft }
+
+function openTask(id, preset) {
+  const x = id ? S.tasks.get(id) : null;
+  const base = x || { title: '', description: '', status: 'todo', priority: 'medium', team: '', assignees: [], due: '', labels: [], checklist: [], blocked: false, ...preset };
+  D = { id: x ? x.id : null, orig: JSON.parse(JSON.stringify(base)), draft: JSON.parse(JSON.stringify(base)), detail: null };
+  renderDrawer();
+  if (x) api('api_taskDetail', x.id).then(det => { if (D && D.id === x.id) { D.detail = det; renderDetail(); } }).catch(() => {});
+  setTimeout(() => { const el = $('#d-title'); if (el && !x) el.focus(); }, 30);
+}
+
+function dirtyFields() {
+  if (!D) return {};
+  const out = {};
+  ['title', 'description', 'status', 'priority', 'team', 'due', 'blocked'].forEach(k => { if (D.draft[k] !== D.orig[k]) out[k] = D.draft[k]; });
+  ['assignees', 'labels', 'checklist'].forEach(k => { if (JSON.stringify(D.draft[k]) !== JSON.stringify(D.orig[k])) out[k] = D.draft[k]; });
+  return out;
+}
+
+function renderDrawer() {
+  const d = D.draft, x = D.id ? S.tasks.get(D.id) : null;
+  const teams = [...new Set(S.settings.teams.concat(d.team ? [d.team] : []))];
+  const doneN = d.checklist.filter(i => i.d).length;
+  $('#layer').innerHTML = `<div class="scrim" data-action="close-drawer"></div>
+  <aside class="drawer" role="dialog" aria-modal="true" aria-labelledby="d-title">
+    <div class="drawer-head"><span class="id">${esc(D.id || t('newTask'))}</span>
+      ${x ? `<span class="muted" style="font-size:12px">${esc(fmtTime(x.updatedAt))}</span>` : ''}
+      <button class="icon-btn" data-action="close-drawer" style="margin-inline-start:auto" aria-label="${t('close')}">${ICON.x}</button></div>
+    <form class="drawer-body" id="task-form" novalidate>
+      <input class="title-input" id="d-title" name="title" value="${esc(d.title)}" placeholder="${t('title')}" maxlength="200" aria-label="${t('title')}" required>
+      <div class="field"><span>${t('status')}</span><div class="seg" role="group">${S.statuses.map(s => `<button type="button" data-action="d-status" data-v="${s}" aria-pressed="${d.status === s}">${t(s)}</button>`).join('')}</div></div>
+      <div class="row2">
+        <label class="field"><span>${t('priority')}</span><select class="input" name="priority">${S.priorities.map(p => `<option value="${p}" ${d.priority === p ? 'selected' : ''}>${t(p)}</option>`).join('')}</select></label>
+        <label class="field"><span>${t('due')}</span><input class="input" type="date" name="due" value="${esc(d.due)}"></label>
+      </div>
+      <div class="row2">
+        <label class="field"><span>${t('teamField')}</span><select class="input" name="team"><option value="">${t('none')}</option>${teams.map(x => `<option ${d.team === x ? 'selected' : ''}>${esc(x)}</option>`).join('')}</select></label>
+        <label class="field"><span>${t('labels')}</span><input class="input" name="labels" value="${esc(d.labels.join(', '))}" placeholder="${t('labelsHelp')}"></label>
+      </div>
+      <div class="field"><span>${t('assignees')}</span><div class="people">${S.members.filter(m => m.active || d.assignees.includes(m.id)).map(m => `<button type="button" class="person" data-action="d-person" data-id="${m.id}" aria-pressed="${d.assignees.includes(m.id)}">${avatar(m.id)}${esc(m.name)}</button>`).join('')}</div></div>
+      <label class="check"><input type="checkbox" name="blocked" ${d.blocked ? 'checked' : ''}>${t('isBlocked')}</label>
+      <label class="field"><span>${t('description')}</span><textarea class="input" name="description" rows="5">${esc(d.description)}</textarea></label>
+      <div class="field"><span>${t('checklist')} ${d.checklist.length ? `(${doneN}/${d.checklist.length})` : ''}</span>
+        ${d.checklist.length ? `<div class="progress"><i style="width:${doneN / d.checklist.length * 100}%"></i></div>` : ''}
+        <div class="checklist">${d.checklist.map((i, n) => `<div class="cl-item ${i.d ? 'done' : ''}">
+          <input type="checkbox" data-action="cl-toggle" data-n="${n}" ${i.d ? 'checked' : ''} aria-label="${esc(i.t)}">
+          <input type="text" data-cl="${n}" value="${esc(i.t)}" maxlength="200">
+          <button type="button" class="icon-btn" data-action="cl-remove" data-n="${n}" aria-label="×" style="width:30px;height:30px">${ICON.x}</button></div>`).join('')}
+          <input class="input" id="cl-new" placeholder="${t('addStep')}" maxlength="200"></div></div>
+      <div id="detail"></div>
+    </form>
+    <div class="drawer-foot">
+      <button class="btn btn-dark" data-action="save-task" id="save-btn">${t('save')}</button>
+      <button class="btn" data-action="close-drawer">${t('cancel')}</button>
+      ${x && (S.me.admin || x.createdBy === S.me.id) ? `<button class="btn btn-ghost" data-action="archive" style="margin-inline-start:auto">${t('archive')}</button>` : ''}
+      ${x && S.me.admin ? `<button class="btn btn-danger btn-sm" data-action="delete">${t('delete')}</button>` : ''}
+    </div>
+  </aside>`;
+  wireDrawer();
+  renderDetail();
+}
+
+function renderDetail() {
+  const el = $('#detail');
+  if (!el || !D || !D.id) return;
+  const det = D.detail;
+  // Keep a comment being typed (and its focus) when the comments arrive or refresh.
+  const box = $('#c-new'), typed = box ? box.value : '', focused = box && document.activeElement === box;
+  el.innerHTML = `<p class="section-title">${t('comments')}</p>
+    ${det ? det.comments.map(c => `<div class="comment"><b>${esc(c.author)}</b><time>${esc(fmtTime(c.createdAt))}</time><p>${esc(c.text)}</p></div>`).join('') : '<div class="spinner"></div>'}
+    <div style="display:flex;gap:8px;align-items:flex-end;margin-top:8px"><textarea class="input" id="c-new" rows="2" placeholder="${t('addComment')}" maxlength="2000" style="min-height:44px"></textarea>
+    <button type="button" class="btn btn-sm btn-dark" data-action="post-comment">${t('post')}</button></div>
+    ${det && det.activity.length ? `<p class="section-title">${t('activity')}</p><ul class="activity">${det.activity.map(a => `<li><b>${esc(a.actor)}</b> · ${esc(a.action)}${a.details ? ': ' + esc(a.details) : ''}<br><time>${esc(fmtTime(a.time))}</time></li>`).join('')}</ul>` : ''}`;
+  const box2 = $('#c-new');
+  if (box2 && typed) box2.value = typed;
+  if (box2 && focused) box2.focus();
+}
+
+function wireDrawer() {
+  const form = $('#task-form');
+  form.addEventListener('input', e => {
+    const el = e.target;
+    if (el.name === 'title' || el.name === 'description' || el.name === 'due') D.draft[el.name] = el.value;
+    if (el.name === 'labels') D.draft.labels = el.value.split(',').map(s => s.trim()).filter(Boolean);
+    if (el.dataset.cl !== undefined) D.draft.checklist[Number(el.dataset.cl)].t = el.value;
+  });
+  form.addEventListener('change', e => {
+    const el = e.target;
+    if (el.name === 'priority' || el.name === 'team') D.draft[el.name] = el.value;
+    if (el.name === 'blocked') D.draft.blocked = el.checked;
+  });
+  form.addEventListener('submit', e => e.preventDefault());
+  $('#cl-new').addEventListener('keydown', e => {
+    if (e.key !== 'Enter') return;
+    e.preventDefault();
+    const v = e.target.value.trim();
+    if (!v) return;
+    D.draft.checklist.push({ t: v, d: false });
+    renderDrawerKeepScroll(() => $('#cl-new') && $('#cl-new').focus());
+  });
+}
+
+function renderDrawerKeepScroll(after) {
+  const body = document.querySelector('.drawer-body'), top = body ? body.scrollTop : 0;
+  renderDrawer();
+  const b2 = document.querySelector('.drawer-body');
+  if (b2) b2.scrollTop = top;
+  if (after) after();
+}
+
+function closeDrawer(force) {
+  if (!D) return;
+  if (!force && Object.keys(dirtyFields()).length) return confirmBox(t('unsaved'), () => closeDrawer(true));
+  D = null;
+  $('#layer').innerHTML = '';
+}
+
+function saveTask() {
+  const patch = dirtyFields();
+  if (!D.id && !D.draft.title.trim()) return toast(errText('title'), true);
+  if (D.id && !Object.keys(patch).length) return closeDrawer(true);
+  if (!D.id) Object.assign(patch, { title: D.draft.title, status: D.draft.status, priority: D.draft.priority });
+  if (D.id) patch.id = D.id;
+  const btn = $('#save-btn');
+  btn.disabled = true; btn.textContent = t('saving');
+  api('api_saveTask', patch).then(x => {
+    S.tasks.set(x.id, x);
+    toast(D.id ? t('saved') : t('created'));
+    closeDrawer(true);
+    renderMain();
+  }).catch(err => { btn.disabled = false; btn.textContent = t('save'); fail(err); });
+}
+
+// =============================================================================== modals
+function modal(html, onReady) {
+  const wrap = document.createElement('div');
+  wrap.innerHTML = `<div class="scrim modal-scrim" data-action="close-modal"></div><div class="modal" role="dialog" aria-modal="true">${html}</div>`;
+  wrap.className = 'modal-wrap';
+  document.body.appendChild(wrap);
+  const first = wrap.querySelector('input,select,textarea,button:not([data-action="close-modal"])');
+  if (first) setTimeout(() => first.focus(), 20);
+  if (onReady) onReady(wrap);
+  return wrap;
+}
+const closeModal = () => document.querySelectorAll('.modal-wrap').forEach(m => m.remove());
+
+function confirmBox(text, yes) {
+  modal(`<p style="margin:0;font-size:16px">${esc(text)}</p><div style="display:flex;gap:8px;justify-content:flex-end"><button class="btn" data-action="close-modal">${t('cancel')}</button><button class="btn btn-dark" id="confirm-yes">${t('yes')}</button></div>`,
+    w => w.querySelector('#confirm-yes').addEventListener('click', () => { closeModal(); yes(); }));
+}
+
+function showCode(name, code) {
+  modal(`<h2>${t('codeFor')} ${esc(name)}</h2><div class="code-box" id="code-box">${esc(code)}</div><p class="muted" style="margin:0">${t('codeOnce')}</p>
+    <div style="display:flex;gap:8px;justify-content:flex-end"><button class="btn" id="copy-code">${t('copy')}</button><button class="btn btn-dark" data-action="close-modal">${t('close')}</button></div>`,
+  w => w.querySelector('#copy-code').addEventListener('click', () => {
+    const done = () => toast(t('copied'));
+    if (navigator.clipboard) navigator.clipboard.writeText(code).then(done, () => selectCode());
+    else selectCode();
+    function selectCode() { const r = document.createRange(); r.selectNodeContents(w.querySelector('#code-box')); const s = getSelection(); s.removeAllRanges(); s.addRange(r); try { document.execCommand('copy'); done(); } catch (e) {} }
+  }));
+}
+
+function memberForm(id) {
+  const m = id ? S.members.find(x => x.id === id) : { name: '', email: '', role: '', team: '', admin: false, active: true, notify: true };
+  modal(`<h2>${id ? t('edit') : t('addMember')}</h2><form id="member-form" class="drawer-body" style="padding:0" novalidate>
+    <label class="field"><span>${t('name')}</span><input class="input" name="name" value="${esc(m.name)}" required maxlength="80"></label>
+    <label class="field"><span>${t('email')}</span><input class="input" type="email" name="email" value="${esc(m.email)}" dir="ltr"></label>
+    <div class="row2"><label class="field"><span>${t('role')}</span><input class="input" name="role" value="${esc(m.role)}" maxlength="60"></label>
+    <label class="field"><span>${t('teamField')}</span><select class="input" name="team"><option value="">${t('none')}</option>${S.settings.teams.map(x => `<option ${m.team === x ? 'selected' : ''}>${esc(x)}</option>`).join('')}</select></label></div>
+    <label class="check"><input type="checkbox" name="admin" ${m.admin ? 'checked' : ''}>${t('admin')}</label>
+    <label class="check"><input type="checkbox" name="active" ${m.active ? 'checked' : ''}>${t('active')}</label>
+    <label class="check"><input type="checkbox" name="notify" ${m.notify ? 'checked' : ''}>${t('notifyMail')}</label>
+    ${id ? '' : `<label class="check"><input type="checkbox" name="sendCode">${t('sendCodeMail')}</label>`}
+    <p class="error" id="member-error" role="alert"></p>
+    <div style="display:flex;gap:8px;justify-content:flex-end"><button type="button" class="btn" data-action="close-modal">${t('cancel')}</button><button class="btn btn-dark" type="submit">${t('save')}</button></div>
+  </form>`, w => w.querySelector('#member-form').addEventListener('submit', e => {
+    e.preventDefault();
+    const f = e.target, btn = f.querySelector('[type=submit]');
+    btn.disabled = true;
+    api('api_saveMember', { id, name: f.name.value, email: f.email.value, role: f.role.value, team: f.team.value, admin: f.admin.checked, active: f.active.checked, notify: f.notify.checked, sendCode: f.sendCode ? f.sendCode.checked : false })
+      .then(r => {
+        const i = S.members.findIndex(x => x.id === r.member.id);
+        if (i >= 0) S.members[i] = r.member; else S.members.push(r.member);
+        closeModal(); renderMain(); toast(t('memberSaved'));
+        if (r.code) showCode(r.member.name, r.code);
+      }).catch(err => { btn.disabled = false; f.querySelector('#member-error').textContent = errText(err.code); });
+  }));
+}
+
+function changeCodeForm() {
+  modal(`<h2>${t('changeCode')}</h2><form id="code-form" class="drawer-body" style="padding:0" novalidate>
+    <label class="field"><span>${t('currentCode')}</span><input class="input" name="cur" dir="ltr" autocomplete="current-password" required></label>
+    <label class="field"><span>${t('newCodeLabel')}</span><input class="input" name="next" dir="ltr" autocomplete="new-password" required></label>
+    <label class="field"><span>${t('confirmCode')}</span><input class="input" name="again" dir="ltr" autocomplete="new-password" required></label>
+    <p class="error" id="code-error" role="alert"></p>
+    <div style="display:flex;gap:8px;justify-content:flex-end"><button type="button" class="btn" data-action="close-modal">${t('cancel')}</button><button class="btn btn-dark" type="submit">${t('save')}</button></div>
+  </form>`, w => w.querySelector('#code-form').addEventListener('submit', e => {
+    e.preventDefault();
+    const f = e.target;
+    if (f.next.value !== f.again.value) return (f.querySelector('#code-error').textContent = t('mismatch'));
+    api('api_changeCode', f.cur.value, f.next.value).then(r => {
+      S.token = r.token; saved.set('ies-tasks-token', r.token); closeModal(); toast(t('codeChanged'));
+    }).catch(err => { f.querySelector('#code-error').textContent = errText(err.code); });
+  }));
+}
+
+// =============================================================================== events
+document.addEventListener('click', e => {
+  const el = e.target.closest('[data-action]');
+  if (S.menu && !e.target.closest('.menu') && !(el && el.dataset.action === 'menu')) { S.menu = false; render(); if (!el) return; }
+  if (!el) return;
+  const a = el.dataset.action;
+  if (a === 'view') { S.view = el.dataset.view; saved.set('ies-tasks-view', S.view); S.menu = false; render(); }
+  else if (a === 'new') openTask(null, el.dataset.status ? { status: el.dataset.status } : {});
+  else if (a === 'open') openTask(el.dataset.id);
+  else if (a === 'sync') sync(true);
+  else if (a === 'menu') { S.menu = !S.menu; render(); }
+  else if (a === 'lang') { S.lang = S.lang === 'ar' ? 'en' : 'ar'; saved.set('ies-tasks-lang', S.lang); S.menu = false; if (S.me) render(); else showLogin(); }
+  else if (a === 'signout') signOut(false);
+  else if (a === 'change-code') { S.menu = false; render(); changeCodeForm(); }
+  else if (a === 'notify') api('api_setNotify', !S.me.notify).then(r => { S.me.notify = r.notify; render(); }).catch(fail);
+  else if (a === 'clear-filters') { S.filters = { q: '', team: '', who: '', prio: '', showDone: S.filters.showDone }; renderMain(); }
+  else if (a === 'sort') { const k = el.dataset.key; S.sort = { key: k, dir: S.sort.key === k ? -S.sort.dir : 1 }; renderMain(); }
+  else if (a === 'cal') { const st = Number(el.dataset.step); if (!st) S.cal = null; else { let m = S.cal.m + st, y = S.cal.y; if (m < 0) { m = 11; y--; } if (m > 11) { m = 0; y++; } S.cal = { y, m }; } renderMain(); }
+  else if (a === 'close-drawer') closeDrawer(false);
+  else if (a === 'save-task') saveTask();
+  else if (a === 'd-status') { D.draft.status = el.dataset.v; document.querySelectorAll('[data-action="d-status"]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.v === D.draft.status))); }
+  else if (a === 'd-person') { const id = el.dataset.id, list = D.draft.assignees; const i = list.indexOf(id); if (i >= 0) list.splice(i, 1); else list.push(id); el.setAttribute('aria-pressed', String(i < 0)); }
+  else if (a === 'cl-toggle') { D.draft.checklist[Number(el.dataset.n)].d = el.checked; renderDrawerKeepScroll(); }
+  else if (a === 'cl-remove') { D.draft.checklist.splice(Number(el.dataset.n), 1); renderDrawerKeepScroll(); }
+  else if (a === 'post-comment') {
+    const box = $('#c-new'), text = box.value.trim();
+    if (!text) return;
+    el.disabled = true;
+    box.value = '';
+    api('api_addComment', D.id, text).then(c => {
+      const x = S.tasks.get(c.taskId); if (x) S.tasks.set(x.id, Object.assign({}, x, { comments: x.comments + 1 }));
+      renderMain();
+      if ($('#c-new')) $('#c-new').value = '';
+      if (D && D.id === c.taskId) {
+        // Reload comments and history together, so a comment posted before they first loaded is never lost.
+        D.detail = Object.assign({}, D.detail || { activity: [] }, { comments: ((D.detail && D.detail.comments) || []).concat([c]) });
+        renderDetail();
+        return api('api_taskDetail', c.taskId).then(det => { if (D && D.id === c.taskId) { D.detail = det; renderDetail(); } });
+      }
+    }).catch(err => { el.disabled = false; fail(err); });
+  }
+  else if (a === 'archive') confirmBox(t('confirmArchive'), () => api('api_archiveTask', D.id, true).then(x => { S.tasks.delete(x.id); closeDrawer(true); renderMain(); toast(t('archived')); }).catch(fail));
+  else if (a === 'delete') confirmBox(t('confirmDelete'), () => api('api_deleteTask', D.id).then(r => { S.tasks.delete(r.id); closeDrawer(true); renderMain(); toast(t('deleted')); }).catch(fail));
+  else if (a === 'close-modal') closeModal();
+  else if (a === 'member') memberForm(el.dataset.id);
+  else if (a === 'reset-code') { const m = S.members.find(x => x.id === el.dataset.id); confirmBox(t('resetConfirm'), () => api('api_resetCode', m.id, false).then(r => showCode(m.name, r.code)).catch(fail)); }
+});
+
+document.addEventListener('input', e => {
+  const k = e.target.dataset && e.target.dataset.filter;
+  if (!k) return;
+  S.filters[k] = e.target.type === 'checkbox' ? e.target.checked : e.target.value;
+  if (k === 'q') { clearTimeout(S.qt); S.qt = setTimeout(() => { renderMain(); const s = $('.search'); if (s) { s.focus(); s.setSelectionRange(s.value.length, s.value.length); } }, 200); }
+  else renderMain();
+});
+
+document.addEventListener('submit', e => {
+  if (e.target.id !== 'settings-form') return;
+  e.preventDefault();
+  const f = e.target;
+  api('api_saveSettings', { teams: f.teams.value.split('\n').map(s => s.trim()).filter(Boolean), digest: f.digest.checked, digestHour: Number(f.digestHour.value) })
+    .then(s => { S.settings = Object.assign(S.settings, s); renderMain(); toast(t('settingsSaved')); }).catch(fail);
+});
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') { if (document.querySelector('.modal-wrap')) closeModal(); else if (D) closeDrawer(false); else if (S.menu) { S.menu = false; render(); } }
+  if (e.key === 'Enter' && (e.metaKey || e.ctrlKey) && D) saveTask();
+  if ((e.key === 'Enter' || e.key === ' ') && e.target.matches && e.target.matches('[data-action="open"]:not(button)')) { e.preventDefault(); openTask(e.target.dataset.id); }
+});
+
+boot();
+})();
+</script>
+</body>
+</html>

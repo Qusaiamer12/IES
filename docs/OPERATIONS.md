@@ -13,6 +13,14 @@
 
 Both hosts rebuild automatically from GitHub; nobody deploys by hand.
 
+## Team task manager
+
+The committee's task manager is a Google Apps Script web app whose database is the Google Sheet
+**IES HU Tasks — database** (Drive → `IES 26-27`). Install, update and sign-in codes: [tools/task-manager/README.md](../tools/task-manager/README.md).
+- Admins (Chair, Vice Chair, Secretary by default) manage members and codes from the app's **Team** page.
+- Emails and the daily reminder are sent by the account that deployed the app.
+- Every task, comment and change is a row in the sheet: export it at the end of the term like the form submissions.
+
 ## Environment variables
 
 Set in the host's dashboard, never in the repository (`.env*` files are git-ignored; `.env.example` lists them all).
@@ -74,6 +82,7 @@ the chapter account `ies.2026.hu@gmail.com` (or add it as owner) so the chapter 
 - [ ] Vercel: invite the chapter account to team `ies14` as owner (or transfer the project).
 - [ ] Render: invite the chapter account to the workspace.
 - [ ] Supabase: invite the chapter account to the organization as owner.
+- [ ] Task manager: transfer the sheet *IES HU Tasks — database* to the chapter account and redeploy the web app from it; give the new officers sign-in codes, deactivate those who left.
 - [ ] Gmail / Drive: change the chapter account's password and recovery phone to the new chair's; revoke old App Passwords and create a new one.
 - [ ] Domain (if any): renewal date, registrar login.
 

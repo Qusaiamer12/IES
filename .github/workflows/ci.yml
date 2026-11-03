@@ -45,6 +45,9 @@ jobs:
           for i in $(seq 1 60); do curl -sf -o /dev/null http://localhost:3000 && break; sleep 1; done
           npm run test:e2e
 
+      - name: Task manager (Apps Script) tests
+        run: npm run tasks:test
+
       - name: Build (static backup)
         run: npm run build:static
         env:

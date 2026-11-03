@@ -24,6 +24,7 @@ npm run dev        # http://localhost:3000
 | `npm run build && MAIL_DRY_RUN=1 npm start` then `npm run test:e2e` | End-to-end checks against the built site (every page, phone + desktop, accessibility, forms, headers) |
 | `npm run build:static` | The static backup build (`out/`); needs the `NEXT_PUBLIC_SUPABASE_*` variables |
 | `npm run preview:html` | Single-file HTML preview of the running site, for sharing |
+| `npm run tasks:dev` / `tasks:test` / `tasks:build` | Task manager: local preview, tests, paste-ready build (`tools/task-manager/`) |
 
 CI (`.github/workflows/ci.yml`) runs all of this on every push and pull request.
 
