@@ -14,12 +14,14 @@ concurrency:
 
 jobs:
   check:
-    runs-on: ubuntu-latest
+    # Pinned: Playwright supports specific OS releases; ubuntu-latest moved to 26.04 before Playwright did.
+    # Move this forward together with a Playwright update.
+    runs-on: ubuntu-24.04
     timeout-minutes: 25
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
           node-version-file: .nvmrc
           cache: npm
