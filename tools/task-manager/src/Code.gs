@@ -182,7 +182,15 @@ function api_addComment(token, taskId, text) {
     writeRecord_('Tasks', Object.assign({}, t, { UpdatedAt: c.CreatedAt }), t);
     log_(me, taskId, 'commented', body.slice(0, 120));
     const to = split_(t.Assignees).concat([t.CreatedBy]).filter(id => id !== me.ID);
-    notify_(to, `${me.Name} commented on “${t.Title}”`, `<p><b>${esc_(me.Name)}</b>:</p><blockquote>${esc_(body)}</blockquote>`, t.ID);
+    const view = taskView_(t);
+    notify_(to, m => ({
+      subject: `${me.Name} علّق على: ${t.Title}`,
+      preheader: body.slice(0, 90),
+      heading: 'تعليق جديد على مهمة',
+      intro: `أهلًا ${esc_(firstName_(m.Name))}، <b>${esc_(me.Name)}</b> كتب تعليق على مهمة إلك:`,
+      body: `<div dir="auto" style="margin:0 0 14px;padding:12px 16px;border-radius:12px;background:#FFF8E6;border-right:4px solid #FFC21A;font-size:15px;line-height:1.7;color:#2E3A59">${esc_(body).replace(/\n/g, '<br>')}</div>` + taskCardHtml_(view, true),
+      button: { label: 'افتح المهمة ورد', taskId: t.ID },
+    }));
     return commentView_(c);
   }));
 }
@@ -288,8 +296,15 @@ function dailyDigest() {
   table_('Members').items.filter(m => bool_(m.Active) && bool_(m.Notify) && m.Email).forEach(m => {
     const mine = open.filter(t => split_(t.Assignees).indexOf(m.ID) >= 0).sort((a, b) => a.Due.localeCompare(b.Due));
     if (!mine.length) return;
-    const rows = mine.map(t => `<li><b>${esc_(t.Title)}</b> — ${t.Due < today ? '<span style="color:#C0262D">overdue</span>' : t.Due === today ? 'due today' : 'due ' + t.Due}</li>`).join('');
-    sendMail_(m.Email, `${CONFIG.APP_NAME}: ${mine.length} task${mine.length > 1 ? 's' : ''} need${mine.length > 1 ? '' : 's'} you`, `<p>Hi ${esc_(m.Name)},</p><ul>${rows}</ul>`);
+    const late = mine.filter(t => t.Due < today).length;
+    sendMail_(m.Email, {
+      subject: late ? `عندك ${countTasks_(late)} متأخرة` : `مهامك القريبة: ${countTasks_(mine.length)}`,
+      preheader: mine.map(t => t.Title).slice(0, 3).join(' · '),
+      heading: 'مهامك لليوم',
+      intro: `صباح الخير ${esc_(firstName_(m.Name))}، هاي المهام اللي موعدها قرّب أو فات:`,
+      body: mine.map(t => taskCardHtml_(taskView_(t), true)).join('<div style="height:8px"></div>'),
+      button: { label: 'افتح مهامي' },
+    });
   });
 }
 
@@ -477,33 +492,128 @@ function logTaskChanges_(me, before, after) {
 function notifyAssigned_(me, before, after) {
   const added = after.assignees.filter(id => !before || before.assignees.indexOf(id) < 0).filter(id => id !== me.ID);
   if (!added.length) return;
-  const due = after.due ? `<p>Due: <b>${after.due}</b></p>` : '';
-  const desc = after.description ? `<p>${esc_(after.description).replace(/\n/g, '<br>')}</p>` : '';
-  notify_(added, `${me.Name} assigned you: “${after.title}”`, `${desc}${due}`, after.id);
+  notify_(added, m => ({
+    subject: `مهمة جديدة: ${after.title}`,
+    preheader: `${me.Name} كلّفك بمهمة${after.due ? ' · الموعد ' + dayText_(after.due) : ''}`,
+    heading: 'عندك مهمة جديدة',
+    intro: `أهلًا ${esc_(firstName_(m.Name))}، <b>${esc_(me.Name)}</b> كلّفك بهاي المهمة:`,
+    body: taskCardHtml_(after),
+    button: { label: 'افتح المهمة', taskId: after.id },
+  }));
 }
 
-function notify_(memberIds, subject, html, taskId) {
+/** Sends one email per member, built for that member by `build(member)`. Inactive, opted-out or email-less members are skipped. */
+function notify_(memberIds, build) {
   const members = table_('Members').items;
   memberIds.filter((id, i) => memberIds.indexOf(id) === i).forEach(id => {
     const m = members.find(x => x.ID === id);
-    if (m && bool_(m.Active) && bool_(m.Notify) && m.Email) sendMail_(m.Email, subject, html, taskId);
+    if (m && bool_(m.Active) && bool_(m.Notify) && m.Email) sendMail_(m.Email, build(m));
   });
 }
 
 function sendCode_(m, code) {
-  sendMail_(m.Email, `Your ${CONFIG.APP_NAME} sign-in code`,
-    `<p>Hi ${esc_(m.Name)},</p><p>Your sign-in code is <b style="font-size:18px;letter-spacing:2px">${code}</b>.</p>` +
-    '<p>Open the app, choose your name and enter the code. You can change it from the menu after signing in.</p>');
+  sendMail_(m.Email, {
+    subject: `رمز الدخول إلى ${CONFIG.APP_NAME}`,
+    preheader: 'الرمز الخاص فيك لبرنامج مهام الفريق',
+    heading: 'رمز الدخول تبعك',
+    intro: `أهلًا ${esc_(firstName_(m.Name))}، هاد رمزك لبرنامج مهام الفريق:`,
+    body: `<div dir="ltr" style="margin:8px 0 18px;padding:16px;border:2px dashed #FFC21A;border-radius:12px;background:#FFFBEB;text-align:center;font:700 26px/1.2 'Courier New',monospace;letter-spacing:3px;color:#0B1530">${esc_(code)}</div>` +
+      `<p style="margin:0 0 6px;font-size:15px;line-height:1.7;color:#4A5468">افتح البرنامج، اختار اسمك واكتب الرمز. الأحرف الكبيرة والصغيرة نفس الإشي.</p>` +
+      `<p style="margin:0;font-size:15px;line-height:1.7;color:#4A5468">بتقدر تغيّره من القائمة بعد ما تدخل. لا تبعته لحدا.</p>`,
+    button: { label: 'افتح البرنامج' },
+  });
 }
 
-function sendMail_(to, subject, html, taskId) {
+// ------------------------------------------------------------------------------------------------ email design
+
+const MONTHS_AR_ = ['كانون الثاني', 'شباط', 'آذار', 'نيسان', 'أيار', 'حزيران', 'تموز', 'آب', 'أيلول', 'تشرين الأول', 'تشرين الثاني', 'كانون الأول'];
+const PRIORITY_AR_ = { low: ['منخفضة', '#6B7385'], medium: ['متوسطة', '#1449D6'], high: ['عالية', '#E2570B'], urgent: ['عاجلة', '#C0262D'] };
+const STATUS_AR_ = { todo: 'للتنفيذ', doing: 'قيد التنفيذ', review: 'مراجعة', done: 'منجز' };
+
+function firstName_(name) { return str_(name).trim().split(/\s+/)[0] || ''; }
+
+/** "13 تشرين الثاني 2026" */
+function dayText_(day) {
+  const p = str_(day).split('-').map(Number);
+  return p.length === 3 && p[1] ? `${p[2]} ${MONTHS_AR_[p[1] - 1]} ${p[0]}` : str_(day);
+}
+
+/** "اليوم" · "بكرة" · "بعد 5 أيام" · "متأخرة يومين" */
+function dueWhen_(day) {
+  const n = Math.round((Date.parse(day + 'T12:00:00Z') - Date.parse(today_() + 'T12:00:00Z')) / 864e5);
+  const days = k => (k === 1 ? 'يوم' : k === 2 ? 'يومين' : k <= 10 ? `${k} أيام` : `${k} يوم`);
+  if (isNaN(n)) return { text: '', color: '#4A5468' };
+  if (n < 0) return { text: `متأخرة ${days(-n)}`, color: '#C0262D' };
+  if (n === 0) return { text: 'اليوم', color: '#A84306' };
+  if (n === 1) return { text: 'بكرة', color: '#A84306' };
+  return { text: `بعد ${days(n)}`, color: '#13795B' };
+}
+
+function countTasks_(n) { return n === 1 ? 'مهمة وحدة' : n === 2 ? 'مهمتين' : n <= 10 ? `${n} مهام` : `${n} مهمة`; }
+
+function pill_(text, color) {
+  return `<span style="display:inline-block;padding:3px 10px;border-radius:999px;background:${color}1A;color:${color};font-size:13px;font-weight:700">${esc_(text)}</span>`;
+}
+
+/** The task as a card: title, then due date, priority, team, people, steps and description. `t` is a taskView_. */
+function taskCardHtml_(t, compact) {
+  const prio = PRIORITY_AR_[t.priority] || PRIORITY_AR_.medium;
+  const row = (label, value) => `<tr><td style="padding:5px 0;width:96px;color:#6B7385;font-size:14px;vertical-align:top">${label}</td><td style="padding:5px 0;font-size:15px;color:#0B1530">${value}</td></tr>`;
+  const rows = [];
+  if (t.due) { const w = dueWhen_(t.due); rows.push(row('الموعد', `${esc_(dayText_(t.due))} ${w.text ? '&nbsp;' + pill_(w.text, w.color) : ''}`)); }
+  rows.push(row('الأولوية', pill_(prio[0], prio[1])));
+  if (!compact) rows.push(row('الحالة', esc_(STATUS_AR_[t.status] || t.status)));
+  if (t.team) rows.push(row('اللجنة', esc_(t.team)));
+  if (!compact && t.assignees.length) rows.push(row('المسؤولين', esc_(namesOf_(t.assignees).join('، '))));
+  if (!compact && t.checklist.length) rows.push(row('الخطوات', `${t.checklist.filter(i => i.d).length} من ${t.checklist.length} خلصت`));
+  if (!compact && t.labels.length) rows.push(row('وسوم', t.labels.map(l => pill_(l, '#4A5468')).join(' ')));
+  const desc = !compact && t.description
+    ? `<div dir="auto" style="margin-top:12px;padding-top:12px;border-top:1px solid #E6E9F0;font-size:15px;line-height:1.7;color:#2E3A59">${esc_(t.description).replace(/\n/g, '<br>')}</div>` : '';
+  return `<div style="margin:0 0 6px;border:1px solid #E6E9F0;border-right:5px solid ${prio[1]};border-radius:12px;background:#FAFBFD;padding:14px 16px">` +
+    `<div dir="auto" style="font-size:18px;font-weight:700;color:#0B1530;margin-bottom:8px">${esc_(t.title)}</div>` +
+    `<table role="presentation" cellpadding="0" cellspacing="0" style="width:100%;border-collapse:collapse">${rows.join('')}</table>${desc}</div>`;
+}
+
+/** Wraps content in the chapter's email layout. Inline styles and tables only, so it looks the same in Gmail, Outlook and phones. */
+function emailHtml_(o) {
+  const url = appUrl_();
+  const href = url ? url + (o.button && o.button.taskId ? '#task=' + encodeURIComponent(o.button.taskId) : '') : '';
+  const button = o.button && href
+    ? `<table role="presentation" cellpadding="0" cellspacing="0" style="margin:22px 0 4px"><tr><td style="border-radius:999px;background:#0B1530"><a href="${esc_(href)}" style="display:inline-block;padding:13px 28px;font-size:16px;font-weight:700;color:#FFFFFF;text-decoration:none;border-radius:999px">${esc_(o.button.label)} ←</a></td></tr></table>` : '';
+  return `<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${esc_(o.subject)}</title></head>` +
+    `<body style="margin:0;padding:0;background:#EEF1F6">` +
+    `<div style="display:none;max-height:0;overflow:hidden;opacity:0">${esc_(o.preheader || '')}</div>` +
+    `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#EEF1F6"><tr><td align="center" style="padding:24px 12px">` +
+    `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" dir="rtl" style="max-width:560px;background:#FFFFFF;border-radius:18px;overflow:hidden;font-family:Tahoma,'Segoe UI',Arial,sans-serif;text-align:right">` +
+    `<tr><td align="center" style="padding:22px 24px 16px"><img src="${esc_(CONFIG.LOGO_URL)}" width="210" alt="IEEE IES · HU Student Branch Chapter" style="display:block;width:210px;max-width:70%;height:auto;border:0"></td></tr>` +
+    `<tr><td style="padding:0"><table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr>` +
+    `<td width="55%" style="height:5px;line-height:5px;font-size:0;background:#0B1530">&nbsp;</td><td width="20%" style="height:5px;line-height:5px;font-size:0;background:#FFC21A">&nbsp;</td><td width="25%" style="height:5px;line-height:5px;font-size:0;background:#FF6B1A">&nbsp;</td>` +
+    `</tr></table></td></tr>` +
+    `<tr><td style="padding:26px 28px 8px">` +
+    `<h1 style="margin:0 0 10px;font-size:22px;line-height:1.4;color:#0B1530">${esc_(o.heading)}</h1>` +
+    `<p style="margin:0 0 16px;font-size:15px;line-height:1.7;color:#4A5468">${o.intro || ''}</p>` +
+    `${o.body || ''}${button}</td></tr>` +
+    `<tr><td style="padding:18px 28px 24px;border-top:1px solid #EEF1F6;font-size:12px;line-height:1.7;color:#6B7385">` +
+    `وصلك هاد الإيميل من <b>${esc_(CONFIG.APP_NAME)}</b>، برنامج مهام فريق IEEE IES بالجامعة الهاشمية.` +
+    `${o.noOptOut ? '' : '<br>لإيقاف هاي الإيميلات: افتح البرنامج ← القائمة ← إشعارات الإيميل.'}</td></tr>` +
+    `</table></td></tr></table></body></html>`;
+}
+
+/** Plain-text copy of the same email, for mail apps that don't show HTML. */
+function emailText_(o) {
+  const strip = h => str_(h).replace(/<br\s*\/?>/gi, '\n').replace(/<\/(p|div|tr|li|h1)>/gi, '\n').replace(/<[^>]+>/g, ' ')
+    .replace(/&nbsp;/g, ' ').replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&#39;/g, "'")
+    .replace(/[ \t]+/g, ' ').replace(/\n\s*\n+/g, '\n').trim();
+  const url = appUrl_();
+  return [o.heading, strip(o.intro), strip(o.body), url ? url + (o.button && o.button.taskId ? '#task=' + o.button.taskId : '') : '', '— ' + CONFIG.APP_NAME + ' · IEEE IES HU']
+    .filter(Boolean).join('\n\n');
+}
+
+/** `o`: { subject, preheader, heading, intro (html), body (html), button: { label, taskId? } }. Never throws. */
+function sendMail_(to, o) {
   try {
     if (MailApp.getRemainingDailyQuota() < 1) return;
-    const link = appUrl_() ? `<p><a href="${appUrl_()}${taskId ? '#task=' + taskId : ''}" style="background:#FFC21A;color:#0B1530;padding:10px 16px;border-radius:999px;text-decoration:none;font-weight:bold">Open ${esc_(CONFIG.APP_NAME)}</a></p>` : '';
-    MailApp.sendEmail({
-      to: to, subject: subject, name: CONFIG.APP_NAME,
-      htmlBody: `<div style="font-family:Arial,sans-serif;color:#0B1530;max-width:560px">${html}${link}<p style="color:#5A6478;font-size:12px">${esc_(CONFIG.APP_NAME)} · IEEE IES HU</p></div>`,
-    });
+    MailApp.sendEmail({ to: to, subject: o.subject, name: 'IEEE IES HU · ' + CONFIG.APP_NAME, body: emailText_(o), htmlBody: emailHtml_(o) });
   } catch (e) {
     console.error('mail failed', e); // never block saving because of email
   }
@@ -728,4 +838,11 @@ function parseChecklist_(v) {
   try { const a = JSON.parse(str_(v) || '[]'); return Array.isArray(a) ? a.map(i => ({ t: str_(i.t), d: !!i.d })) : []; } catch (e) { return []; }
 }
 function commentCount_(taskId) { return table_('Comments').items.filter(c => c.TaskID === taskId).length; }
-function appUrl_() { try { return ScriptApp.getService().getUrl() || ''; } catch (e) { return ''; } }
+/** The web app's /exec address. Remembered from web requests, because time triggers (the daily reminder) may get the /dev one. */
+function appUrl_() {
+  let u = '';
+  try { u = ScriptApp.getService().getUrl() || ''; } catch (e) { /* not deployed */ }
+  const props = PropertiesService.getScriptProperties();
+  if (/\/exec$/.test(u)) { if (props.getProperty('appUrl') !== u) props.setProperty('appUrl', u); return u; }
+  return props.getProperty('appUrl') || u;
+}

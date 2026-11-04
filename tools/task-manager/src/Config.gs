@@ -14,6 +14,7 @@ const CONFIG = {
   TIME_ZONE: 'Asia/Amman',
   /** Icon of the browser tab. */
   FAVICON_URL: 'https://ies-hu.vercel.app/icon-192.png',
+  LOGO_URL: 'https://ies-hu.vercel.app/images/ies-hu-logo.png', // shown at the top of emails
   /** How long a login lasts on a device. */
   SESSION_DAYS: 30,
 };

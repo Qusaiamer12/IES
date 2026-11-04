@@ -346,3 +346,28 @@ describe('server-side protection', () => {
     assert.ok(app.call('api_login', id, adminCode).token);
   });
 });
+
+describe('emails', () => {
+  it('are branded, in Arabic, escape what people typed, link to the task and include a plain-text copy', () => {
+    const r = app.call('api_saveMember', admin.token, { name: 'Rana Odeh', email: 'rana@example.com' });
+    app.mail.length = 0;
+    const t = app.call('api_saveTask', admin.token, { title: 'Poster <b>v2</b>', description: 'Line 1\nLine 2', priority: 'urgent',
+      due: '2026-12-01', team: 'Design', assignees: [r.member.id], checklist: [{ t: 'Draft', d: true }, { t: 'Print', d: false }] });
+    const m = app.mail.at(-1);
+    assert.equal(m.to, 'rana@example.com');
+    assert.equal(m.subject, 'مهمة جديدة: Poster <b>v2</b>');
+    assert.ok(m.htmlBody.includes('dir="rtl"') && m.htmlBody.includes('ies-hu-logo.png'), 'logo and right-to-left layout');
+    assert.ok(m.htmlBody.includes('أهلًا Rana') && m.htmlBody.includes('عاجلة') && m.htmlBody.includes('1 كانون الأول 2026'));
+    assert.ok(m.htmlBody.includes('1 من 2 خلصت') && m.htmlBody.includes('Line 1<br>Line 2'));
+    assert.ok(m.htmlBody.includes('Poster &lt;b&gt;v2&lt;/b&gt;') && !m.htmlBody.includes('<b>v2</b>'), 'typed HTML is escaped');
+    assert.ok(m.htmlBody.includes('/exec#task=' + t.id), 'button opens the task');
+    assert.ok(m.body.includes('Poster <b>v2</b>') && !m.body.includes('<td'), 'plain-text copy');
+  });
+
+  it('does not email you about a task you assigned to yourself', () => {
+    app.call('api_saveMember', admin.token, { id: admin.me.id, name: admin.me.name, email: 'me@example.com', admin: true, active: true });
+    app.mail.length = 0;
+    app.call('api_saveTask', admin.token, { title: 'Mine', assignees: [admin.me.id] });
+    assert.equal(app.mail.length, 0);
+  });
+});
