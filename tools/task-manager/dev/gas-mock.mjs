@@ -30,7 +30,7 @@ for (const m of ['setFontWeight', 'setBackground', 'setFontColor', 'setNumberFor
 }
 
 class Sheet {
-  constructor(name) { this.name = name; this.data = []; }
+  constructor(name) { this.name = name; this.data = []; this.maxRows = 1000; }
   // Like Sheets: a text cell starting with ' keeps the apostrophe out of the value.
   set(row, col, v) {
     while (this.data.length < row) this.data.push([]);
@@ -44,7 +44,8 @@ class Sheet {
     return 0;
   }
   getLastColumn() { return this.data.reduce((n, line) => Math.max(n, line.reduce((m, v, i) => (v !== '' ? i + 1 : m), 0)), 0); }
-  getMaxRows() { return 1000; }
+  getMaxRows() { return Math.max(this.maxRows, this.data.length); }
+  insertRowsAfter(after, n) { this.maxRows = this.getMaxRows() + n; return this; }
   getRange(row, col, rows = 1, cols = 1) {
     if (rows < 1 || cols < 1) throw new Error('The number of rows/columns in the range must be at least 1.');
     return new Range(this, row, col, rows, cols);

@@ -529,15 +529,21 @@ function table_(name, fresh) {
   const lastRow = sh.getLastRow(), lastCol = sh.getLastColumn();
   const header = sh.getRange(1, 1, 1, lastCol).getValues()[0].map(h => String(h).trim());
   const rows = lastRow > 1 ? sh.getRange(2, 1, lastRow - 1, lastCol).getValues() : [];
+  const keyCol = header.indexOf(SCHEMA[name][0]);
   const items = [];
+  let used = 1; // last row holding real content; unticked checkboxes (FALSE) in empty rows don't count
   rows.forEach((r, i) => {
-    if (r.every(v => v === '' || v === null)) return; // blank rows left by people editing the sheet
+    if (r.some(v => v !== '' && v !== null && v !== false)) used = i + 2;
+    // Skip blank rows and rows without an id (empty rows whose checkbox columns read FALSE, notes typed by hand).
+    if (keyCol >= 0 ? isBlank_(r[keyCol]) : r.every(isBlank_)) return;
     const o = { _row: i + 2, _raw: r };
     SCHEMA[name].forEach(c => { const j = header.indexOf(c); o[c] = j < 0 ? '' : cell_(r[j]); });
     items.push(o);
   });
-  return (MEMO_[key] = { sh: sh, header: header, items: items });
+  return (MEMO_[key] = { sh: sh, header: header, items: items, used: used });
 }
+
+function isBlank_(v) { return v === '' || v === null || v === undefined || v === false; }
 
 /** Writes one record (insert when `existing` is null). Unknown columns people added to the sheet are preserved. */
 function writeRecord_(name, rec, existing) {
@@ -552,8 +558,13 @@ function writeRecord_(name, rec, existing) {
     const i = T.items.indexOf(existing);
     T.items[i] = Object.assign({}, rec, { _row: existing._row, _raw: row });
   } else {
-    T.sh.appendRow(row);
-    T.items.push(Object.assign({}, rec, { _row: T.sh.getLastRow(), _raw: row }));
+    // Write right under the data, not after the last row Sheets counts: empty rows with checkboxes read as FALSE and
+    // would push new records to the bottom of the sheet, outside the formatted rows.
+    const r = T.used + 1;
+    if (r > T.sh.getMaxRows()) T.sh.insertRowsAfter(T.sh.getMaxRows(), 100);
+    T.sh.getRange(r, 1, 1, row.length).setValues([row]);
+    T.used = r;
+    T.items.push(Object.assign({}, rec, { _row: r, _raw: row }));
   }
 }
 

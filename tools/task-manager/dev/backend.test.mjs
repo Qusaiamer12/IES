@@ -252,3 +252,25 @@ describe('paste-ready build', () => {
     }
   });
 });
+
+describe('sheet quirks', () => {
+  it('ignores empty rows whose checkboxes read FALSE and writes new rows right under the data', () => {
+    const T = app.ss.getSheetByName('Tasks'), M = app.ss.getSheetByName('Members');
+    const head = sh => sh.getRange(1, 1, 1, sh.getLastColumn()).getValues()[0];
+    const tcol = c => head(T).indexOf(c) + 1, mcol = c => head(M).indexOf(c) + 1;
+    // What a sheet with checkbox columns looks like: every empty row holds FALSE in those columns.
+    for (let r = 2; r <= 1000; r++) ['Blocked', 'Archived'].forEach(c => T.set(r, tcol(c), false));
+    for (let r = M.getLastRow() + 1; r <= 1000; r++) ['Admin', 'Active', 'Notify'].forEach(c => M.set(r, mcol(c), false));
+    app.ctx.resetMemo_('Tasks'); app.ctx.resetMemo_('Members');
+    const boot = app.call('api_bootstrap', admin.token);
+    assert.equal(boot.tasks.length, 0, 'no phantom tasks');
+    assert.equal(boot.members.length, 1, 'no phantom members');
+    const t = app.call('api_saveTask', admin.token, { title: 'First real task', assignees: [admin.me.id], labels: ['x'], checklist: [{ t: 'step' }] });
+    assert.equal(t.id, 'T-0001');
+    assert.equal(T.getRange(2, tcol('ID')).getValue(), 'T-0001', 'written on row 2, not after row 1000');
+    const m = app.call('api_saveMember', admin.token, { name: 'New Member' });
+    assert.equal(M.getRange(3, mcol('Name')).getValue(), 'New Member');
+    assert.equal(app.call('api_bootstrap', admin.token).tasks.length, 1);
+    assert.ok(m.code);
+  });
+});
