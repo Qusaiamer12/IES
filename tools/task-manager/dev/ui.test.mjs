@@ -387,3 +387,24 @@ describe('easier everyday use', () => {
     await p.close();
   });
 });
+
+describe('email notifications', () => {
+  it('shows when my notifications are off and turns them back on in one tap', async () => {
+    const r = dev.app.call('api_login', 'M-0001', dev.adminCode);
+    const tala = dev.app.call('api_publicInfo').members.find(m => m.name === 'Tala Samhan');
+    const p = await page();
+    await signIn(p, 'Tala Samhan', dev.codes['Tala Samhan']);
+    assert.equal(await p.locator('.tip', { hasText: '✉️' }).count(), 0, 'no banner while notifications are on');
+    const tk = dev.app.call('api_login', tala.id, dev.codes['Tala Samhan']).token;
+    dev.app.call('api_setNotify', tk, false);
+    await p.click('[data-action="sync"]');
+    const banner = p.locator('.tip', { hasText: '✉️' });
+    await banner.waitFor();
+    await banner.locator('[data-action="notify"]').click();
+    await p.waitForFunction(() => document.querySelector('#toast').textContent.includes('tala@example.com'));
+    await banner.waitFor({ state: 'detached' });
+    assert.equal(dev.app.call('api_bootstrap', tk).me.notify, true);
+    assert.ok(r.token);
+    await p.close();
+  });
+});

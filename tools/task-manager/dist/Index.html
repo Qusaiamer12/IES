@@ -309,7 +309,7 @@ const T = {
     settings: 'الإعدادات', teams: 'اللجان', teamsHelp: 'لجنة بكل سطر', digest: 'تذكير يومي بالإيميل', digestHelp: 'كل عضو بيوصله إيميل الصبح بمهامه المتأخرة واللي موعدها قريب.',
     digestHour: 'الساعة', openSheet: 'فتح الشيت على درايف', settingsSaved: 'انحفظت الإعدادات', resetConfirm: 'إعطاء رمز جديد؟ الرمز القديم بيوقف وبيطلع من كل الأجهزة.',
     changeCode: 'تغيير رمز الدخول', currentCode: 'الرمز الحالي', newCodeLabel: 'الرمز الجديد (6 أحرف أو أرقام على الأقل)', confirmCode: 'أعد كتابة الرمز الجديد',
-    codeChanged: 'تغيّر الرمز', mismatch: 'الرمزين مش متطابقين', language: 'English', signOut: 'تسجيل الخروج', myNotify: 'إشعارات الإيميل',
+    codeChanged: 'تغيّر الرمز', mismatch: 'الرمزين مش متطابقين', language: 'English', signOut: 'تسجيل الخروج', myNotify: 'إشعارات الإيميل', notifyOnLabel: 'شغّالة ✓', notifyOffLabel: 'طافية، اضغط لتشغيلها', notifyNowOn: 'شغّلت إشعارات الإيميل، رح توصلك على {e}', notifyNowOff: 'طفّيت إشعارات الإيميل، ما رح يوصلك إيميلات', notifyOffBanner: 'إشعارات الإيميل طافية عندك، فما رح يوصلك إيميل لما تنكلّف بمهمة أو حدا يعلّق.', turnOn: 'شغّلها', noEmailBanner: 'ما في إيميل مسجّل إلك، فما رح توصلك إشعارات. اطلب من مسؤول يضيفه من صفحة الفريق.',
     on: 'شغّالة', off: 'مطفية', months: ['كانون الثاني','شباط','آذار','نيسان','أيار','حزيران','تموز','آب','أيلول','تشرين الأول','تشرين الثاني','كانون الأول'],
     dows: ['أحد','اثنين','ثلاثاء','أربعاء','خميس','جمعة','سبت'], prev: 'السابق', next: 'التالي', thisMonth: 'هذا الشهر',
     err: { AUTH: 'انتهت الجلسة، سجّل دخول من جديد.', BAD_CODE: 'الرمز غلط.', LOCKED: 'محاولات كثيرة. جرّب بعد 15 دقيقة.', FORBIDDEN: 'ما عندك صلاحية لهاد.',
@@ -344,7 +344,7 @@ const T = {
     settings: 'Settings', teams: 'Teams', teamsHelp: 'One team per line', digest: 'Daily email reminder', digestHelp: 'Every morning each member gets their overdue and soon-due tasks.',
     digestHour: 'Hour', openSheet: 'Open the sheet in Drive', settingsSaved: 'Settings saved', resetConfirm: 'Give a new code? The old one stops working on every device.',
     changeCode: 'Change sign-in code', currentCode: 'Current code', newCodeLabel: 'New code (at least 6 letters or digits)', confirmCode: 'Type the new code again',
-    codeChanged: 'Code changed', mismatch: 'The codes don’t match', language: 'العربية', signOut: 'Sign out', myNotify: 'Email notifications',
+    codeChanged: 'Code changed', mismatch: 'The codes don’t match', language: 'العربية', signOut: 'Sign out', myNotify: 'Email notifications', notifyOnLabel: 'on ✓', notifyOffLabel: 'off, tap to turn on', notifyNowOn: 'Email notifications on, they go to {e}', notifyNowOff: 'Email notifications off, you won’t get emails', notifyOffBanner: 'Your email notifications are off, so you won’t get an email when you’re assigned a task or someone comments.', turnOn: 'Turn on', noEmailBanner: 'There is no email on your account, so you won’t get notifications. Ask an admin to add it on the Team page.',
     on: 'On', off: 'Off', months: ['January','February','March','April','May','June','July','August','September','October','November','December'],
     dows: ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'], prev: 'Previous', next: 'Next', thisMonth: 'This month',
     err: { AUTH: 'Your session ended. Please sign in again.', BAD_CODE: 'Wrong code.', LOCKED: 'Too many attempts. Try again in 15 minutes.', FORBIDDEN: 'You don’t have permission for that.',
@@ -510,6 +510,8 @@ function sync(manual) {
     d.tasks.forEach(x => S.tasks.set(x.id, x));
     d.archivedIds.forEach(id => S.tasks.delete(id));
     S.members = d.members;
+    const mine = d.members.find(m => m.id === S.me.id);
+    if (mine) Object.assign(S.me, { notify: mine.notify, email: mine.email });
     S.lastSync = d.serverTime;
     renderMain();
     if (manual) toast('✓');
@@ -537,7 +539,7 @@ function render() {
     ${S.menu ? `<div class="menu" role="menu">
       <div class="who"><b>${esc(me.name)}</b><span class="muted" style="font-size:13px">${esc(me.role || '')}${me.admin ? ' · ' + t('admin') : ''}</span></div>
       <button role="menuitem" data-action="lang">🌐 ${t('language')}</button>
-      <button role="menuitem" data-action="notify">✉️ ${t('myNotify')}: ${me.notify ? t('on') : t('off')}</button>
+      <button role="menuitem" data-action="notify">✉️ ${t('myNotify')}: ${me.notify ? t('notifyOnLabel') : t('notifyOffLabel')}</button>
       <button role="menuitem" data-action="change-code">🔑 ${t('changeCode')}</button>
       ${me.admin ? `<a role="menuitem" href="${esc(S.settings.sheetUrl)}" target="_blank" rel="noopener">📊 ${t('openSheet')}</a>` : ''}
       <button role="menuitem" data-action="signout">↩ ${t('signOut')}</button>
@@ -598,9 +600,16 @@ function card(x) {
   </article>`;
 }
 
+/** Says so when this member won't get emails, so nobody waits for one that can't come. */
+function mailBanner() {
+  if (!S.me.email) return `<div class="tip" role="status"><span>✉️ ${t('noEmailBanner')}</span></div>`;
+  if (!S.me.notify) return `<div class="tip" role="status"><span>✉️ ${t('notifyOffBanner')}</span><button class="btn btn-sm" data-action="notify">${t('turnOn')}</button></div>`;
+  return '';
+}
+
 function viewBoard() {
   const list = filtered(allTasks());
-  const tip = saved.get('ies-tasks-tip') ? '' : `<div class="tip" role="note"><span>${t('tip')}</span><button class="btn btn-sm" data-action="tip-ok">${t('gotIt')}</button></div>`;
+  const tip = mailBanner() + (saved.get('ies-tasks-tip') ? '' : `<div class="tip" role="note"><span>${t('tip')}</span><button class="btn btn-sm" data-action="tip-ok">${t('gotIt')}</button></div>`);
   const tabs = `<div class="status-tabs" role="tablist">${S.statuses.map(s => `<button type="button" role="tab" data-action="board-tab" data-s="${s}" aria-selected="${S.boardTab === s}"><b>${list.filter(x => x.status === s).length}</b>${t(s)}</button>`).join('')}</div>`;
   return tip + toolbar() + tabs + `<div class="board">${S.statuses.map(s => {
     const items = list.filter(x => x.status === s).sort((a, b) => s === 'done' ? b.completedAt.localeCompare(a.completedAt) : byDueThenPrio(a, b));
@@ -643,8 +652,8 @@ function viewMine() {
     ['noDate', open.filter(x => !x.due)],
     ['doneRecently', mine.filter(doneInLast7)],
   ].filter(g => g[1].length);
-  if (!groups.length) return `<h1 class="page-title">${t('mine')}</h1><div class="empty">${t('noTasks')}</div>`;
-  return `<h1 class="page-title">${t('mine')}</h1>` + groups.map(([k, items]) => `<section class="group"><h2>${t(k)} <span class="count">${items.length}</span></h2>
+  if (!groups.length) return `<h1 class="page-title">${t('mine')}</h1>${mailBanner()}<div class="empty">${t('noTasks')}</div>`;
+  return `<h1 class="page-title">${t('mine')}</h1>${mailBanner()}` + groups.map(([k, items]) => `<section class="group"><h2>${t(k)} <span class="count">${items.length}</span></h2>
     <div class="grid-cards">${items.sort(byDueThenPrio).map(card).join('')}</div></section>`).join('');
 }
 
@@ -1115,7 +1124,7 @@ document.addEventListener('click', e => {
   else if (a === 'lang') { S.lang = S.lang === 'ar' ? 'en' : 'ar'; saved.set('ies-tasks-lang', S.lang); S.menu = false; if (S.me) render(); else showLogin(); }
   else if (a === 'signout') signOut(false);
   else if (a === 'change-code') { S.menu = false; render(); changeCodeForm(); }
-  else if (a === 'notify') api('api_setNotify', !S.me.notify).then(r => { S.me.notify = r.notify; render(); }).catch(fail);
+  else if (a === 'notify') api('api_setNotify', !S.me.notify).then(r => { S.me.notify = r.notify; S.menu = false; render(); toast(r.notify ? t('notifyNowOn').replace('{e}', S.me.email || '—') : t('notifyNowOff')); }).catch(fail);
   else if (a === 'clear-filters') { S.filters = { q: '', team: '', who: '', prio: '', showDone: S.filters.showDone }; renderMain(); }
   else if (a === 'sort') { const k = el.dataset.key; S.sort = { key: k, dir: S.sort.key === k ? -S.sort.dir : 1 }; renderMain(); }
   else if (a === 'cal') { const st = Number(el.dataset.step); if (!st) S.cal = null; else { let m = S.cal.m + st, y = S.cal.y; if (m < 0) { m = 11; y--; } if (m > 11) { m = 0; y++; } S.cal = { y, m }; } renderMain(); }
