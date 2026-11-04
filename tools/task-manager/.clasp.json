@@ -1,0 +1,20 @@
+{
+  "scriptId": "15EOjcpTWBv5dbo8_dE8zk5tZoZMLpvkweD7TYaSZx3lKOtCEuvCWQypI",
+  "rootDir": "src",
+  "parentId": "1w5aQmyWPcBJMHYxQyaKdY5tOwxI0BJCdx60FXtfzoVY",
+  "scriptExtensions": [
+    ".js",
+    ".gs"
+  ],
+  "htmlExtensions": [
+    ".html"
+  ],
+  "jsonExtensions": [
+    ".json"
+  ],
+  "filePushOrder": [
+    "src/Config.gs",
+    "src/Code.gs"
+  ],
+  "skipSubdirectories": false
+}

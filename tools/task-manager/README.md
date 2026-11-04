@@ -46,12 +46,31 @@ own code from the menu.
 The account that deploys is the one that sends the notification emails and owns the reminders. Ideally deploy from the
 chapter account (`ies.2026.hu@gmail.com`) — see *Ownership* below.
 
+## Where it's installed today
+
+- The script is **bound to the sheet** (open the sheet → *Extensions → Apps Script*). Its id is in
+  [`.clasp.json`](.clasp.json); only people with edit access to the sheet can open it.
+- The app's address is the **Web app URL** of the deployment *v1 — first release*: in the Apps Script editor,
+  **Deploy → Manage deployments**, or `clasp list-deployments` (below). It stays the same across updates.
+- Deployed from `qusaiamer191@gmail.com` (Nov 2026). Move it to the chapter account at handover (see *Ownership*).
+
 ## Update the app after a code change
 
 1. Edit `src/`, then `npm run tasks:build` and `npm run tasks:test`.
-2. Paste the new `dist/Code.gs` and `dist/Index.html` into the editor, save.
-3. **Deploy → Manage deployments → ✏️ (edit) → Version: New version → Deploy.** The URL stays the same.
-   (Don't use *New deployment* for updates: it creates a new URL.)
+2. Either paste the new `dist/Code.gs` and `dist/Index.html` into the editor and save, **or** push with
+   [clasp](https://github.com/google/clasp) (Google's command-line tool) from this folder:
+   ```bash
+   npx @google/clasp@3.4.1 login          # once, with an account that can edit the sheet
+   npx @google/clasp@3.4.1 push --force   # uploads src/ (Config.gs, Code.gs, Index.html, appsscript.json)
+   ```
+3. Publish a new version **on the same deployment**, so the URL stays the same:
+   - editor: **Deploy → Manage deployments → ✏️ (edit) → Version: New version → Deploy**, or
+   - clasp: `npx @google/clasp@3.4.1 list-deployments`, then
+     `npx @google/clasp@3.4.1 deploy -i <the v1 deployment id> -d "what changed"`.
+
+   Don't use *New deployment* (or `deploy` without `-i`) for updates: it creates a new URL.
+4. If the update adds a permission (a new entry in `oauthScopes`), the deploying account must open the app once and
+   approve it again; until then the app answers *Access denied*.
 
 ## The sheet
 
