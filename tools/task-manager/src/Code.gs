@@ -128,6 +128,7 @@ function api_saveTask(token, patch) {
     const after = taskView_(rec);
     logTaskChanges_(me, before, after);
     notifyAssigned_(me, before, after);
+    notifyStage_(me, before, after);
     return Object.assign(after, { comments: commentCount_(after.id), attachments: table_('Attachments').items.filter(a => a.TaskID === after.id).length });
   }));
 }
@@ -599,6 +600,21 @@ function notifyAssigned_(me, before, after) {
       : `Hi ${esc_(firstName_(m.Name))}, <b>${esc_(me.Name)}</b> assigned you this task:`,
     body: taskCardHtml_(after),
     button: { label: 'Open the task', taskId: after.id },
+  }));
+}
+
+/** Tells whoever wrote the task when someone else sends it for review or marks it done, so work never waits unseen. */
+function notifyStage_(me, before, after) {
+  if (!before || before.status === after.status || ['review', 'done'].indexOf(after.status) < 0) return;
+  if (!after.createdBy || after.createdBy === me.ID) return;
+  const review = after.status === 'review';
+  notify_([after.createdBy], m => ({
+    subject: `${review ? 'Ready for review' : 'Done'}: ${after.title}`,
+    preheader: `${me.Name} ${review ? 'sent a task for review' : 'marked a task as done'}`,
+    heading: review ? 'A task is ready for review' : 'A task is done ✓',
+    intro: `Hi ${esc_(firstName_(m.Name))}, <b>${esc_(me.Name)}</b> ${review ? 'sent this task for review' : 'marked this task as done'}:`,
+    body: taskCardHtml_(after),
+    button: { label: review ? 'Review the task' : 'Open the task', taskId: after.id },
   }));
 }
 

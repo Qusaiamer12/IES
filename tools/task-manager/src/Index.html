@@ -93,6 +93,9 @@ textarea.input{min-height:96px;resize:vertical}
 .adv:hover{border-color:var(--navy)}.adv.to-done{border-color:#13795B;color:#13795B}
 .card-foot{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:8px}
 .status-tabs{display:none}
+.card-foot .avatars{min-height:24px}
+.day .dots{display:none}.agenda{display:none}
+.day.sel{outline:2px solid var(--blue)}
 .view-title{font-size:24px;line-height:1.35;margin:2px 0 10px;overflow-wrap:anywhere}
 .view-chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px}
 .pill{display:inline-flex;align-items:center;gap:6px;padding:4px 12px;border-radius:999px;font-weight:700;font-size:13px;background:var(--paper);color:var(--ink-2)}
@@ -245,6 +248,7 @@ tbody tr:hover{background:#F7F9FD}
 .menu .who b{display:block}
 .toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--navy);color:#fff;padding:10px 18px;border-radius:999px;z-index:60;box-shadow:0 8px 30px rgba(0,0,0,.3);font-weight:600;max-width:calc(100vw - 32px)}
 .toast.error{background:var(--red);color:#fff}
+.toast-undo{margin-inline-start:10px;border:0;background:transparent;color:var(--gold);font:inherit;font-weight:800;text-decoration:underline;cursor:pointer;padding:6px 4px}
 .loading{display:grid;place-items:center;min-height:60vh;color:var(--ink-3)}
 .spinner{width:34px;height:34px;border-radius:99px;border:3px solid var(--line);border-top-color:var(--navy);animation:spin 1s linear infinite;margin:0 auto 10px}
 @keyframes spin{to{transform:rotate(360deg)}}
@@ -269,17 +273,40 @@ tbody tr:hover{background:#F7F9FD}
   .board .col.on{display:block}
   .board .col-head{display:none}
   .filter-toggle{display:inline-flex}
+  /* iPhone zooms into any field with text under 16px: keep fields at 16px on phones */
+  .input,input,select,textarea{font-size:16px!important}
+  /* finger-sized targets */
+  .adv{min-height:38px;padding:6px 16px;font-size:14px}
+  .seg button,.stage-row .seg button{min-height:38px;padding:6px 14px;font-size:14px}
+  .person{min-height:40px}
+  .btn-sm{min-height:38px}
+  .icon-btn{min-width:42px;min-height:42px}
+  .v-step{padding:12px 2px}.v-step input{width:24px;height:24px}
+  .x-btn{width:36px;height:36px}
+  /* list: one card per task instead of a squeezed table */
+  .table-wrap{overflow:visible;background:transparent;box-shadow:none;border:0}
+  .table-wrap table,.table-wrap tbody{display:block}
+  .table-wrap thead{display:none}
+  .table-wrap tr{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;background:#fff;border-radius:12px;padding:12px 14px;margin-bottom:10px;box-shadow:var(--shadow)}
+  .table-wrap td{display:block;padding:0;border:0}
+  .table-wrap td:first-child{flex-basis:100%;font-size:15px}
+  /* calendar: dots in the month, the chosen day's tasks below */
+  .day{min-height:52px;padding:5px;gap:2px;cursor:pointer}
+  .day button,.day>.muted{display:none}
+  .day .dots{display:flex;gap:3px;flex-wrap:wrap;align-items:center}
+  .day .dots i{width:7px;height:7px;border-radius:50%}
+  .day .dots b{font-size:10px;line-height:1;color:var(--ink-3)}
+  .agenda{display:block;margin-top:16px}
+  .agenda h2{font-size:16px;margin:0 0 10px}
   .filter-extra{display:none}
   .filter-extra.open{display:contents}
   .kpis{grid-template-columns:repeat(2,minmax(0,1fr))}
   .panels,.admin-grid{grid-template-columns:1fr}
   .tabs{position:fixed;bottom:0;left:0;right:0;margin:0;background:var(--navy);padding:8px 10px calc(8px + env(safe-area-inset-bottom));z-index:25;justify-content:space-between;box-shadow:0 -6px 20px rgba(0,0,0,.2)}
-  .tab{padding:8px 10px;font-size:13px}
+  .tab{padding:8px 10px;font-size:13px;min-height:40px}
   .brand small{display:none}
   .topbar-in{padding:10px 14px}
   .main{padding:14px 14px 100px}
-  .day{min-height:70px}
-  .day button{font-size:10.5px;padding:1px 4px}
   .row2{grid-template-columns:1fr}
   .new-label{display:none}
   .toolbar{gap:8px}
@@ -309,6 +336,7 @@ const T = {
     low: 'منخفضة', medium: 'متوسطة', high: 'عالية', urgent: 'عاجلة',
     start: 'ابدأ', toReview: 'للمراجعة', markDone: 'تم ✓', movedTo: 'انتقلت إلى «{s}»', filters: 'فلترة', more: 'خيارات إضافية (اللجنة، الوسوم، عائق)',
     me: 'أنا', dToday: 'اليوم', dTomorrow: 'بكرة', dWeek: 'بعد أسبوع', dNone: 'بدون موعد', titlePh: 'شو المهمة؟ مثلًا: حجز قاعة للورشة', addStepBtn: 'أضف',
+    undo: 'تراجع', noTasksDay: 'ما في مهام بهاليوم.', tasksOn: 'مهام {d}',
     tipMember: 'أهلًا! اضغط على أي مهمة لتقرأ تفاصيلها. لما تبلش فيها اضغط «ابدأ»، ولما تخلص اضغط «تم ✓». المهام بيكتبها مسؤولين الفريق.',
     startBig: 'ابدأ المهمة', toReviewBig: 'سلّمها للمراجعة', doneBig: 'خلصت ✓', doneNote: 'هاي المهمة منجزة ✓', changeStatus: 'غيّر المرحلة', noDesc: 'ما في وصف.', createdBy: 'كتبها', untilDue: 'الموعد', close2: 'إغلاق', stepsDone: '{a} من {b} خلصت', overdueBy: 'متأخرة {n}', inDays: 'بعد {n}', tomorrowW: 'بكرة', todayW: 'اليوم', noOne: 'ما في حدا',
     tip: 'أهلًا! اضغط على أي مهمة لتفتحها. زر «ابدأ» و«تم ✓» بنقل المهمة خطوة لقدّام، وزر + فوق بيعمل مهمة جديدة.', gotIt: 'تمام', openTask: 'افتح المهمة',
@@ -346,6 +374,7 @@ const T = {
     low: 'Low', medium: 'Medium', high: 'High', urgent: 'Urgent',
     start: 'Start', toReview: 'To review', markDone: 'Done ✓', movedTo: 'Moved to “{s}”', filters: 'Filters', more: 'More options (team, labels, blocked)',
     me: 'me', dToday: 'Today', dTomorrow: 'Tomorrow', dWeek: 'In a week', dNone: 'No date', titlePh: 'What needs doing? e.g. Book a room for the workshop', addStepBtn: 'Add',
+    undo: 'Undo', noTasksDay: 'No tasks on this day.', tasksOn: 'Tasks on {d}',
     tipMember: 'Welcome! Tap any task to read it. Tap “Start” when you begin and “Done ✓” when you finish. Tasks are written by the team admins.',
     startBig: 'Start this task', toReviewBig: 'Send for review', doneBig: 'Done ✓', doneNote: 'This task is done ✓', changeStatus: 'Change stage', noDesc: 'No description.', createdBy: 'Written by', untilDue: 'Due', close2: 'Close', stepsDone: '{a} of {b} done', overdueBy: '{n} overdue', inDays: 'in {n}', tomorrowW: 'tomorrow', todayW: 'today', noOne: 'Nobody',
     tip: 'Welcome! Tap any task to open it. “Start” and “Done ✓” move a task one step forward, and + at the top creates a new one.', gotIt: 'Got it', openTask: 'Open task',
@@ -452,12 +481,14 @@ const dueClass = tk => !tk.due || tk.status === 'done' ? '' : tk.due < todayStr(
 const prioColor = p => `var(--p-${p})`;
 const statusColor = { todo: '#6B7385', doing: '#1449D6', review: '#D99A00', done: '#13795B' };
 
-function toast(msg, error) {
+function toast(msg, error, undo) {
   const el = $('#toast');
   el.textContent = msg;
+  S.undo = undo || null;
+  if (undo) { const b = document.createElement('button'); b.type = 'button'; b.className = 'toast-undo'; b.dataset.action = 'undo'; b.textContent = t('undo'); el.append(' ', b); }
   el.className = 'toast' + (error ? ' error' : '');
   clearTimeout(toast.t);
-  toast.t = setTimeout(() => el.classList.add('hidden'), error ? 5000 : 2400);
+  toast.t = setTimeout(() => { el.classList.add('hidden'); S.undo = null; }, error || undo ? 5000 : 2400);
 }
 // Known errors get a plain message; anything else also shows the server's words, so a problem can be reported.
 const conflictText = fields => { const names = { team: 'teamField', blocked: 'isBlocked' }; return t('err').CONFLICT.replace('{f}', (fields || []).map(k => t(names[k] || k)).join(S.lang === 'ar' ? '، ' : ', ')); };
@@ -527,6 +558,7 @@ function loadAll() {
     S.tasks = new Map(d.tasks.map(x => [x.id, x]));
     S.lastSync = d.serverTime;
     if (S.view === 'team' && !S.me.admin) S.view = 'board';
+    if (!saved.get('ies-tasks-view') && !S.me.admin) S.view = 'mine'; // members first see what is theirs
     render();
     clearInterval(S.poll);
     S.poll = setInterval(() => { if (document.visibilityState === 'visible') sync(); }, 45000);
@@ -627,11 +659,13 @@ function card(x) {
   return `<article class="card p-${x.priority} ${x.status === 'done' ? 'done' : ''}" draggable="true" data-action="open" data-id="${esc(x.id)}">
     <div class="card-top">${x.team ? `<span class="chip">${esc(x.team)}</span>` : ''}${x.blocked ? `<span class="chip blocked">${t('blocked')}</span>` : ''}${x.labels.slice(0, 3).map(l => `<span class="chip label">${esc(l)}</span>`).join('')}</div>
     <h3 style="margin:0"><button type="button" class="card-title" data-action="open" data-id="${esc(x.id)}">${esc(x.title || t('untitled'))}</button></h3>
-    <div class="card-meta"><span class="meta-items">${due}${x.checklist.length ? `<span>${ICON.check}${done}/${x.checklist.length}</span>` : ''}${x.comments ? `<span>${ICON.chat}${x.comments}</span>` : ''}${x.attachments ? `<span title="${t('attachments')}">${ICON.clip}${x.attachments}</span>` : ''}</span>
-    <span class="avatars">${x.assignees.slice(0, 4).map(avatar).join('')}</span></div>
-    ${next ? `<div class="card-foot"><span></span><button type="button" class="adv ${next[0] === 'done' ? 'to-done' : ''}" data-action="advance" data-id="${esc(x.id)}" data-to="${next[0]}" aria-label="${esc(t(next[1]) + ': ' + x.title)}">${t(next[1])}</button></div>` : ''}
+    <div class="card-meta"><span class="meta-items">${due}${x.checklist.length ? `<span>${ICON.check}${done}/${x.checklist.length}</span>` : ''}${x.comments ? `<span>${ICON.chat}${x.comments}</span>` : ''}${x.attachments ? `<span title="${t('attachments')}">${ICON.clip}${x.attachments}</span>` : ''}</span></div>
+    ${next || x.assignees.length ? `<div class="card-foot"><span class="avatars">${x.assignees.slice(0, 4).map(avatar).join('')}</span>${next ? `<button type="button" class="adv ${next[0] === 'done' ? 'to-done' : ''}" data-action="advance" data-id="${esc(x.id)}" data-to="${next[0]}" aria-label="${esc(t(next[1]) + ': ' + x.title)}">${t(next[1])}</button>` : ''}</div>` : ''}
   </article>`;
 }
+
+/** The notices above a view: email problems, and the first-run tip until dismissed. */
+const topNotes = () => mailBanner() + (saved.get('ies-tasks-tip') ? '' : `<div class="tip" role="note"><span>${t(S.me.admin ? 'tip' : 'tipMember')}</span><button class="btn btn-sm" data-action="tip-ok">${t('gotIt')}</button></div>`);
 
 /** Says so when this member won't get emails, so nobody waits for one that can't come. */
 function mailBanner() {
@@ -642,7 +676,7 @@ function mailBanner() {
 
 function viewBoard() {
   const list = filtered(allTasks());
-  const tip = mailBanner() + (saved.get('ies-tasks-tip') ? '' : `<div class="tip" role="note"><span>${t(S.me.admin ? 'tip' : 'tipMember')}</span><button class="btn btn-sm" data-action="tip-ok">${t('gotIt')}</button></div>`);
+  const tip = topNotes();
   const tabs = `<div class="status-tabs" role="tablist">${S.statuses.map(s => `<button type="button" role="tab" data-action="board-tab" data-s="${s}" aria-selected="${S.boardTab === s}"><b>${list.filter(x => x.status === s).length}</b>${t(s)}</button>`).join('')}</div>`;
   return tip + toolbar() + tabs + `<div class="board">${S.statuses.map(s => {
     const items = list.filter(x => x.status === s).sort((a, b) => s === 'done' ? b.completedAt.localeCompare(a.completedAt) : byDueThenPrio(a, b));
@@ -685,8 +719,8 @@ function viewMine() {
     ['noDate', open.filter(x => !x.due)],
     ['doneRecently', mine.filter(doneInLast7)],
   ].filter(g => g[1].length);
-  if (!groups.length) return `<h1 class="page-title">${t('mine')}</h1>${mailBanner()}<div class="empty">${t('noTasks')}</div>`;
-  return `<h1 class="page-title">${t('mine')}</h1>${mailBanner()}` + groups.map(([k, items]) => `<section class="group"><h2>${t(k)} <span class="count">${items.length}</span></h2>
+  if (!groups.length) return `<h1 class="page-title">${t('mine')}</h1>${topNotes()}<div class="empty">${t('noTasks')}</div>`;
+  return `<h1 class="page-title">${t('mine')}</h1>${topNotes()}` + groups.map(([k, items]) => `<section class="group"><h2>${t(k)} <span class="count">${items.length}</span></h2>
     <div class="grid-cards">${items.sort(byDueThenPrio).map(card).join('')}</div></section>`).join('');
 }
 
@@ -697,12 +731,17 @@ function viewCalendar() {
   const first = new Date(Date.UTC(y, m, 1));
   const start = new Date(first); start.setUTCDate(1 - first.getUTCDay());
   const list = filtered(allTasks());
+  // The selected day (phones list its tasks under the month): the chosen one if in this month, else today or the 1st.
+  const inMonth = ds => ds && Number(ds.slice(0, 4)) === y && Number(ds.slice(5, 7)) - 1 === m;
+  const sel = inMonth(S.calDay) ? S.calDay : inMonth(today) ? today : `${y}-${String(m + 1).padStart(2, '0')}-01`;
+  const dayItems = list.filter(x => x.due === sel).sort(byDueThenPrio);
   const cells = [];
   for (let i = 0; i < 42; i++) {
     const d = new Date(start); d.setUTCDate(start.getUTCDate() + i);
     const ds = d.toISOString().slice(0, 10);
     const items = list.filter(x => x.due === ds).sort((a, b) => prioRank(b.priority) - prioRank(a.priority));
-    cells.push(`<div class="day ${d.getUTCMonth() !== m ? 'other' : ''} ${ds === today ? 'today' : ''}"><span class="n">${d.getUTCDate()}</span>
+    cells.push(`<div class="day ${d.getUTCMonth() !== m ? 'other' : ''} ${ds === today ? 'today' : ''} ${ds === sel ? 'sel' : ''}" data-action="cal-day" data-d="${ds}"><span class="n">${d.getUTCDate()}</span>
+      ${items.length ? `<span class="dots" aria-hidden="true">${items.slice(0, 3).map(x => `<i style="background:${prioColor(x.priority)}"></i>`).join('')}${items.length > 3 ? '<b>+</b>' : ''}</span>` : ''}
       ${items.slice(0, 4).map(x => `<button data-action="open" data-id="${esc(x.id)}" class="${x.status === 'done' ? 'is-done' : ''}" style="border-inline-start-color:${prioColor(x.priority)}" title="${esc(x.title)}">${esc(x.title)}</button>`).join('')}
       ${items.length > 4 ? `<span class="muted" style="font-size:11px">+${items.length - 4}</span>` : ''}</div>`);
     if (i >= 34 && d.getUTCMonth() !== m && d.getUTCDay() === 6) break;
@@ -714,7 +753,9 @@ function viewCalendar() {
       <button class="icon-btn" data-action="cal" data-step="1" aria-label="${t('next')}">${ICON.chev(flip[1])}</button>
       <button class="btn btn-sm" data-action="cal" data-step="0">${t('thisMonth')}</button>
     </div>
-    <div class="cal">${t('dows').map(d => `<div class="dow">${d}</div>`).join('')}${cells.join('')}</div>`;
+    <div class="cal">${t('dows').map(d => `<div class="dow">${d}</div>`).join('')}${cells.join('')}</div>
+    <section class="agenda" aria-live="polite"><h2>${t('tasksOn').replace('{d}', esc(fmtDay(sel)))}</h2>
+      ${dayItems.length ? `<div class="grid-cards">${dayItems.map(card).join('')}</div>` : `<p class="muted">${t('noTasksDay')}</p>`}</section>`;
 }
 
 function viewDashboard() {
@@ -791,14 +832,14 @@ function wireDrag() {
 let D = null; // the open drawer: { id, orig, draft }
 
 /** Moves a task to another status right away (card button or drag), and puts it back if the server says no. */
-function advanceTask(id, status) {
+function advanceTask(id, status, quiet) {
   const x = S.tasks.get(id);
   if (!x || x.status === status) return;
   const prev = x.status;
   S.tasks.set(id, Object.assign({}, x, { status }));
   const view = () => { if (D && D.view && D.id === id) renderDrawerKeepScroll(); };
   renderMain(); view();
-  toast(t('movedTo').replace('{s}', t(status)));
+  if (!quiet) toast(t('movedTo').replace('{s}', t(status)), false, () => advanceTask(id, prev, true));
   api('api_saveTask', { id, status, base: { status: prev } }).then(saved => { S.tasks.set(id, saved); renderMain(); view(); })
     .catch(err => { S.tasks.set(id, Object.assign({}, x, { status: prev })); renderMain(); view(); fail(err); if (err.code === 'CONFLICT') sync(); });
 }
@@ -1244,6 +1285,8 @@ document.addEventListener('click', e => {
   else if (a === 'close-drawer') closeDrawer(false);
   else if (a === 'save-task') saveTask();
   else if (a === 'advance') advanceTask(el.dataset.id, el.dataset.to);
+  else if (a === 'undo') { const u = S.undo; S.undo = null; $('#toast').classList.add('hidden'); if (u) u(); }
+  else if (a === 'cal-day') { S.calDay = el.dataset.d; renderMain(); }
   else if (a === 'v-status') advanceTask(D.id, el.dataset.v);
   else if (a === 'v-tick') tickStep(Number(el.dataset.n), el.checked);
   else if (a === 'attach-pick') { const i = $('#file-in'); if (i) i.click(); }

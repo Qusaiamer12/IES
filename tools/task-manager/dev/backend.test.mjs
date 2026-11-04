@@ -497,3 +497,20 @@ describe('welcome email', () => {
     assert.ok(app.mail.at(-1).htmlBody.includes('As an admin'));
   });
 });
+
+describe('stage emails', () => {
+  it('tells the task writer when someone sends it for review or marks it done, not about their own moves', () => {
+    app.call('api_saveMember', admin.token, { id: admin.me.id, name: admin.me.name, email: 'chair@example.com', admin: true, active: true });
+    const r = app.call('api_saveMember', admin.token, { name: 'Lana', email: 'lana@example.com' });
+    const lana = app.call('api_login', r.member.id, r.code);
+    const t = app.call('api_saveTask', admin.token, { title: 'Banner', assignees: [r.member.id] });
+    app.mail.length = 0;
+    app.call('api_saveTask', lana.token, { id: t.id, status: 'doing', base: { status: 'todo' } });
+    assert.equal(app.mail.length, 0, 'starting a task sends nothing');
+    app.call('api_saveTask', lana.token, { id: t.id, status: 'review', base: { status: 'doing' } });
+    assert.equal(app.mail.at(-1).to, 'chair@example.com');
+    assert.equal(app.mail.at(-1).subject, 'Ready for review: Banner');
+    app.call('api_saveTask', admin.token, { id: t.id, status: 'done', base: { status: 'review' } });
+    assert.equal(app.mail.length, 1, 'the writer is not emailed about their own move');
+  });
+});

@@ -324,6 +324,7 @@ describe('easier everyday use', () => {
     dev.app.call('api_saveTask', token(), { title: 'Collect sponsor quotes' });
     const p = await page();
     await signIn(p, 'Tala Samhan', dev.codes['Tala Samhan']);
+    await p.click('[data-action="view"][data-view="board"]');
     await p.locator('.card', { hasText: 'Collect sponsor quotes' }).locator('.card-title').click();
     await p.setInputFiles('#file-in', [
       { name: 'quote.pdf', mimeType: 'application/pdf', buffer: Buffer.from('%PDF-1.4 test') },
@@ -449,6 +450,46 @@ describe('members read tasks and work on them', () => {
     const r = await new AxeBuilder({ page: p }).withTags(['wcag2a', 'wcag2aa']).analyze();
     const serious = r.violations.filter(v => ['serious', 'critical'].includes(v.impact));
     assert.deepEqual(serious.map(v => v.id + ': ' + v.nodes.map(n => n.target.join(' ')).join(', ')), []);
+    await p.close();
+  });
+});
+
+describe('phone', () => {
+  const token = () => dev.app.call('api_login', 'M-0001', dev.adminCode).token;
+  const phone = () => page({ width: 390, height: 844 });
+  it('opens members on My tasks, keeps fields at 16px and buttons finger-sized', async () => {
+    const p = await phone();
+    await signIn(p, 'Hala Rawashdeh', dev.codes['Hala Rawashdeh']);
+    assert.equal(await p.locator('[data-action="view"][data-view="mine"]').getAttribute('aria-current'), 'page');
+    const r = await p.evaluate(() => ({
+      small: [...document.querySelectorAll('.adv, .tab, .icon-btn')].filter(e => e.getBoundingClientRect().height && e.getBoundingClientRect().height < 36).length,
+      fonts: [...document.querySelectorAll('input, select, textarea')].filter(e => e.getBoundingClientRect().height && parseFloat(getComputedStyle(e).fontSize) < 16).length,
+    }));
+    assert.deepEqual(r, { small: 0, fonts: 0 });
+    await p.close();
+  });
+  it('shows the list as cards and the calendar as dots with the day\'s tasks below', async () => {
+    const today = new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Amman' }).format(new Date());
+    dev.app.call('api_saveTask', token(), { title: 'Due today on the calendar', due: today });
+    const p = await phone();
+    await signIn(p);
+    await p.click('[data-action="view"][data-view="list"]');
+    assert.equal(await p.locator('.table-wrap thead').isVisible(), false);
+    assert.equal(await p.evaluate(() => document.documentElement.scrollWidth > innerWidth + 1), false);
+    await p.click('[data-action="view"][data-view="calendar"]');
+    await p.locator('.agenda .card', { hasText: 'Due today on the calendar' }).waitFor();
+    assert.ok(await p.locator('.day.today .dots i').count() >= 1);
+    await p.close();
+  });
+  it('lets you undo a move', async () => {
+    dev.app.call('api_saveTask', token(), { title: 'Undo me' });
+    const p = await page();
+    await signIn(p);
+    await column(p, 'todo').locator('.card', { hasText: 'Undo me' }).locator('[data-action="advance"]').click();
+    await p.click('#toast [data-action="undo"]');
+    await column(p, 'todo').locator('.card', { hasText: 'Undo me' }).waitFor();
+    await p.waitForTimeout(400);
+    assert.equal(dev.app.call('api_bootstrap', token()).tasks.find(x => x.title === 'Undo me').status, 'todo');
     await p.close();
   });
 });
