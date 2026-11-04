@@ -132,6 +132,7 @@ function api_saveTask(token, patch) {
     const now = iso_();
     const existing = patch && patch.id ? T.items.find(t => t.ID === patch.id) : null;
     if (patch && patch.id && !existing) throw new Error('NOT_FOUND');
+    if (!bool_(me.Admin)) checkMemberPatch_(patch || {}, existing);
     if (existing && patch.base) patch = rebasePatch_(patch, taskView_(existing));
     const fields = cleanTaskPatch_(patch || {}, !existing);
     const rec = existing ? Object.assign({}, existing) : {
@@ -481,6 +482,21 @@ function settingsView_() {
 }
 
 // ------------------------------------------------------------------------------------------------ validation
+
+/**
+ * Admins write tasks; members work on them. A member may move a task to another stage and tick its steps, and nothing
+ * else here (comments and attachments have their own calls). Everything else is refused on the server, not only hidden.
+ */
+function checkMemberPatch_(patch, existing) {
+  if (!existing) throw new Error('FORBIDDEN');
+  Object.keys(patch).forEach(k => { if (['id', 'base', 'status', 'checklist'].indexOf(k) < 0) throw new Error('FORBIDDEN'); });
+  if (patch.checklist !== undefined) {
+    // Same steps, same order: only the ticks may differ from what the member started from.
+    const texts = l => (Array.isArray(l) ? l : []).map(i => str_(i && i.t).trim()).join('\n');
+    const from = patch.base && patch.base.checklist !== undefined ? patch.base.checklist : taskView_(existing).checklist;
+    if (texts(patch.checklist) !== texts(from)) throw new Error('FORBIDDEN');
+  }
+}
 
 /**
  * Two people editing the same task at once. `patch.base` holds the values the editor started from. Fields nobody else

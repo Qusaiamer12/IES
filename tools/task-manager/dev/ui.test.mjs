@@ -172,9 +172,11 @@ describe('task manager UI', () => {
     const p = await page();
     await signIn(p, 'Hala Rawashdeh', dev.codes['Hala Rawashdeh']);
     assert.equal(await p.locator('[data-view="team"]').count(), 0);
+    assert.equal(await p.locator('[data-action="new"]').count(), 0, 'members do not write tasks');
     await p.locator('.card').first().click();
     await p.waitForSelector('.drawer');
     assert.equal(await p.locator('[data-action="delete"]').count(), 0);
+    assert.equal(await p.locator('#d-title').count(), 0, 'no edit form for members');
     await p.close();
   });
 
@@ -248,8 +250,9 @@ describe('team scenarios', () => {
 
   it('tells the second editor when someone else changed the same field, without losing either edit', async () => {
     const t = dev.app.call('api_saveTask', token(), { title: 'Order the banners' });
+    const second = dev.app.call('api_saveMember', token(), { name: 'Second Admin', admin: true });
     const a = await page(), b = await page();
-    await signIn(a); await signIn(b, 'Tala Samhan', dev.codes['Tala Samhan']);
+    await signIn(a); await signIn(b, 'Second Admin', second.code);
     await a.locator('.card', { hasText: 'Order the banners' }).click();
     await b.locator('.card', { hasText: 'Order the banners' }).click();
     await a.fill('#d-title', 'Order the banners (3 sizes)');
@@ -272,7 +275,7 @@ describe('team scenarios', () => {
     const mailsBefore = dev.app.mail.length;
     const p = await page({ width: 390, height: 844 });
     const hala = await page();
-    await signIn(p, 'Tala Samhan', dev.codes['Tala Samhan']);
+    await signIn(p);
     await signIn(hala, 'Hala Rawashdeh', dev.codes['Hala Rawashdeh']);
     await p.click('.top-actions [data-action="new"]');
     await p.fill('#d-title', 'Design the workshop certificate');
@@ -343,14 +346,15 @@ describe('easier everyday use', () => {
   });
 
   it('makes a new task quick: my team by default, date and priority in one tap, steps and files kept without pressing Enter', async () => {
+    dev.app.call('api_saveMember', token(), { id: 'M-0001', name: 'Admin', team: 'Core Team', admin: true, active: true });
     const p = await page({ width: 390, height: 844 });
-    await signIn(p, 'Tala Samhan', dev.codes['Tala Samhan']);
-    await p.locator('.tip').waitFor();
+    await signIn(p);
+    await p.locator('.tip[role="note"]').waitFor();
     await p.click('[data-action="tip-ok"]');
-    assert.equal(await p.locator('.tip').count(), 0);
+    assert.equal(await p.locator('.tip[role="note"]').count(), 0);
     await p.click('.top-actions [data-action="new"]');
     await p.fill('#d-title', 'Prepare the welcome slides');
-    assert.match(await p.locator('.people .person').first().textContent(), /Tala Samhan/, 'me first');
+    assert.match(await p.locator('.people .person').first().textContent(), /Admin/, 'me first');
     await p.click('[data-action="d-due"]:has-text("بكرة")');
     await p.click('[data-action="d-prio"][data-v="urgent"]');
     await p.fill('#cl-new', 'Ask Noor for the agenda');
@@ -405,6 +409,46 @@ describe('email notifications', () => {
     await banner.waitFor({ state: 'detached' });
     assert.equal(dev.app.call('api_bootstrap', tk).me.notify, true);
     assert.ok(r.token);
+    await p.close();
+  });
+});
+
+describe('members read tasks and work on them', () => {
+  const token = () => dev.app.call('api_login', 'M-0001', dev.adminCode).token;
+  it('opens a readable task with one big button for the next stage and steps to tick', async () => {
+    const hala = dev.app.call('api_publicInfo').members.find(m => m.name === 'Hala Rawashdeh');
+    const t = dev.app.call('api_saveTask', token(), { title: 'Design the event banner', description: 'Size 2x1 m. Brief: https://example.com/brief',
+      priority: 'high', due: '2026-12-01', team: 'Design', assignees: [hala.id], checklist: [{ t: 'Sketch', d: false }, { t: 'Final file', d: false }] });
+    const p = await page({ width: 390, height: 844 });
+    await signIn(p, 'Hala Rawashdeh', dev.codes['Hala Rawashdeh']);
+    await p.locator('.card', { hasText: 'Design the event banner' }).locator('.card-title').click();
+    await p.waitForSelector('#v-title');
+    assert.equal(await p.locator('#v-title').textContent(), 'Design the event banner');
+    assert.equal(await p.locator('.view-desc a[href="https://example.com/brief"]').count(), 1, 'links in the description open');
+    assert.match(await p.locator('.facts').textContent(), /Hala Rawashdeh/);
+    await p.click('.next-btn');
+    await p.waitForFunction(() => document.querySelector('.view-chips').textContent.includes('قيد التنفيذ'));
+    await p.click('.v-step:has-text("Sketch")');
+    await p.waitForFunction(() => document.querySelector('.view-sec h3') && [...document.querySelectorAll('.view-sec h3')].some(h => h.textContent.includes('1 من 2')));
+    await p.waitForTimeout(300);
+    const now = dev.app.call('api_bootstrap', token()).tasks.find(x => x.id === t.id);
+    assert.equal(now.status, 'doing');
+    assert.deepEqual(now.checklist, [{ t: 'Sketch', d: true }, { t: 'Final file', d: false }]);
+    assert.match(await p.locator('.next-btn').textContent(), /سلّمها للمراجعة/);
+    const overflow = await p.evaluate(() => document.documentElement.scrollWidth > window.innerWidth + 1);
+    assert.equal(overflow, false);
+    assert.deepEqual(p.errors, []);
+    await p.close();
+  });
+
+  it('has no serious accessibility problems in the read view', async () => {
+    const p = await page();
+    await signIn(p, 'Hala Rawashdeh', dev.codes['Hala Rawashdeh']);
+    await p.locator('.card .card-title').first().click();
+    await p.waitForSelector('#v-title');
+    const r = await new AxeBuilder({ page: p }).withTags(['wcag2a', 'wcag2aa']).analyze();
+    const serious = r.violations.filter(v => ['serious', 'critical'].includes(v.impact));
+    assert.deepEqual(serious.map(v => v.id + ': ' + v.nodes.map(n => n.target.join(' ')).join(', ')), []);
     await p.close();
   });
 });

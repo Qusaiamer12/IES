@@ -25,6 +25,9 @@ Everything the team does in the app is a row in the sheet, in the chapter's Driv
 - **Filters** by text, team, person and priority. **Arabic / English**, right-to-left, works on phones.
 - **Email** (Arabic, with the chapter logo): when you are assigned a task (also by yourself) or someone comments on yours;
   optional **daily reminder** of overdue and soon-due tasks.
+- **Who does what**: admins (Chair, Vice Chair, Secretary by default) write and edit tasks. Members open a task to read
+  it (description with clickable links, due date, people, steps, files), then move it on with one big button (*Start this
+  task* → *Send for review* → *Done*), tick steps, attach files and comment. The server enforces this, not only the screen.
 - **Team admin** (admins only): add members, give or reset sign-in codes, deactivate people, edit teams, reminders.
 - Syncs every 45 seconds, so everyone sees the same board.
 
@@ -112,6 +115,9 @@ dev/gas-mock.mjs   in-memory stand-in for SpreadsheetApp, LockService, Utilities
 dev/server.mjs     local preview with a google.script.run stand-in: npm run tasks:dev → http://localhost:4300
 dev/*.test.mjs     backend tests + browser tests (Playwright, axe): npm run tasks:test (also in CI)
 ```
+
+Gotcha: Google's page server cuts a line of `Index.html` where two slashes appear, as if a comment started. Keep URLs
+and base64 out of the UI code (the logos are stored as base64url); a test fails if it happens.
 
 Design notes: every write runs under `LockService`; task saves are *patches* (only changed fields) that carry the
 values the editor started from: two people editing different fields both win, their checklist, assignee and label

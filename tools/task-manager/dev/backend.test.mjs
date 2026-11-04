@@ -278,7 +278,7 @@ describe('sheet quirks', () => {
 describe('two people editing the same task at once', () => {
   let lina, t;
   beforeEach(() => {
-    const r = app.call('api_saveMember', admin.token, { name: 'Lina' });
+    const r = app.call('api_saveMember', admin.token, { name: 'Lina', admin: true }); // two admins editing the same task
     lina = app.call('api_login', r.member.id, r.code);
     t = app.call('api_saveTask', admin.token, { title: 'Poster', assignees: [admin.me.id], labels: ['design'],
       checklist: [{ t: 'Draft', d: false }, { t: 'Print', d: false }] });
@@ -416,7 +416,7 @@ describe('attachments', () => {
   it('lets only the uploader or an admin remove a file, and trashes it in Drive', () => {
     const r = app.call('api_saveMember', admin.token, { name: 'Omar' });
     const omar = app.call('api_login', r.member.id, r.code);
-    const t = app.call('api_saveTask', omar.token, { title: 'Hall booking' });
+    const t = app.call('api_saveTask', admin.token, { title: 'Hall booking' });
     const mine = app.call('api_uploadAttachment', omar.token, t.id, { name: 'form.pdf', type: 'application/pdf', data: b64('1') });
     const adminFile = app.call('api_uploadAttachment', admin.token, t.id, { name: 'admin.pdf', type: 'application/pdf', data: b64('2') });
     throwsCode(() => app.call('api_removeAttachment', omar.token, adminFile.id), 'FORBIDDEN');
@@ -433,5 +433,52 @@ describe('attachments', () => {
     app.call('api_deleteTask', admin.token, t.id);
     assert.ok([...app.drive.files.values()].every(f => f.trashed));
     assert.equal(app.ss.getSheetByName('Attachments').getLastRow(), 1);
+  });
+});
+
+describe('served page', () => {
+  it('has no "//" inside code or styles (Google cuts the line there, as if a comment started)', async () => {
+    const { readFileSync } = await import('node:fs');
+    const html = readFileSync(new URL('../dist/Index.html', import.meta.url), 'utf8');
+    const parts = [...html.matchAll(/<(script|style)>([\s\S]*?)<\/\1>/g)].map(m => m[2]);
+    const bad = [];
+    parts.forEach(code => code.split('\n').forEach((line, i) => {
+      for (let j = line.indexOf('//'); j >= 0; j = line.indexOf('//', j + 2)) {
+        if (j > 0 && !/\s/.test(line[j - 1])) bad.push(`line ${i + 1}: …${line.slice(Math.max(0, j - 30), j + 10)}…`);
+      }
+    }));
+    assert.deepEqual(bad, [], 'only comments may contain //; write URLs and base64 so they do not (see LOGO in Index.html)');
+  });
+});
+
+describe('admins write tasks, members work on them', () => {
+  let rana, t;
+  beforeEach(() => {
+    const r = app.call('api_saveMember', admin.token, { name: 'Rana' });
+    rana = app.call('api_login', r.member.id, r.code);
+    t = app.call('api_saveTask', admin.token, { title: 'Book the hall', assignees: [r.member.id], checklist: [{ t: 'Call', d: false }, { t: 'Pay', d: false }] });
+  });
+  it('lets a member move a task and tick its steps', () => {
+    app.call('api_saveTask', rana.token, { id: t.id, status: 'doing', base: { status: 'todo' } });
+    app.call('api_saveTask', rana.token, { id: t.id, checklist: [{ t: 'Call', d: true }, { t: 'Pay', d: false }], base: { checklist: t.checklist } });
+    const now = app.call('api_bootstrap', admin.token).tasks.find(x => x.id === t.id);
+    assert.equal(now.status, 'doing');
+    assert.deepEqual(now.checklist, [{ t: 'Call', d: true }, { t: 'Pay', d: false }]);
+  });
+  it('refuses everything else from a member, on the server', () => {
+    throwsCode(() => app.call('api_saveTask', rana.token, { title: 'My own task' }), 'FORBIDDEN');
+    throwsCode(() => app.call('api_saveTask', rana.token, { id: t.id, title: 'Renamed' }), 'FORBIDDEN');
+    throwsCode(() => app.call('api_saveTask', rana.token, { id: t.id, assignees: [] }), 'FORBIDDEN');
+    throwsCode(() => app.call('api_saveTask', rana.token, { id: t.id, checklist: [{ t: 'Call', d: true }] }), 'FORBIDDEN');
+    throwsCode(() => app.call('api_saveTask', rana.token, { id: t.id, checklist: [{ t: 'Call', d: false }, { t: 'Pay', d: false }, { t: 'Extra', d: false }] }), 'FORBIDDEN');
+    throwsCode(() => app.call('api_archiveTask', rana.token, t.id, true), 'FORBIDDEN');
+    assert.equal(app.call('api_bootstrap', admin.token).tasks.find(x => x.id === t.id).title, 'Book the hall');
+  });
+  it('still lets a member comment and attach files', () => {
+    app.call('api_addComment', rana.token, t.id, 'Called them, waiting for the price');
+    app.call('api_uploadAttachment', rana.token, t.id, { name: 'price.pdf', type: 'application/pdf', data: Buffer.from('%PDF').toString('base64') });
+    const det = app.call('api_taskDetail', rana.token, t.id);
+    assert.equal(det.comments.length, 1);
+    assert.equal(det.attachments.length, 1);
   });
 });
