@@ -617,3 +617,25 @@ describe('calendar feed', () => {
     assert.ok(!bad.includes('BEGIN:VEVENT'), 'a guessed link shows nothing');
   });
 });
+
+describe('email delivery', () => {
+  it('tries a refused email once more, and leaves a trace on the task if it still fails', () => {
+    const m = app.call('api_saveMember', admin.token, { name: 'Mais', email: 'mais@example.com' });
+    const real = app.ctx.MailApp.sendEmail;
+    let calls = 0;
+    app.ctx.MailApp.sendEmail = msg => { calls++; if (calls === 1) throw new Error('Service temporarily unavailable'); real(msg); };
+    app.mail.length = 0;
+    app.call('api_saveTask', admin.token, { title: 'Retry me', assignees: [m.member.id] });
+    assert.equal(app.mail.length, 1, 'sent on the second try');
+    app.ctx.MailApp.sendEmail = () => { throw new Error('Limit Exceeded: Email'); };
+    const t = app.call('api_saveTask', admin.token, { title: 'Never sent', assignees: [m.member.id] });
+    const act = app.call('api_taskDetail', admin.token, t.id).activity;
+    assert.ok(act.some(a => a.action === 'email failed' && a.details.startsWith('mais@example.com')), 'failure recorded on the task');
+    app.ctx.MailApp.sendEmail = real;
+    assert.deepEqual(app.call('api_resendAssignment', admin.token, t.id, [m.member.id]), { sent: 1 });
+    assert.equal(app.mail.at(-1).subject, 'New task: Never sent');
+    const r = app.call('api_saveMember', admin.token, { name: 'Nour' });
+    const nour = app.call('api_login', r.member.id, r.code);
+    throwsCode(() => app.call('api_resendAssignment', nour.token, t.id), 'FORBIDDEN');
+  });
+});

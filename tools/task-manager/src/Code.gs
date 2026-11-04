@@ -470,7 +470,7 @@ function inboxFor_(me) {
   table_('Tasks').items.forEach(t => { tasks[t.ID] = t; });
   const since = new Date(Date.now() - 30 * 864e5).toISOString();
   const first = '@' + firstName_(me.Name).toLowerCase(), full = '@' + str_(me.Name).toLowerCase();
-  return table_('Activity').items.filter(a => a.ActorID !== me.ID && a.TaskID && tasks[a.TaskID] && str_(a.Time) >= since).filter(a => {
+  return table_('Activity').items.filter(a => a.ActorID !== me.ID && a.Action !== 'email failed' && a.TaskID && tasks[a.TaskID] && str_(a.Time) >= since).filter(a => {
     const t = tasks[a.TaskID];
     const mine = split_(t.Assignees).indexOf(me.ID) >= 0 || t.CreatedBy === me.ID;
     const low = str_(a.Details).toLowerCase();
@@ -763,7 +763,11 @@ function notifyAssigned_(me, before, after) {
   // Everyone newly assigned gets an email, including someone who assigned themselves (a reminder in their inbox).
   const added = after.assignees.filter(id => !before || before.assignees.indexOf(id) < 0);
   if (!added.length) return;
-  notify_(added, m => ({
+  notify_(added, m => assignmentEmail_(me, m, after));
+}
+
+function assignmentEmail_(me, m, after) {
+  return {
     subject: `New task: ${after.title}`,
     preheader: `${m.ID === me.ID ? 'You assigned yourself a task' : me.Name + ' assigned you a task'}${after.due ? ' · due ' + dayText_(after.due) : ''}`,
     heading: 'You have a new task',
@@ -772,7 +776,7 @@ function notifyAssigned_(me, before, after) {
       : `Hi ${esc_(firstName_(m.Name))}, <b>${esc_(me.Name)}</b> assigned you this task:`,
     body: taskCardHtml_(after),
     button: { label: 'Open the task', taskId: after.id },
-  }));
+  };
 }
 
 /** Tells whoever wrote the task when someone else sends it for review or marks it done, so work never waits unseen. */
@@ -942,12 +946,41 @@ function emailText_(o) {
 
 /** `o`: { subject, preheader, heading, intro (html), body (html), button: { label, taskId? } }. Never throws. */
 function sendMail_(to, o) {
-  try {
-    if (MailApp.getRemainingDailyQuota() < 1) return;
-    MailApp.sendEmail({ to: to, subject: o.subject, name: 'IEEE IES HU · ' + CONFIG.APP_NAME, body: emailText_(o), htmlBody: emailHtml_(o) });
-  } catch (e) {
-    console.error('mail failed', e); // never block saving because of email
+  const msg = { to: to, subject: o.subject, name: 'IEEE IES HU · ' + CONFIG.APP_NAME, body: emailText_(o), htmlBody: emailHtml_(o) };
+  for (let attempt = 1; attempt <= 2; attempt++) {
+    try {
+      if (MailApp.getRemainingDailyQuota() < 1) throw new Error('daily email quota used up');
+      MailApp.sendEmail(msg);
+      return true;
+    } catch (e) {
+      console.error('mail failed', attempt, to, e);
+      if (attempt === 1) { Utilities.sleep(1500); continue; } // Google sometimes refuses one send in a burst; try once more
+      // Never block saving because of email, but leave a trace on the task so an admin can resend it.
+      try {
+        writeRecord_('Activity', { Time: iso_(), ActorID: '', ActorName: 'system', TaskID: (o.button && o.button.taskId) || '',
+          Action: 'email failed', Details: to + ': ' + str_(e && e.message).slice(0, 200) }, null);
+      } catch (e2) { /* the sheet is busy: the console has it */ }
+    }
   }
+  return false;
+}
+
+/** Admins: send the "New task" email again to some (or all) of a task's assignees. Returns how many were sent. */
+function api_resendAssignment(token, taskId, memberIds) {
+  return withUser_(token, me => {
+    requireAdmin_(me);
+    const t = table_('Tasks').items.find(x => x.ID === taskId);
+    if (!t) throw new Error('NOT_FOUND');
+    const view = taskView_(t);
+    const ids = (Array.isArray(memberIds) && memberIds.length ? memberIds.map(String) : view.assignees).filter(id => view.assignees.indexOf(id) >= 0);
+    let sent = 0;
+    const members = table_('Members').items;
+    ids.forEach(id => {
+      const m = members.find(x => x.ID === id);
+      if (m && bool_(m.Active) && m.Email && sendMail_(m.Email, assignmentEmail_(me, m, view))) sent++;
+    });
+    return { sent: sent };
+  });
 }
 
 function log_(me, taskId, action, details) {
