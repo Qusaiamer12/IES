@@ -5,7 +5,7 @@ Everything the team does in the app is a row in the sheet, in the chapter's Driv
 
 | | |
 |---|---|
-| **Database** | Google Sheet *IES HU Tasks — database* in Drive → `IES 26-27` |
+| **Database** | Google Sheet *IES HU Tasks — database* in Drive → `IES HU Tasks (private)`. Only the Chair, Vice Chair, Secretary and `ies.2026.hu@gmail.com` can open it (editors cannot re-share). Keep it out of shared folders: a file inherits everyone who can open its folder. |
 | **App** | The web app URL from the deployment (see below); bookmark it on your phone |
 | **Code** | `src/` (edit here) → `dist/` (generated, paste-ready) |
 
@@ -14,6 +14,15 @@ Everything the team does in the app is a row in the sheet, in the chapter's Driv
 - **Board** with To do / In progress / Review / Done. Every card has a one-tap button for its next stage (*Start*, *To review*,
   *Done ✓*); on desktop you can also drag cards. On phones the board shows one stage at a time, with tabs.
 - **Tasks**: title, description, priority, team, several assignees, due date, labels, checklist, "blocked" flag.
+- **Projects & events**: group tasks under an event (IEEE Day, a workshop…) with its date and progress. A new event can
+  get the usual event tasks from a template in one tap, each due relative to the event date; admins edit the template
+  on the Team page (`days | task | team`, one per line). Filter the board by project from the sidebar.
+- **Repeating tasks** (weekly or monthly): marking one done creates the next, steps unticked.
+- **@mentions** in comments (suggestions while typing) email the person mentioned. A 🔔 **notifications** list shows what
+  others did on your tasks and where you were mentioned.
+- **Google Calendar**: each member gets a private calendar link (menu → *Show my tasks in Google Calendar*) with their
+  open tasks that have a due date.
+- **Navigation**: a sidebar on computers; on phones a ☰ menu (drawer).
 - **Attachments**: photos, PDFs, any file up to 10 MB, from the button, by dropping files on the task or pasting an
   image. Big phone photos are resized before upload. Files go to the Drive folder *IES HU Tasks — attachments* next to
   the sheet, viewable by link (the links are shown only inside the app).
@@ -91,6 +100,7 @@ chapter account (`ies.2026.hu@gmail.com`) — see *Ownership* below.
 | `Comments` | One row per comment. |
 | `Activity` | Every change: who did what, when (an audit trail). |
 | `Settings` | `teams`, `digest`, `digestHour`. |
+| `Projects` | One row per project or event: name, date, description, archived. Tasks point to it in their `Project` column. |
 | `Attachments` | One row per file: task, name, type, size, Drive file id and link, who uploaded it. |
 
 You can read, filter, chart and export the sheet freely. You may add your own columns or reorder them: the app finds
@@ -128,7 +138,7 @@ changes are merged, and a plain field both changed is refused for the second one
 
 ## بالعربي
 
-**برنامج مهام للجنة كاملة، وكل البيانات بشيت على درايف الشعبة** (`IES 26-27` ← *IES HU Tasks — database*).
+**برنامج مهام للجنة كاملة، وكل البيانات بشيت على درايف الشعبة** (`IES HU Tasks (private)` ← *IES HU Tasks — database*، مفتوح بس للرئيسة ونائب الرئيس والسكرتيرة وحساب الشعبة).
 
 **شو فيه:**
 - **لوحة:** للتنفيذ ← قيد التنفيذ ← مراجعة ← منجز، وبتسحب المهمة بين الأعمدة.

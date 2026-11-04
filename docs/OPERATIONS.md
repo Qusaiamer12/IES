@@ -16,7 +16,7 @@ Both hosts rebuild automatically from GitHub; nobody deploys by hand.
 ## Team task manager
 
 The committee's task manager is a Google Apps Script web app whose database is the Google Sheet
-**IES HU Tasks — database** (Drive → `IES 26-27`). Install, update and sign-in codes: [tools/task-manager/README.md](../tools/task-manager/README.md).
+**IES HU Tasks — database** (Drive → `IES HU Tasks (private)`, shared only with the Chair, Vice Chair, Secretary and the chapter account; editors cannot re-share). Install, update and sign-in codes: [tools/task-manager/README.md](../tools/task-manager/README.md).
 - Admins (Chair, Vice Chair, Secretary by default) manage members and codes from the app's **Team** page.
 - Emails and the daily reminder are sent by the account that deployed the app.
 - Every task, comment and change is a row in the sheet: export it at the end of the term like the form submissions.

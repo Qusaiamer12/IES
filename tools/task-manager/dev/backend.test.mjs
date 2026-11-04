@@ -514,3 +514,106 @@ describe('stage emails', () => {
     assert.equal(app.mail.length, 1, 'the writer is not emailed about their own move');
   });
 });
+
+describe('projects and the event template', () => {
+  it('creates an event with the template tasks, each due relative to the event date', () => {
+    const r = app.call('api_saveProject', admin.token, { name: 'IEEE Day 2027', date: '2027-10-20', applyTemplate: true });
+    assert.equal(r.project.name, 'IEEE Day 2027');
+    assert.ok(r.tasks.length >= 10);
+    const hall = r.tasks.find(t => t.title.includes('حجز القاعة'));
+    assert.equal(hall.due, '2027-09-29', '21 days before');
+    assert.equal(hall.team, 'Events');
+    assert.ok(r.tasks.every(t => t.project === r.project.id && t.status === 'todo'));
+    const boot = app.call('api_bootstrap', admin.token);
+    assert.equal(boot.projects.length, 1);
+    assert.equal(boot.tasks.filter(t => t.project === r.project.id).length, r.tasks.length);
+  });
+  it('uses the template the admins wrote, skips bad lines, and lets tasks join or leave a project', () => {
+    app.call('api_saveSettings', admin.token, { teams: ['Design'], digest: false, digestHour: 8, eventTemplate: '-2 | Poster | Design\nnot a line\n+1 | Photos' });
+    const r = app.call('api_saveProject', admin.token, { name: 'Workshop', date: '2027-01-10', applyTemplate: true });
+    assert.deepEqual(r.tasks.map(t => [t.title, t.due, t.team]), [['Poster', '2027-01-08', 'Design'], ['Photos', '2027-01-11', '']]);
+    const t = app.call('api_saveTask', admin.token, { title: 'Loose task' });
+    assert.equal(app.call('api_saveTask', admin.token, { id: t.id, project: r.project.id }).project, r.project.id);
+    throwsCode(() => app.call('api_saveTask', admin.token, { id: t.id, project: 'P-999' }), 'BAD_INPUT:project');
+    assert.equal(app.call('api_saveTask', admin.token, { id: t.id, project: '' }).project, '');
+  });
+  it('is for admins only', () => {
+    const m = app.call('api_saveMember', admin.token, { name: 'Basel' });
+    const basel = app.call('api_login', m.member.id, m.code);
+    throwsCode(() => app.call('api_saveProject', basel.token, { name: 'Mine' }), 'FORBIDDEN');
+    const p = app.call('api_saveProject', admin.token, { name: 'Event' }).project;
+    const t = app.call('api_saveTask', admin.token, { title: 'T' });
+    throwsCode(() => app.call('api_saveTask', basel.token, { id: t.id, project: p.id }), 'FORBIDDEN');
+  });
+});
+
+describe('repeating tasks', () => {
+  it('makes the next one when a weekly task is done, with steps unticked and the same people', () => {
+    const m = app.call('api_saveMember', admin.token, { name: 'Dana' });
+    const t = app.call('api_saveTask', admin.token, { title: 'Weekly minutes', due: '2026-11-05', repeat: 'weekly', assignees: [m.member.id], checklist: [{ t: 'Write', d: false }] });
+    app.call('api_saveTask', admin.token, { id: t.id, checklist: [{ t: 'Write', d: true }] });
+    const done = app.call('api_saveTask', admin.token, { id: t.id, status: 'done' });
+    assert.ok(done.spawned);
+    assert.equal(done.spawned.due, '2026-11-12');
+    assert.equal(done.spawned.status, 'todo');
+    assert.deepEqual(done.spawned.checklist, [{ t: 'Write', d: false }]);
+    assert.deepEqual(done.spawned.assignees, [m.member.id]);
+    assert.equal(done.spawned.repeat, 'weekly');
+    const again = app.call('api_saveTask', admin.token, { id: t.id, title: 'Weekly minutes (edited)' });
+    assert.equal(again.spawned, null, 'only the move to done repeats');
+  });
+  it('repeats monthly, keeping the end of the month sane', () => {
+    const t = app.call('api_saveTask', admin.token, { title: 'Monthly report', due: '2027-01-31', repeat: 'monthly' });
+    assert.equal(app.call('api_saveTask', admin.token, { id: t.id, status: 'done' }).spawned.due, '2027-02-28');
+    throwsCode(() => app.call('api_saveTask', admin.token, { title: 'x', repeat: 'daily' }), 'BAD_INPUT:repeat');
+  });
+});
+
+describe('mentions and the inbox', () => {
+  let rami, sara, t;
+  beforeEach(() => {
+    app.call('api_saveMember', admin.token, { id: admin.me.id, name: admin.me.name, email: 'admin@example.com', admin: true, active: true });
+    const a = app.call('api_saveMember', admin.token, { name: 'Rami Khaled', email: 'rami@example.com' });
+    const b = app.call('api_saveMember', admin.token, { name: 'Sara Odeh', email: 'sara@example.com' });
+    rami = app.call('api_login', a.member.id, a.code); sara = app.call('api_login', b.member.id, b.code);
+    t = app.call('api_saveTask', admin.token, { title: 'Stage setup', assignees: [rami.me.id] });
+  });
+  it('emails whoever is @mentioned, once, even if they are not on the task', () => {
+    app.mail.length = 0;
+    app.call('api_addComment', rami.token, t.id, 'Need help here @sara, and @Admin please check');
+    const to = app.mail.map(m => [m.to, m.subject.split(':')[0]]);
+    assert.deepEqual(to.sort(), [['admin@example.com', 'Rami Khaled mentioned you'], ['sara@example.com', 'Rami Khaled mentioned you']]);
+  });
+  it('lists what others did on my tasks and mentions of me, not my own actions', () => {
+    app.call('api_saveTask', rami.token, { id: t.id, status: 'doing', base: { status: 'todo' } });
+    app.call('api_addComment', rami.token, t.id, 'Started. @Sara can you bring the cables?');
+    app.call('api_addComment', admin.token, t.id, 'Thanks');
+    const inboxAdmin = app.call('api_bootstrap', admin.token).inbox;
+    assert.deepEqual(inboxAdmin.map(i => i.action).sort(), ['commented', 'updated']);
+    assert.ok(inboxAdmin.every(i => i.actor === 'Rami Khaled' && i.title === 'Stage setup'));
+    const inboxSara = app.call('api_bootstrap', sara.token).inbox;
+    assert.equal(inboxSara.length, 1, 'only the mention: the task is not hers');
+    const inboxRami = app.call('api_bootstrap', rami.token).inbox;
+    assert.ok(inboxRami.some(i => i.actor === 'Admin' && i.action === 'commented') && !inboxRami.some(i => i.actor === 'Rami Khaled'));
+  });
+});
+
+describe('calendar feed', () => {
+  it('gives each member a private iCal link with their open tasks that have a due date', () => {
+    const m = app.call('api_saveMember', admin.token, { name: 'Hiba' });
+    const hiba = app.call('api_login', m.member.id, m.code);
+    app.call('api_saveTask', admin.token, { title: 'Print, cut; deliver', due: '2026-12-03', assignees: [m.member.id], description: 'Line 1\nLine 2' });
+    app.call('api_saveTask', admin.token, { title: 'Not hers', due: '2026-12-04' });
+    app.call('api_saveTask', admin.token, { title: 'No date', assignees: [m.member.id] });
+    const { url } = app.call('api_feedUrl', hiba.token);
+    const token = decodeURIComponent(url.split('feed=')[1]);
+    const out = app.ctx.doGet({ parameter: { feed: token } });
+    assert.equal(out.mime, 'text/calendar');
+    const ics = out.getContent();
+    assert.equal((ics.match(/BEGIN:VEVENT/g) || []).length, 1);
+    assert.ok(ics.includes('DTSTART;VALUE=DATE:20261203') && ics.includes('DTEND;VALUE=DATE:20261204'));
+    assert.ok(ics.includes('SUMMARY:Print\\, cut\\; deliver') && ics.includes('Line 1\\nLine 2'));
+    const bad = app.ctx.doGet({ parameter: { feed: m.member.id + '.wrong' } }).getContent();
+    assert.ok(!bad.includes('BEGIN:VEVENT'), 'a guessed link shows nothing');
+  });
+});

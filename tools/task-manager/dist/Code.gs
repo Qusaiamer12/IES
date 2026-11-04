@@ -40,27 +40,45 @@ const CONFIG = {
 
 const SCHEMA = {
   Tasks: ['ID', 'Title', 'Description', 'Status', 'Priority', 'Team', 'Assignees', 'AssigneeNames', 'Due', 'Labels',
-    'Checklist', 'Blocked', 'CreatedBy', 'CreatedAt', 'UpdatedAt', 'CompletedAt', 'Archived'],
+    'Checklist', 'Blocked', 'CreatedBy', 'CreatedAt', 'UpdatedAt', 'CompletedAt', 'Archived', 'Project', 'Repeat'],
+  Projects: ['ID', 'Name', 'Date', 'Description', 'Archived', 'CreatedBy', 'CreatedAt'],
   Members: ['ID', 'Name', 'Email', 'Role', 'Team', 'Admin', 'Active', 'Notify', 'CodeSalt', 'CodeHash', 'CreatedAt'],
   Comments: ['ID', 'TaskID', 'AuthorID', 'AuthorName', 'Text', 'CreatedAt'],
   Activity: ['Time', 'ActorID', 'ActorName', 'TaskID', 'Action', 'Details'],
   Settings: ['Key', 'Value', 'Notes'],
   Attachments: ['ID', 'TaskID', 'Name', 'Type', 'Size', 'FileID', 'Url', 'UploaderID', 'UploaderName', 'CreatedAt'],
 };
+const REPEATS = ['', 'weekly', 'monthly'];
 const MAX_UPLOAD_BYTES = 10 * 1024 * 1024; // per file; bigger files go to Drive by hand and their link in the description
-const BOOL_COLUMNS = ['Blocked', 'Archived', 'Admin', 'Active', 'Notify'];
+const BOOL_COLUMNS = ['Blocked', 'Archived', 'Admin', 'Active', 'Notify']; // Archived is also used by Projects
 const STATUSES = ['todo', 'doing', 'review', 'done'];
 const PRIORITIES = ['low', 'medium', 'high', 'urgent'];
 const DEFAULT_SETTINGS = [
   ['teams', 'Core Team, Membership, Public Relations, Events, Social Media, Design', 'Comma-separated list shown in the app'],
   ['digest', false, 'TRUE: email each member their due and overdue tasks every morning'],
   ['digestHour', 8, 'Hour of the daily reminder (0-23, in the time zone of Config.gs)'],
+  ['eventTemplate', [
+    '-21 | حجز القاعة وتأكيد الموعد | Events',
+    '-18 | التواصل مع المتحدث أو المدرب وتأكيد الحضور | Events',
+    '-14 | تصميم البوستر | Design',
+    '-12 | فتح التسجيل (الفورم) | Membership',
+    '-10 | نشر الإعلان على السوشال ميديا | Social Media',
+    '-7 | التواصل مع الرعاة والشركاء | Public Relations',
+    '-5 | تذكير بالفعالية ونشر ستوري | Social Media',
+    '-3 | تجهيز الشهادات وقائمة الحضور النهائية | Membership',
+    '-1 | تجهيز القاعة والمعدات | Events',
+    '0 | تصوير الفعالية وتغطيتها | Social Media',
+    '2 | نشر تغطية الفعالية والصور | Social Media',
+    '5 | كتابة تقرير الفعالية | Core Team',
+  ].join('\n'), 'Tasks added to a new event: "days from the event | title | team", one per line (negative = before)'],
 ];
 const CODE_ALPHABET = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789'; // no 0/O, 1/I/L
 
 // ------------------------------------------------------------------------------------------------ web app
 
-function doGet() {
+function doGet(e) {
+  const feed = e && e.parameter && e.parameter.feed;
+  if (feed) return calendarFeed_(str_(feed));
   return HtmlService.createHtmlOutputFromFile('Index')
     .setTitle(CONFIG.APP_NAME)
     .addMetaTag('viewport', 'width=device-width, initial-scale=1, viewport-fit=cover')
@@ -108,6 +126,8 @@ function api_bootstrap(token) {
     me: memberView_(me, me),
     members: membersFor_(me),
     tasks: tasksView_(),
+    projects: projectsView_(),
+    inbox: inboxFor_(me),
     settings: settingsView_(),
     statuses: STATUSES,
     priorities: PRIORITIES,
@@ -121,6 +141,8 @@ function api_changes(token, since) {
     tasks: tasksView_().filter(t => !since || t.updatedAt > since),
     archivedIds: table_('Tasks').items.filter(t => bool_(t.Archived) && (!since || t.UpdatedAt > since)).map(t => t.ID),
     members: membersFor_(me),
+    projects: projectsView_(),
+    inbox: inboxFor_(me),
     serverTime: iso_(),
   }));
 }
@@ -152,7 +174,8 @@ function api_saveTask(token, patch) {
     logTaskChanges_(me, before, after);
     notifyAssigned_(me, before, after);
     notifyStage_(me, before, after);
-    return Object.assign(after, { comments: commentCount_(after.id), attachments: table_('Attachments').items.filter(a => a.TaskID === after.id).length });
+    const spawned = before && before.status !== 'done' && after.status === 'done' && after.repeat ? repeatTask_(me, rec) : null;
+    return Object.assign(after, { spawned: spawned, comments: commentCount_(after.id), attachments: table_('Attachments').items.filter(a => a.TaskID === after.id).length });
   }));
 }
 
@@ -285,14 +308,24 @@ function api_addComment(token, taskId, text) {
     writeRecord_('Comments', c, null);
     writeRecord_('Tasks', Object.assign({}, t, { UpdatedAt: c.CreatedAt }), t);
     log_(me, taskId, 'commented', body.slice(0, 120));
-    const to = split_(t.Assignees).concat([t.CreatedBy]).filter(id => id !== me.ID);
     const view = taskView_(t);
+    const quote = `<div dir="auto" style="margin:0 0 14px;padding:12px 16px;border-radius:12px;background-color:#FFF8E6;border-left:4px solid #FFC21A;font-size:15px;line-height:1.7;color:#2E3A59">${esc_(body).replace(/\n/g, '<br>')}</div>`;
+    const mentioned = mentionsIn_(body).filter(id => id !== me.ID);
+    notify_(mentioned, m => ({
+      subject: `${me.Name} mentioned you: ${t.Title}`,
+      preheader: body.slice(0, 90),
+      heading: 'You were mentioned',
+      intro: `Hi ${esc_(firstName_(m.Name))}, <b>${esc_(me.Name)}</b> mentioned you in a comment:`,
+      body: quote + taskCardHtml_(view, true),
+      button: { label: 'Open and reply', taskId: t.ID },
+    }));
+    const to = split_(t.Assignees).concat([t.CreatedBy]).filter(id => id !== me.ID && mentioned.indexOf(id) < 0);
     notify_(to, m => ({
       subject: `${me.Name} commented on: ${t.Title}`,
       preheader: body.slice(0, 90),
       heading: 'New comment on a task',
       intro: `Hi ${esc_(firstName_(m.Name))}, <b>${esc_(me.Name)}</b> commented on a task of yours:`,
-      body: `<div dir="auto" style="margin:0 0 14px;padding:12px 16px;border-radius:12px;background-color:#FFF8E6;border-left:4px solid #FFC21A;font-size:15px;line-height:1.7;color:#2E3A59">${esc_(body).replace(/\n/g, '<br>')}</div>` + taskCardHtml_(view, true),
+      body: quote + taskCardHtml_(view, true),
       button: { label: 'Open and reply', taskId: t.ID },
     }));
     return commentView_(c);
@@ -385,10 +418,116 @@ function api_saveSettings(token, input) {
     setSetting_('teams', teams.join(', '));
     setSetting_('digest', !!input.digest);
     setSetting_('digestHour', hour);
+    if (input.eventTemplate !== undefined) {
+      const tpl = str_(input.eventTemplate).slice(0, 6000);
+      setSetting_('eventTemplate', tpl);
+    }
     installDigest_(!!input.digest, hour);
     return settingsView_();
   }));
 }
+
+// ------------------------------------------------------------------------------------------------ projects (events)
+
+/** Creates or edits a project (an event, a campaign…). Admins only. With `applyTemplate`, a new project gets the
+ *  event template's tasks, each due relative to the project's date. Returns { project, tasks }. */
+function api_saveProject(token, input) {
+  return withUser_(token, me => withLock_(() => {
+    requireAdmin_(me);
+    const P = table_('Projects', true);
+    const existing = input && input.id ? P.items.find(x => x.ID === input.id) : null;
+    if (input && input.id && !existing) throw new Error('NOT_FOUND');
+    const name = str_(input.name).trim();
+    if (!name || name.length > 120) throw new Error('BAD_INPUT:name');
+    const date = str_(input.date);
+    if (date && !/^\d{4}-\d{2}-\d{2}$/.test(date)) throw new Error('BAD_INPUT:due');
+    const rec = Object.assign({}, existing || { ID: nextId_(P.items, 'P-'), CreatedBy: me.ID, CreatedAt: iso_() }, {
+      Name: name, Date: date, Description: str_(input.description).slice(0, 2000), Archived: !!input.archived,
+    });
+    writeRecord_('Projects', rec, existing);
+    log_(me, '', existing ? 'project updated' : 'project created', name);
+    const made = [];
+    if (!existing && input.applyTemplate) {
+      const T = table_('Tasks', true);
+      parseTemplate_(getSetting_('eventTemplate')).forEach(line => {
+        const now = iso_();
+        const t = { ID: nextId_(T.items, 'T-'), Title: line.title, Description: '', Status: 'todo', Priority: 'medium', Team: line.team,
+          Assignees: '', AssigneeNames: '', Due: date ? addDays_(date, line.offset) : '', Labels: '', Checklist: '[]', Blocked: false,
+          CreatedBy: me.ID, CreatedAt: now, UpdatedAt: now, CompletedAt: '', Archived: false, Project: rec.ID, Repeat: '' };
+        writeRecord_('Tasks', t, null);
+        made.push(Object.assign(taskView_(t), { comments: 0, attachments: 0 }));
+      });
+      if (made.length) log_(me, '', 'template applied', `${name}: ${made.length} tasks`);
+    }
+    return { project: projectView_(rec), tasks: made };
+  }));
+}
+
+function projectView_(p) {
+  return { id: p.ID, name: str_(p.Name), date: str_(p.Date), description: str_(p.Description), archived: bool_(p.Archived), createdBy: str_(p.CreatedBy) };
+}
+function projectsView_() { return table_('Projects').items.map(projectView_); }
+
+/** "days | title | team" lines → [{ offset, title, team }]; bad lines are skipped. */
+function parseTemplate_(text) {
+  return str_(text).split(/\r?\n/).map(l => l.split('|').map(x => x.trim())).filter(x => x[1] && /^[-+]?\d+$/.test(x[0]))
+    .slice(0, 40).map(x => ({ offset: Number(x[0]), title: x[1].slice(0, 200), team: (x[2] || '').slice(0, 60) }));
+}
+
+// ------------------------------------------------------------------------------------------------ mentions, inbox, calendar
+
+/** Members named in a comment as @FirstName or @Full Name (any case). Returns member ids. */
+function mentionsIn_(text) {
+  const low = str_(text).toLowerCase();
+  if (low.indexOf('@') < 0) return [];
+  return table_('Members').items.filter(m => bool_(m.Active) && m.Name).filter(m => {
+    const full = '@' + str_(m.Name).toLowerCase(), first = '@' + firstName_(m.Name).toLowerCase();
+    const at = (s) => { const i = low.indexOf(s); return i >= 0 && !/[a-z0-9\u0600-\u06ff]/.test(low.charAt(i + s.length)); };
+    return at(full) || at(first);
+  }).map(m => m.ID);
+}
+
+/** What others did on my tasks (assigned to me or written by me) and comments that mention me, newest first. */
+function inboxFor_(me) {
+  const tasks = {};
+  table_('Tasks').items.forEach(t => { tasks[t.ID] = t; });
+  const since = new Date(Date.now() - 30 * 864e5).toISOString();
+  const first = '@' + firstName_(me.Name).toLowerCase(), full = '@' + str_(me.Name).toLowerCase();
+  return table_('Activity').items.filter(a => a.ActorID !== me.ID && a.TaskID && tasks[a.TaskID] && str_(a.Time) >= since).filter(a => {
+    const t = tasks[a.TaskID];
+    const mine = split_(t.Assignees).indexOf(me.ID) >= 0 || t.CreatedBy === me.ID;
+    const low = str_(a.Details).toLowerCase();
+    return mine || (a.Action === 'commented' && (low.indexOf(full) >= 0 || low.indexOf(first) >= 0));
+  }).sort((a, b) => str_(b.Time).localeCompare(str_(a.Time))).slice(0, 40).map(a => ({
+    time: str_(a.Time), actor: str_(a.ActorName), action: str_(a.Action), details: str_(a.Details).slice(0, 140),
+    taskId: str_(a.TaskID), title: str_(tasks[a.TaskID].Title),
+  }));
+}
+
+/** A private link to the member's tasks as a calendar (iCal), for Google Calendar's "From URL". */
+function api_feedUrl(token) {
+  return withUser_(token, me => ({ url: appUrl_() + '?feed=' + feedToken_(me.ID) }));
+}
+function feedToken_(memberId) { return memberId + '.' + hmac_('feed|' + memberId).slice(0, 24); }
+
+function calendarFeed_(token) {
+  const id = token.split('.')[0];
+  const m = table_('Members').items.find(x => x.ID === id && bool_(x.Active));
+  const ok = m && feedToken_(id) === token;
+  const lines = ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//IEEE IES HU//Tasks//EN', 'CALSCALE:GREGORIAN', 'METHOD:PUBLISH',
+    'X-WR-CALNAME:' + icsText_(CONFIG.APP_NAME + (ok ? ' · ' + m.Name : '')), 'X-WR-TIMEZONE:' + CONFIG.TIME_ZONE];
+  if (ok) {
+    const url = appUrl_(), stamp = iso_().replace(/[-:]/g, '').replace(/\.\d+/, '');
+    table_('Tasks').items.filter(t => !bool_(t.Archived) && t.Status !== 'done' && t.Due && split_(t.Assignees).indexOf(id) >= 0).forEach(t => {
+      const d = t.Due.replace(/-/g, ''), end = addDays_(t.Due, 1).replace(/-/g, '');
+      lines.push('BEGIN:VEVENT', 'UID:' + t.ID + '@ies-hu-tasks', 'DTSTAMP:' + stamp, 'DTSTART;VALUE=DATE:' + d, 'DTEND;VALUE=DATE:' + end,
+        'SUMMARY:' + icsText_(t.Title), 'DESCRIPTION:' + icsText_((t.Description ? t.Description + '\n\n' : '') + url + '#task=' + t.ID), 'END:VEVENT');
+    });
+  }
+  lines.push('END:VCALENDAR');
+  return ContentService.createTextOutput(lines.join('\r\n')).setMimeType(ContentService.MimeType.ICAL);
+}
+function icsText_(s) { return str_(s).replace(/\\/g, '\\\\').replace(/\n/g, '\\n').replace(/[,;]/g, m => '\\' + m).slice(0, 900); }
 
 // ------------------------------------------------------------------------------------------------ reminders
 
@@ -442,7 +581,7 @@ function taskView_(t) {
     priority: PRIORITIES.indexOf(t.Priority) >= 0 ? t.Priority : 'medium', team: str_(t.Team), assignees: split_(t.Assignees),
     due: str_(t.Due), labels: split_(t.Labels), checklist: parseChecklist_(t.Checklist), blocked: bool_(t.Blocked),
     createdBy: str_(t.CreatedBy), createdAt: str_(t.CreatedAt), updatedAt: str_(t.UpdatedAt), completedAt: str_(t.CompletedAt),
-    archived: bool_(t.Archived),
+    archived: bool_(t.Archived), project: str_(t.Project), repeat: REPEATS.indexOf(str_(t.Repeat)) >= 0 ? str_(t.Repeat) : '',
   };
 }
 
@@ -476,6 +615,7 @@ function settingsView_() {
     teams: split_(getSetting_('teams')),
     digest: bool_(getSetting_('digest')),
     digestHour: Number(getSetting_('digestHour')) || 8,
+    eventTemplate: str_(getSetting_('eventTemplate')),
     appName: CONFIG.APP_NAME,
     appUrl: appUrl_(),
     sheetUrl: ss_().getUrl(),
@@ -587,7 +727,39 @@ function cleanTaskPatch_(p, isNew) {
     out.Checklist = JSON.stringify(list.map(i => ({ t: str_(i && i.t).trim().slice(0, 200), d: !!(i && i.d) })).filter(i => i.t));
   }
   if (has('blocked')) out.Blocked = !!p.blocked;
+  if (has('project')) {
+    const id = str_(p.project);
+    if (id && !table_('Projects').items.some(x => x.ID === id)) throw new Error('BAD_INPUT:project');
+    out.Project = id;
+  }
+  if (has('repeat')) {
+    if (REPEATS.indexOf(str_(p.repeat)) < 0) throw new Error('BAD_INPUT:repeat');
+    out.Repeat = str_(p.repeat);
+  }
   return out;
+}
+
+/** A repeating task was done: make the next one (same details, steps unticked, next due date). Returns its view. */
+function repeatTask_(me, rec) {
+  const T = table_('Tasks', true);
+  const base = rec.Due || today_();
+  const next = rec.Repeat === 'monthly' ? addMonths_(base, 1) : addDays_(base, 7);
+  const now = iso_();
+  const copy = {
+    ID: nextId_(T.items, 'T-'), Title: rec.Title, Description: rec.Description, Status: 'todo', Priority: rec.Priority, Team: rec.Team,
+    Assignees: rec.Assignees, AssigneeNames: rec.AssigneeNames, Due: next, Labels: rec.Labels,
+    Checklist: JSON.stringify(parseChecklist_(rec.Checklist).map(i => ({ t: i.t, d: false }))), Blocked: false,
+    CreatedBy: rec.CreatedBy || me.ID, CreatedAt: now, UpdatedAt: now, CompletedAt: '', Archived: false, Project: rec.Project, Repeat: rec.Repeat,
+  };
+  writeRecord_('Tasks', copy, null);
+  log_(me, copy.ID, 'repeated', rec.ID + ' → ' + next);
+  return Object.assign(taskView_(copy), { comments: 0, attachments: 0 });
+}
+
+function addMonths_(day, n) {
+  const p = str_(day).split('-').map(Number);
+  const last = new Date(Date.UTC(p[0], p[1] - 1 + n + 1, 0)).getUTCDate(); // 31 Jan + 1 month = 28/29 Feb
+  return new Date(Date.UTC(p[0], p[1] - 1 + n, Math.min(p[2], last))).toISOString().slice(0, 10);
 }
 
 // ------------------------------------------------------------------------------------------------ activity and notifications
@@ -917,7 +1089,7 @@ function writeRecord_(name, rec, existing) {
 function ensureSchema_() {
   if (MEMO_.schemaOk) return;
   const cache = CacheService.getScriptCache();
-  const cacheKey = 'schema-v2:' + ss_().getId(); // bump when SCHEMA changes, so existing sheets get new tabs/columns
+  const cacheKey = 'schema-v3:' + ss_().getId(); // bump when SCHEMA changes, so existing sheets get new tabs/columns
   if (cache.get(cacheKey)) { MEMO_.schemaOk = true; return; }
   const ss = ss_();
   Object.keys(SCHEMA).forEach(name => {

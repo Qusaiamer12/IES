@@ -141,6 +141,10 @@ export function loadApp({ srcDir, sheetId = 'TEST_SHEET' }) {
       newTrigger: fn => { const t = { fn, getHandlerFunction: () => fn }; const b = { timeBased: () => b, atHour: h => ((t.hour = h), b), everyDays: () => b, inTimezone: () => b, create: () => (triggers.push(t), t) }; return b; },
     },
     HtmlService: {},
+    ContentService: {
+      MimeType: { ICAL: 'text/calendar' },
+      createTextOutput: text => ({ text, mime: '', setMimeType(m) { this.mime = m; return this; }, getContent() { return this.text; } }),
+    },
     Logger: { log: (...a) => ctx.__log.push(a.join(' ')) },
     __log: [],
   };

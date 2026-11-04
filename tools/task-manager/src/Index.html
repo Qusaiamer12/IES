@@ -45,7 +45,32 @@ textarea.input{min-height:96px;resize:vertical}
 .check input{width:18px;height:18px;accent-color:var(--navy)}
 
 /* ---------- layout */
-.topbar{position:sticky;top:0;z-index:20;background:var(--navy);color:#fff}
+.shell{display:grid;grid-template-columns:252px minmax(0,1fr);min-height:100vh}
+.side{position:sticky;top:0;height:100vh;overflow-y:auto;background:var(--navy);color:#fff;display:flex;flex-direction:column;gap:6px;padding:16px 12px;z-index:40}
+.side-brand{display:flex;align-items:center;gap:10px;font-weight:700;padding:4px 6px 14px;border-bottom:1px solid rgba(255,255,255,.1);margin-bottom:6px}
+.side-brand small{display:block;font-weight:500;color:#B9C3D6;font-size:12px}
+.side-close{display:none;margin-inline-start:auto;color:#fff}
+.side .tabs{display:flex;flex-direction:column;gap:2px;margin:0;overflow:visible}
+.side .tab{display:flex;align-items:center;gap:12px;width:100%;padding:10px 12px;border-radius:10px;text-align:start;font-size:15px;color:#C9D2E3}
+.side .tab:hover{background:rgba(255,255,255,.08);color:#fff}
+.side .tab[aria-current="page"]{background:#fff;color:var(--navy)}
+.side .tab .count{margin-inline-start:auto;background:var(--gold);color:var(--navy);border-radius:999px;font-size:12px;padding:1px 8px}
+.side-sec{margin-top:10px;padding-top:10px;border-top:1px solid rgba(255,255,255,.1)}
+.side-sec p{margin:0 0 4px;padding:0 12px;font-size:12px;font-weight:700;color:#8F9AB3;text-transform:uppercase;letter-spacing:.4px}
+.side-link{display:flex;align-items:center;gap:10px;width:100%;border:0;background:transparent;color:#C9D2E3;padding:8px 12px;border-radius:10px;text-align:start;font:inherit;font-size:14px;text-decoration:none;cursor:pointer}
+.side-link span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.side-link:hover,.side-link.on{background:rgba(255,255,255,.08);color:#fff}
+.side-foot{margin-top:auto;padding-top:10px;border-top:1px solid rgba(255,255,255,.1);display:flex;flex-direction:column;gap:2px}
+.side-foot .who{display:flex;align-items:center;gap:10px;padding:6px 12px 10px}
+.side-foot .who small{display:block;color:#8F9AB3;font-size:12px}
+.side-scrim{display:none}
+.content{min-width:0}
+.burger{display:none;position:relative}
+.top-title{display:none;font-weight:800;font-size:18px;color:var(--ink)}
+.bell{position:relative}
+.bell-n{position:absolute;top:1px;inset-inline-end:-2px;min-width:18px;height:18px;border-radius:999px;background:var(--red);color:#fff;font-size:11px;font-weight:800;line-height:15px;text-align:center;padding:0 4px;border:2px solid #fff}
+.dot-badge{position:absolute;top:8px;inset-inline-end:8px;width:9px;height:9px;border-radius:50%;background:var(--gold)}
+.topbar{position:sticky;top:0;z-index:20;background:rgba(244,246,250,.92);backdrop-filter:blur(8px);color:var(--ink);border-bottom:1px solid var(--line)}
 .topbar-in{display:flex;align-items:center;gap:12px;padding:10px 20px;max-width:1500px;margin:0 auto}
 .brand{display:flex;align-items:center;gap:10px;font-weight:700;letter-spacing:.2px;white-space:nowrap}
 .brand-mark{display:block;width:38px;height:38px;border-radius:50%;background:#fff var(--logo-mark) center/88% no-repeat;flex:none}
@@ -56,12 +81,13 @@ textarea.input{min-height:96px;resize:vertical}
 .tab:hover{color:#fff;background:rgba(255,255,255,.08)}
 .tab[aria-current="page"]{background:#fff;color:var(--navy)}
 .top-actions{margin-inline-start:auto;display:flex;align-items:center;gap:8px}
-.topbar .icon-btn:hover{background:rgba(255,255,255,.12)}
+.topbar .icon-btn{color:var(--ink)}
+.topbar .icon-btn:hover{background:#E6E9F0}
 .avatar{display:inline-grid;place-items:center;width:30px;height:30px;border-radius:999px;color:#fff;font-size:12px;font-weight:700;flex:none;border:2px solid #fff}
 .avatars{display:flex}
 .avatars .avatar{margin-inline-start:-8px}
 .avatars .avatar:first-child{margin-inline-start:0}
-.main{max-width:1500px;margin:0 auto;padding:18px 20px 90px}
+.main{max-width:1500px;margin:0 auto;padding:18px 24px 40px}
 .toolbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:16px}
 .toolbar .input{width:auto;min-width:150px;min-height:38px}
 .toolbar .search{flex:1 1 220px;max-width:340px}
@@ -93,6 +119,31 @@ textarea.input{min-height:96px;resize:vertical}
 .adv:hover{border-color:var(--navy)}.adv.to-done{border-color:#13795B;color:#13795B}
 .card-foot{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:8px}
 .status-tabs{display:none}
+.chip.prj{background:#EEF2FF;color:#3730A3}
+.proj-filter{border:0;cursor:pointer;font:inherit;font-size:13px;padding:6px 12px}
+.page-head{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:12px}
+.page-head .page-title{margin:0}
+.proj-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px}
+.proj{background:#fff;border-radius:14px;padding:16px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:10px}
+.proj.archived{opacity:.6}
+.proj-top{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.proj h3{margin:0;font-size:17px;display:flex;align-items:center;gap:8px;overflow-wrap:anywhere}
+.proj-date{display:flex;align-items:center;gap:6px;font-size:14px}
+.proj-desc{margin:0;color:var(--ink-2);font-size:14px;line-height:1.6;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.proj-stats{display:flex;justify-content:space-between;font-size:13px;color:var(--ink-2)}
+.proj-stats .late{color:var(--red);font-weight:700}
+.proj-actions{display:flex;gap:8px;margin-top:auto}
+.inbox{display:flex;flex-direction:column;gap:6px;max-height:60vh;overflow-y:auto}
+.inbox-item{display:flex;flex-direction:column;gap:2px;text-align:start;border:1px solid var(--line);background:#fff;border-radius:12px;padding:10px 12px;font:inherit;font-size:14px;cursor:pointer}
+.inbox-item.new{border-color:var(--gold);background:#FFFBEB}
+.inbox-item time{font-size:12px;color:var(--ink-3)}
+.mention{color:var(--blue);font-weight:700}
+.mention-box{display:flex;flex-direction:column;border:1px solid var(--line);border-radius:12px;background:#fff;box-shadow:var(--shadow);margin-top:6px;overflow:hidden}
+.mention-box[hidden]{display:none}
+.mention-box button{display:flex;align-items:center;gap:8px;border:0;background:#fff;padding:8px 12px;font:inherit;text-align:start;cursor:pointer;min-height:40px}
+.mention-box button:hover{background:var(--paper)}
+.feed-steps{font-size:14px;line-height:1.8}
+.feed-steps ol{margin:8px 0;padding-inline-start:20px}
 .card-foot .avatars{min-height:24px}
 .day .dots{display:none}.agenda{display:none}
 .day.sel{outline:2px solid var(--blue)}
@@ -302,11 +353,21 @@ tbody tr:hover{background:#F7F9FD}
   .filter-extra.open{display:contents}
   .kpis{grid-template-columns:repeat(2,minmax(0,1fr))}
   .panels,.admin-grid{grid-template-columns:1fr}
-  .tabs{position:fixed;bottom:0;left:0;right:0;margin:0;background:var(--navy);padding:8px 10px calc(8px + env(safe-area-inset-bottom));z-index:25;justify-content:space-between;box-shadow:0 -6px 20px rgba(0,0,0,.2)}
-  .tab{padding:8px 10px;font-size:13px;min-height:40px}
-  .brand small{display:none}
+  /* phones: the sidebar becomes a drawer behind the ☰ button */
+  .shell{display:block}
+  .side{position:fixed;inset-block:0;inset-inline-start:0;width:min(300px,84vw);height:100%;transform:translateX(105%);visibility:hidden;transition:transform .22s ease,visibility 0s linear .22s;padding-bottom:calc(16px + env(safe-area-inset-bottom))}
+  [dir="ltr"] .side{transform:translateX(-105%)}
+  .side-open .side{transform:none;visibility:visible;transition:transform .22s ease;box-shadow:0 0 40px rgba(0,0,0,.35)}
+  .side-open .side-scrim{display:block;position:fixed;inset:0;background:rgba(11,21,48,.45);z-index:35}
+  .side-close{display:grid}
+  .side .tab,.side-link{min-height:44px}
+  .burger{display:grid}
+  .topbar{background:var(--navy);color:#fff;border-bottom:0}
+  .topbar .icon-btn{color:#fff}
+  .topbar .icon-btn:hover{background:rgba(255,255,255,.12)}
+  .top-title{display:block;color:#fff;font-size:17px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
   .topbar-in{padding:10px 14px}
-  .main{padding:14px 14px 100px}
+  .main{padding:14px 14px calc(30px + env(safe-area-inset-bottom))}
   .row2{grid-template-columns:1fr}
   .new-label{display:none}
   .toolbar{gap:8px}
@@ -336,6 +397,13 @@ const T = {
     low: 'منخفضة', medium: 'متوسطة', high: 'عالية', urgent: 'عاجلة',
     start: 'ابدأ', toReview: 'للمراجعة', markDone: 'تم ✓', movedTo: 'انتقلت إلى «{s}»', filters: 'فلترة', more: 'خيارات إضافية (اللجنة، الوسوم، عائق)',
     me: 'أنا', dToday: 'اليوم', dTomorrow: 'بكرة', dWeek: 'بعد أسبوع', dNone: 'بدون موعد', titlePh: 'شو المهمة؟ مثلًا: حجز قاعة للورشة', addStepBtn: 'أضف',
+    projects: 'المشاريع والفعاليات', projectsShort: 'المشاريع', newProject: 'مشروع جديد', projectName: 'اسم المشروع أو الفعالية', projectDate: 'تاريخ الفعالية',
+    applyTemplate: 'أضف مهام الفعالية المعتادة من القالب', templateHint: 'بتنعمل {n} مهمة، كل وحدة بموعدها قبل أو بعد تاريخ الفعالية. القالب بيتعدّل من صفحة الفريق.', projectSaved: 'انحفظ المشروع', projectMade: 'انعمل المشروع ومعه {n} مهمة',
+    showTasks: 'عرض المهام', edit: 'تعديل', archivedP: 'مؤرشف', showArchived: 'عرض المؤرشفة', noProjects: 'ما في مشاريع لسا.', project: 'المشروع', allProjects: 'كل المشاريع', progress: 'الإنجاز', openN: '{n} مفتوحة', lateN: '{n} متأخرة', doneOf: '{a} من {b} منجزة',
+    repeat: 'التكرار', rNone: 'لا يتكرر', rWeekly: 'كل أسبوع', rMonthly: 'كل شهر', repeatedNext: 'انعملت النسخة الجاية بموعد {d}',
+    inbox: 'الإشعارات', inboxEmpty: 'ما في إشعارات جديدة.', markSeen: 'تمام', mentionHint: 'اكتب @ واسم العضو عشان يوصله تنبيه',
+    calFeed: 'ربط مهامي بتقويم جوجل', calFeedTitle: 'مهامك بتقويم جوجل', calFeedSteps: '<ol><li>افتح Google Calendar على الكمبيوتر.</li><li>جنب «تقاويم أخرى» اضغط + ← «من عنوان URL».</li><li>الصق الرابط واضغط «إضافة تقويم».</li></ol><p class="muted">الرابط خاص فيك، لا تبعته لحدا. جوجل بتحدّث التقويم كل كم ساعة.</p>',
+    eventTemplate: 'قالب مهام الفعالية', eventTemplateHelp: 'كل سطر: عدد الأيام من الفعالية | المهمة | اللجنة. السالب يعني قبل الفعالية.', menu: 'القائمة', closeMenu: 'سكّر القائمة', account: 'الحساب',
     undo: 'تراجع', noTasksDay: 'ما في مهام بهاليوم.', tasksOn: 'مهام {d}',
     tipMember: 'أهلًا! اضغط على أي مهمة لتقرأ تفاصيلها. لما تبلش فيها اضغط «ابدأ»، ولما تخلص اضغط «تم ✓». المهام بيكتبها مسؤولين الفريق.',
     startBig: 'ابدأ المهمة', toReviewBig: 'سلّمها للمراجعة', doneBig: 'خلصت ✓', doneNote: 'هاي المهمة منجزة ✓', changeStatus: 'غيّر المرحلة', noDesc: 'ما في وصف.', createdBy: 'كتبها', untilDue: 'الموعد', close2: 'إغلاق', stepsDone: '{a} من {b} خلصت', overdueBy: 'متأخرة {n}', inDays: 'بعد {n}', tomorrowW: 'بكرة', todayW: 'اليوم', noOne: 'ما في حدا',
@@ -345,7 +413,7 @@ const T = {
     labelsHelp: 'افصل بينها بفاصلة', description: 'الوصف', checklist: 'قائمة خطوات', addStep: 'أضف خطوة واضغط Enter', isBlocked: 'متوقفة (في عائق)',
     save: 'حفظ', saving: 'جاري الحفظ…', cancel: 'إلغاء', close: 'إغلاق', saved: 'انحفظ', created: 'انضافت المهمة',
     attachments: 'الملحقات', attachAdd: 'أرفق ملف أو صورة', attachHelp: 'صور، PDF، ملفات… لحد 10 ميغا للملف. بتقدر تسحب الملفات لهون أو تلصق صورة.', uploading: 'جاري الرفع…', uploaded: 'انرفع الملف', pendingNote: 'رح ينرفعوا لما تحفظ المهمة', confirmRemoveFile: 'أكيد بدك تشيل هاد الملف؟', removeFile: 'شيل الملف', uploadedBy: 'رفعه', dropHere: 'إفلت الملفات هون',
-    acts: { created: 'أنشأ المهمة', updated: 'عدّل', commented: 'علّق', attached: 'أرفق', 'removed attachment': 'شال ملف', archived: 'أرشف المهمة', restored: 'رجّع المهمة', deleted: 'حذف المهمة', blocked: 'متوقفة', unblocked: 'رجعت تمشي', description: 'الوصف', checklist: 'الخطوات', labels: 'الوسوم', assignees: 'المسؤولين', team: 'اللجنة', due: 'الموعد', title: 'العنوان', status: 'الحالة', priority: 'الأولوية' },
+    acts: { repeated: 'تكرّرت المهمة', created: 'أنشأ المهمة', updated: 'عدّل', commented: 'علّق', attached: 'أرفق', 'removed attachment': 'شال ملف', archived: 'أرشف المهمة', restored: 'رجّع المهمة', deleted: 'حذف المهمة', blocked: 'متوقفة', unblocked: 'رجعت تمشي', description: 'الوصف', checklist: 'الخطوات', labels: 'الوسوم', assignees: 'المسؤولين', team: 'اللجنة', due: 'الموعد', title: 'العنوان', status: 'الحالة', priority: 'الأولوية' },
     comments: 'التعليقات', addComment: 'اكتب تعليق…', post: 'إرسال', activity: 'السجل', archive: 'أرشفة', restore: 'استرجاع', delete: 'حذف نهائي',
     archived: 'انأرشفت المهمة', deleted: 'انحذفت المهمة', confirmDelete: 'حذف المهمة وتعليقاتها نهائيًا؟ ما في رجعة.', confirmArchive: 'أرشفة المهمة؟ بتختفي من اللوحة وبتضل محفوظة بالشيت.',
     yes: 'أكيد', unsaved: 'في تغييرات ما انحفظت. تسكّر بدون حفظ؟', none: '—',
@@ -374,6 +442,13 @@ const T = {
     low: 'Low', medium: 'Medium', high: 'High', urgent: 'Urgent',
     start: 'Start', toReview: 'To review', markDone: 'Done ✓', movedTo: 'Moved to “{s}”', filters: 'Filters', more: 'More options (team, labels, blocked)',
     me: 'me', dToday: 'Today', dTomorrow: 'Tomorrow', dWeek: 'In a week', dNone: 'No date', titlePh: 'What needs doing? e.g. Book a room for the workshop', addStepBtn: 'Add',
+    projects: 'Projects & events', projectsShort: 'Projects', newProject: 'New project', projectName: 'Project or event name', projectDate: 'Event date',
+    applyTemplate: 'Add the usual event tasks from the template', templateHint: '{n} tasks, each due before or after the event date. Edit the template on the Team page.', projectSaved: 'Project saved', projectMade: 'Project created with {n} tasks',
+    showTasks: 'Show tasks', edit: 'Edit', archivedP: 'Archived', showArchived: 'Show archived', noProjects: 'No projects yet.', project: 'Project', allProjects: 'All projects', progress: 'Progress', openN: '{n} open', lateN: '{n} overdue', doneOf: '{a} of {b} done',
+    repeat: 'Repeat', rNone: 'Does not repeat', rWeekly: 'Every week', rMonthly: 'Every month', repeatedNext: 'Next one created, due {d}',
+    inbox: 'Notifications', inboxEmpty: 'No new notifications.', markSeen: 'Got it', mentionHint: 'Type @ and a name to notify someone',
+    calFeed: 'Show my tasks in Google Calendar', calFeedTitle: 'Your tasks in Google Calendar', calFeedSteps: '<ol><li>Open Google Calendar on a computer.</li><li>Next to “Other calendars” click + → “From URL”.</li><li>Paste the link and click “Add calendar”.</li></ol><p class="muted">The link is private to you; don’t share it. Google refreshes it every few hours.</p>',
+    eventTemplate: 'Event task template', eventTemplateHelp: 'One per line: days from the event | task | team. Negative means before the event.', menu: 'Menu', closeMenu: 'Close menu', account: 'Account',
     undo: 'Undo', noTasksDay: 'No tasks on this day.', tasksOn: 'Tasks on {d}',
     tipMember: 'Welcome! Tap any task to read it. Tap “Start” when you begin and “Done ✓” when you finish. Tasks are written by the team admins.',
     startBig: 'Start this task', toReviewBig: 'Send for review', doneBig: 'Done ✓', doneNote: 'This task is done ✓', changeStatus: 'Change stage', noDesc: 'No description.', createdBy: 'Written by', untilDue: 'Due', close2: 'Close', stepsDone: '{a} of {b} done', overdueBy: '{n} overdue', inDays: 'in {n}', tomorrowW: 'tomorrow', todayW: 'today', noOne: 'Nobody',
@@ -383,7 +458,7 @@ const T = {
     labelsHelp: 'Separate with commas', description: 'Description', checklist: 'Checklist', addStep: 'Add a step and press Enter', isBlocked: 'Blocked (something is in the way)',
     save: 'Save', saving: 'Saving…', cancel: 'Cancel', close: 'Close', saved: 'Saved', created: 'Task created',
     attachments: 'Attachments', attachAdd: 'Attach a file or photo', attachHelp: 'Photos, PDFs, any file… up to 10 MB each. You can also drop files here or paste an image.', uploading: 'Uploading…', uploaded: 'File uploaded', pendingNote: 'They upload when you save the task', confirmRemoveFile: 'Remove this file?', removeFile: 'Remove file', uploadedBy: 'by', dropHere: 'Drop files here',
-    acts: { created: 'created the task', updated: 'changed', commented: 'commented', attached: 'attached', 'removed attachment': 'removed a file', archived: 'archived the task', restored: 'restored the task', deleted: 'deleted the task', blocked: 'blocked', unblocked: 'unblocked', description: 'description', checklist: 'checklist', labels: 'labels', assignees: 'assignees', team: 'team', due: 'due date', title: 'title', status: 'status', priority: 'priority' },
+    acts: { repeated: 'repeated the task', created: 'created the task', updated: 'changed', commented: 'commented', attached: 'attached', 'removed attachment': 'removed a file', archived: 'archived the task', restored: 'restored the task', deleted: 'deleted the task', blocked: 'blocked', unblocked: 'unblocked', description: 'description', checklist: 'checklist', labels: 'labels', assignees: 'assignees', team: 'team', due: 'due date', title: 'title', status: 'status', priority: 'priority' },
     comments: 'Comments', addComment: 'Write a comment…', post: 'Post', activity: 'History', archive: 'Archive', restore: 'Restore', delete: 'Delete',
     archived: 'Task archived', deleted: 'Task deleted', confirmDelete: 'Delete this task and its comments for good? This cannot be undone.', confirmArchive: 'Archive this task? It leaves the board but stays in the sheet.',
     yes: 'Yes', unsaved: 'You have unsaved changes. Close without saving?', none: '—',
@@ -420,7 +495,7 @@ const S = {
   me: null, members: [], tasks: new Map(), settings: null, statuses: ['todo', 'doing', 'review', 'done'], priorities: ['low', 'medium', 'high', 'urgent'],
   view: saved.get('ies-tasks-view') || 'board',
   boardTab: saved.get('ies-tasks-tab') || 'todo', showFilters: false,
-  filters: { q: '', team: '', who: '', prio: '', showDone: false },
+  filters: { q: '', team: '', who: '', prio: '', project: '', showDone: false },
   sort: { key: 'due', dir: 1 },
   cal: null, lastSync: null, menu: false,
 };
@@ -449,6 +524,19 @@ const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': 
 const ICON = {
   cal: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>',
   check: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.5l5 5L20 6.5"/></svg>',
+  nav: {
+    mine: '<path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM4 21c1.4-4 4.4-6 8-6s6.6 2 8 6"/>',
+    board: '<rect x="3" y="4" width="5" height="16" rx="1.5"/><rect x="10" y="4" width="5" height="11" rx="1.5"/><rect x="17" y="4" width="4" height="7" rx="1.5"/>',
+    list: '<path d="M8 6h13M8 12h13M8 18h13M3.5 6h.01M3.5 12h.01M3.5 18h.01"/>',
+    calendar: '<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/>',
+    projects: '<path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>',
+    dashboard: '<path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/>',
+    team: '<path d="M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM2 21c1-3.5 3.6-5.5 7-5.5s6 2 7 5.5M17 11a3 3 0 1 0 0-6M19 15.5c1.6.7 2.6 2.3 3 5.5"/>',
+  },
+  burger: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>',
+  bell: '<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 1 1 12 0c0 7 3 8 3 8H3s3-1 3-8M10.3 21a1.9 1.9 0 0 0 3.4 0"/></svg>',
+  folder: '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>',
+  repeat: '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M17 2l4 4-4 4M3 11V9a3 3 0 0 1 3-3h15M7 22l-4-4 4-4M21 13v2a3 3 0 0 1-3 3H3"/></svg>',
   clip: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5l-8.6 8.6a5 5 0 0 1-7.1-7.1l8.6-8.6a3.5 3.5 0 0 1 5 5l-8.6 8.6a2 2 0 0 1-2.8-2.8l7.9-7.9"/></svg>',
   chat: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"><path d="M4 5h16v11H9l-5 4z"/></svg>',
   plus: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>',
@@ -556,6 +644,7 @@ function loadAll() {
   return api('api_bootstrap').then(d => {
     S.me = d.me; S.members = d.members; S.settings = d.settings; S.statuses = d.statuses; S.priorities = d.priorities;
     S.tasks = new Map(d.tasks.map(x => [x.id, x]));
+    S.projects = d.projects || []; S.inbox = d.inbox || [];
     S.lastSync = d.serverTime;
     if (S.view === 'team' && !S.me.admin) S.view = 'board';
     if (!saved.get('ies-tasks-view') && !S.me.admin) S.view = 'mine'; // members first see what is theirs
@@ -571,6 +660,9 @@ function sync(manual) {
   return api('api_changes', S.lastSync).then(d => {
     d.tasks.forEach(x => S.tasks.set(x.id, x));
     d.archivedIds.forEach(id => S.tasks.delete(id));
+    const before = unreadCount() + ':' + (S.projects || []).map(p => p.id + p.name + p.archived).join();
+    S.projects = d.projects || S.projects; S.inbox = d.inbox || S.inbox;
+    const shellChanged = before !== unreadCount() + ':' + (S.projects || []).map(p => p.id + p.name + p.archived).join();
     // An open read view follows changes made by others, unless the member is typing a comment.
     const typing = document.activeElement && document.activeElement.id === 'c-new';
     if (D && D.view && !typing && (d.tasks.some(x => x.id === D.id) || d.archivedIds.includes(D.id))) renderDrawerKeepScroll();
@@ -578,46 +670,64 @@ function sync(manual) {
     const mine = d.members.find(m => m.id === S.me.id);
     if (mine) Object.assign(S.me, { notify: mine.notify, email: mine.email });
     S.lastSync = d.serverTime;
-    renderMain();
+    if (shellChanged && !(document.activeElement && document.activeElement.matches('input, textarea, select'))) render(); else renderMain();
     if (manual) toast('✓');
   }).catch(e => { if (manual) fail(e); });
 }
 
 // =============================================================================== render: shell
-const VIEWS = ['board', 'list', 'mine', 'calendar', 'dashboard', 'team'];
+const VIEWS = ['mine', 'board', 'list', 'calendar', 'projects', 'dashboard', 'team'];
 
 function render() {
   applyLang();
   const me = S.me;
+  const mineOpen = allTasks().filter(x => x.assignees.includes(me.id) && x.status !== 'done').length;
+  const unread = unreadCount();
+  const navIcon = v => `<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICON.nav[v]}</svg>`;
+  const activeProjects = (S.projects || []).filter(p => !p.archived).sort((a, b) => (a.date || '9999').localeCompare(b.date || '9999')).slice(0, 6);
   $('#app').innerHTML = `
-    <header class="topbar"><div class="topbar-in">
-      <div class="brand"><span class="brand-mark" role="img" aria-label="IEEE IES HU"></span><div>${esc(S.settings.appName)}<small>${t('appSub')}</small></div></div>
+  <div class="shell ${S.side ? 'side-open' : ''}">
+    <aside class="side" id="side" aria-label="${t('menu')}">
+      <div class="side-brand"><span class="brand-mark" role="img" aria-label="IEEE IES HU"></span><div>${esc(S.settings.appName)}<small>${t('appSub')}</small></div>
+        <button class="icon-btn side-close" data-action="side" aria-label="${t('closeMenu')}">${ICON.x}</button></div>
       <nav class="tabs" aria-label="Views">
-        ${VIEWS.filter(v => v !== 'team' || me.admin).map(v => `<button class="tab" data-action="view" data-view="${v}" ${S.view === v ? 'aria-current="page"' : ''}>${t(v)}</button>`).join('')}
+        ${VIEWS.filter(v => v !== 'team' || me.admin).map(v => `<button class="tab" data-action="view" data-view="${v}" ${S.view === v ? 'aria-current="page"' : ''}>${navIcon(v)}<span>${t(v === 'projects' ? 'projectsShort' : v)}</span>${v === 'mine' && mineOpen ? `<b class="count">${mineOpen}</b>` : ''}</button>`).join('')}
       </nav>
-      <div class="top-actions">
-        <button class="icon-btn" data-action="sync" title="Sync" aria-label="Sync">${ICON.sync}</button>
-        ${me.admin ? `<button class="btn btn-primary btn-sm" data-action="new">${ICON.plus}<span class="new-label">${t('newTask')}</span></button>` : ''}
-        <button class="icon-btn" data-action="menu" aria-haspopup="true" aria-expanded="${S.menu}" aria-label="Menu"><span class="avatar" style="background:${colorOf(me.id)}">${esc(initials(me.name))}</span></button>
+      ${activeProjects.length ? `<div class="side-sec"><p>${t('projectsShort')}</p>${activeProjects.map(p => `<button class="side-link ${S.filters.project === p.id ? 'on' : ''}" data-action="project" data-id="${esc(p.id)}">${ICON.folder}<span>${esc(p.name)}</span></button>`).join('')}</div>` : ''}
+      <div class="side-foot">
+        <div class="who"><span class="avatar" style="background:${colorOf(me.id)}">${esc(initials(me.name))}</span><div><b>${esc(me.name)}</b><small>${esc(me.role || '')}${me.admin ? ' · ' + t('admin') : ''}</small></div></div>
+        <button class="side-link" data-action="lang">🌐 <span>${t('language')}</span></button>
+        <button class="side-link" data-action="notify">✉️ <span>${t('myNotify')}: ${me.notify ? t('notifyOnLabel') : t('notifyOffLabel')}</span></button>
+        <button class="side-link" data-action="cal-feed">📅 <span>${t('calFeed')}</span></button>
+        <button class="side-link" data-action="change-code">🔑 <span>${t('changeCode')}</span></button>
+        ${me.admin ? `<a class="side-link" href="${esc(S.settings.sheetUrl)}" target="_blank" rel="noopener">📊 <span>${t('openSheet')}</span></a>` : ''}
+        <button class="side-link" data-action="signout">↩ <span>${t('signOut')}</span></button>
       </div>
+    </aside>
+    <div class="side-scrim" data-action="side" aria-hidden="true"></div>
+    <div class="content">
+      <header class="topbar"><div class="topbar-in">
+        <button class="icon-btn burger" data-action="side" aria-label="${t('menu')}" aria-expanded="${!!S.side}" aria-controls="side">${ICON.burger}${unread ? '<i class="dot-badge"></i>' : ''}</button>
+        <span class="top-title">${esc(t(S.view === 'projects' ? 'projects' : S.view))}</span>
+        <div class="top-actions">
+          <button class="icon-btn bell" data-action="inbox" aria-label="${t('inbox')}${unread ? ' (' + unread + ')' : ''}">${ICON.bell}${unread ? `<b class="bell-n">${unread > 9 ? '9+' : unread}</b>` : ''}</button>
+          <button class="icon-btn" data-action="sync" title="Sync" aria-label="Sync">${ICON.sync}</button>
+          ${me.admin ? `<button class="btn btn-primary btn-sm" data-action="new">${ICON.plus}<span class="new-label">${t('newTask')}</span></button>` : ''}
+        </div>
+      </div></header>
+      <main class="main" id="main"></main>
     </div>
-    ${S.menu ? `<div class="menu" role="menu">
-      <div class="who"><b>${esc(me.name)}</b><span class="muted" style="font-size:13px">${esc(me.role || '')}${me.admin ? ' · ' + t('admin') : ''}</span></div>
-      <button role="menuitem" data-action="lang">🌐 ${t('language')}</button>
-      <button role="menuitem" data-action="notify">✉️ ${t('myNotify')}: ${me.notify ? t('notifyOnLabel') : t('notifyOffLabel')}</button>
-      <button role="menuitem" data-action="change-code">🔑 ${t('changeCode')}</button>
-      ${me.admin ? `<a role="menuitem" href="${esc(S.settings.sheetUrl)}" target="_blank" rel="noopener">📊 ${t('openSheet')}</a>` : ''}
-      <button role="menuitem" data-action="signout">↩ ${t('signOut')}</button>
-    </div>` : ''}
-    </header>
-    <main class="main" id="main"></main>`;
+  </div>`;
   renderMain();
 }
+
+/** Notifications newer than the last time this person looked (remembered on this device). */
+const unreadCount = () => { const seen = saved.get('ies-tasks-seen') || ''; return (S.inbox || []).filter(i => i.time > seen).length; };
 
 function renderMain() {
   const el = $('#main');
   if (!el) return;
-  const views = { board: viewBoard, list: viewList, mine: viewMine, calendar: viewCalendar, dashboard: viewDashboard, team: viewTeam };
+  const views = { board: viewBoard, list: viewList, mine: viewMine, calendar: viewCalendar, projects: viewProjects, dashboard: viewDashboard, team: viewTeam };
   el.innerHTML = (views[S.view] || viewBoard)();
   if (S.view === 'board') wireDrag();
 }
@@ -629,14 +739,16 @@ function toolbar(opts = {}) {
   const active = S.members.filter(m => m.active);
   return `<div class="toolbar">
     <input class="input search" type="search" placeholder="${t('search')}" value="${esc(f.q)}" data-filter="q" aria-label="${t('search')}">
-    ${(() => { const n = [f.team, f.who, f.prio].filter(Boolean).length; return `<button type="button" class="btn btn-sm filter-toggle" data-action="toggle-filters" aria-expanded="${S.showFilters}">${t('filters')}${n ? ` (${n})` : ''}</button>`; })()}
+    ${f.project && projName(f.project) ? `<button type="button" class="chip prj proj-filter" data-action="clear-project" aria-label="${t('clear')}">${ICON.folder}${esc(projName(f.project))} ✕</button>` : ''}
+    ${(() => { const n = [f.team, f.who, f.prio, f.project].filter(Boolean).length; return `<button type="button" class="btn btn-sm filter-toggle" data-action="toggle-filters" aria-expanded="${S.showFilters}">${t('filters')}${n ? ` (${n})` : ''}</button>`; })()}
     <div class="filter-extra ${S.showFilters ? 'open' : ''}">
     <select class="input" data-filter="team" aria-label="${t('teamField')}"><option value="">${t('allTeams')}</option>${teams.map(x => `<option ${f.team === x ? 'selected' : ''}>${esc(x)}</option>`).join('')}</select>
     <select class="input" data-filter="who" aria-label="${t('assignees')}"><option value="">${t('everyone')}</option>${active.map(m => `<option value="${m.id}" ${f.who === m.id ? 'selected' : ''}>${esc(m.name)}</option>`).join('')}</select>
+    ${(S.projects || []).length ? `<select class="input" data-filter="project" aria-label="${t('project')}"><option value="">${t('allProjects')}</option>${S.projects.filter(p => !p.archived || p.id === f.project).map(p => `<option value="${esc(p.id)}" ${f.project === p.id ? 'selected' : ''}>${esc(p.name)}</option>`).join('')}</select>` : ''}
     <select class="input" data-filter="prio" aria-label="${t('priority')}"><option value="">${t('anyPriority')}</option>${S.priorities.map(p => `<option value="${p}" ${f.prio === p ? 'selected' : ''}>${t(p)}</option>`).join('')}</select>
     ${opts.showDone ? `<label class="check"><input type="checkbox" data-filter="showDone" ${f.showDone ? 'checked' : ''}>${t('showDone')}</label>` : ''}
     </div>
-    ${f.q || f.team || f.who || f.prio ? `<button class="btn btn-ghost btn-sm" data-action="clear-filters">${t('clear')}</button>` : ''}
+    ${f.q || f.team || f.who || f.prio || f.project ? `<button class="btn btn-ghost btn-sm" data-action="clear-filters">${t('clear')}</button>` : ''}
   </div>`;
 }
 
@@ -644,9 +756,17 @@ function filtered(list) {
   const f = S.filters, q = f.q.trim().toLowerCase();
   return list.filter(x =>
     (!q || (x.title + ' ' + x.description + ' ' + x.labels.join(' ') + ' ' + x.id).toLowerCase().includes(q)) &&
-    (!f.team || x.team === f.team) && (!f.who || x.assignees.includes(f.who)) && (!f.prio || x.priority === f.prio));
+    (!f.team || x.team === f.team) && (!f.who || x.assignees.includes(f.who)) && (!f.prio || x.priority === f.prio) && (!f.project || x.project === f.project));
 }
 const allTasks = () => [...S.tasks.values()];
+const projName = id => { const p = (S.projects || []).find(x => x.id === id); return p ? p.name : ''; };
+const tplCount = text => String(text || '').split('\n').filter(l => /^\s*[-+]?\d+\s*\|\s*\S/.test(l)).length;
+/** Comment text with @mentions of team members in bold. */
+function mentionHtml(text) {
+  let h = esc(text);
+  S.members.forEach(m => [m.name, m.name.split(' ')[0]].forEach(n => { if (!n) return; h = h.split('@' + esc(n)).join('<b class="mention">@' + esc(n) + '</b>'); }));
+  return h.replace(/<b class="mention"><b class="mention">(.*?)<\/b>/g, '<b class="mention">$1');
+}
 const prioRank = p => S.priorities.indexOf(p);
 const byDueThenPrio = (a, b) => (a.due || '9999').localeCompare(b.due || '9999') || prioRank(b.priority) - prioRank(a.priority);
 
@@ -657,9 +777,9 @@ function card(x) {
   const next = NEXT_STEP[x.status];
   const due = x.due ? `<span class="due ${dueClass(x)}">${ICON.cal}${esc(fmtDay(x.due))}</span>` : '';
   return `<article class="card p-${x.priority} ${x.status === 'done' ? 'done' : ''}" draggable="true" data-action="open" data-id="${esc(x.id)}">
-    <div class="card-top">${x.team ? `<span class="chip">${esc(x.team)}</span>` : ''}${x.blocked ? `<span class="chip blocked">${t('blocked')}</span>` : ''}${x.labels.slice(0, 3).map(l => `<span class="chip label">${esc(l)}</span>`).join('')}</div>
+    <div class="card-top">${x.project && projName(x.project) ? `<span class="chip prj">${ICON.folder}${esc(projName(x.project))}</span>` : ''}${x.team ? `<span class="chip">${esc(x.team)}</span>` : ''}${x.blocked ? `<span class="chip blocked">${t('blocked')}</span>` : ''}${x.labels.slice(0, 3).map(l => `<span class="chip label">${esc(l)}</span>`).join('')}</div>
     <h3 style="margin:0"><button type="button" class="card-title" data-action="open" data-id="${esc(x.id)}">${esc(x.title || t('untitled'))}</button></h3>
-    <div class="card-meta"><span class="meta-items">${due}${x.checklist.length ? `<span>${ICON.check}${done}/${x.checklist.length}</span>` : ''}${x.comments ? `<span>${ICON.chat}${x.comments}</span>` : ''}${x.attachments ? `<span title="${t('attachments')}">${ICON.clip}${x.attachments}</span>` : ''}</span></div>
+    <div class="card-meta"><span class="meta-items">${due}${x.checklist.length ? `<span>${ICON.check}${done}/${x.checklist.length}</span>` : ''}${x.comments ? `<span>${ICON.chat}${x.comments}</span>` : ''}${x.attachments ? `<span title="${t('attachments')}">${ICON.clip}${x.attachments}</span>` : ''}${x.repeat ? `<span title="${t('repeat')}">${ICON.repeat}</span>` : ''}</span></div>
     ${next || x.assignees.length ? `<div class="card-foot"><span class="avatars">${x.assignees.slice(0, 4).map(avatar).join('')}</span>${next ? `<button type="button" class="adv ${next[0] === 'done' ? 'to-done' : ''}" data-action="advance" data-id="${esc(x.id)}" data-to="${next[0]}" aria-label="${esc(t(next[1]) + ': ' + x.title)}">${t(next[1])}</button>` : ''}</div>` : ''}
   </article>`;
 }
@@ -758,6 +878,74 @@ function viewCalendar() {
       ${dayItems.length ? `<div class="grid-cards">${dayItems.map(card).join('')}</div>` : `<p class="muted">${t('noTasksDay')}</p>`}</section>`;
 }
 
+function viewProjects() {
+  const all = allTasks(), today = todayStr();
+  const list = (S.projects || []).filter(p => S.showArchivedP || !p.archived).sort((a, b) => (a.date || '9999').localeCompare(b.date || '9999'));
+  const head = `<div class="page-head"><h1 class="page-title">${t('projects')}</h1>${S.me.admin ? `<button class="btn btn-primary btn-sm" data-action="project-new">${ICON.plus} ${t('newProject')}</button>` : ''}</div>`
+    + ((S.projects || []).some(p => p.archived) ? `<label class="check" style="margin-bottom:12px"><input type="checkbox" data-action="toggle-archived-p" ${S.showArchivedP ? 'checked' : ''}>${t('showArchived')}</label>` : '');
+  if (!list.length) return head + `<div class="empty">${t('noProjects')}</div>`;
+  return head + `<div class="proj-grid">${list.map(p => {
+    const ts = all.filter(x => x.project === p.id), done = ts.filter(x => x.status === 'done').length;
+    const late = ts.filter(x => x.status !== 'done' && x.due && x.due < today).length, pct = ts.length ? Math.round(done / ts.length * 100) : 0;
+    return `<article class="proj ${p.archived ? 'archived' : ''}">
+      <div class="proj-top"><h3>${ICON.folder} <span>${esc(p.name)}</span></h3>${p.archived ? `<span class="chip">${t('archivedP')}</span>` : ''}</div>
+      ${p.date ? `<div class="muted proj-date">${ICON.cal} ${esc(fmtDay(p.date))} · ${esc(dueWords(p.date))}</div>` : ''}
+      ${p.description ? `<p class="proj-desc" dir="auto">${esc(p.description)}</p>` : ''}
+      <div class="progress" aria-label="${t('progress')} ${pct}%"><i style="width:${pct}%"></i></div>
+      <div class="proj-stats"><span>${t('doneOf').replace('{a}', done).replace('{b}', ts.length)}</span>${late ? `<span class="late">${t('lateN').replace('{n}', late)}</span>` : ''}</div>
+      <div class="proj-actions"><button class="btn btn-sm btn-dark" data-action="project" data-id="${esc(p.id)}">${t('showTasks')}</button>${S.me.admin ? `<button class="btn btn-sm" data-action="project-edit" data-id="${esc(p.id)}">${t('edit')}</button>` : ''}</div>
+    </article>`;
+  }).join('')}</div>`;
+}
+
+function projectForm(id) {
+  const p = id ? S.projects.find(x => x.id === id) : { name: '', date: '', description: '', archived: false };
+  const n = tplCount(S.settings.eventTemplate);
+  modal(`<h2>${id ? t('edit') : t('newProject')}</h2><form id="project-form" class="drawer-body" style="padding:0" novalidate>
+    <label class="field"><span>${t('projectName')}</span><input class="input" name="name" value="${esc(p.name)}" maxlength="120" required></label>
+    <label class="field"><span>${t('projectDate')}</span><input class="input" type="date" name="date" value="${esc(p.date)}"></label>
+    <label class="field"><span>${t('description')}</span><textarea class="input" name="description" rows="3">${esc(p.description)}</textarea></label>
+    ${id ? `<label class="check"><input type="checkbox" name="archived" ${p.archived ? 'checked' : ''}>${t('archivedP')}</label>`
+      : n ? `<label class="check"><input type="checkbox" name="applyTemplate" checked>${t('applyTemplate')}</label><small class="muted">${t('templateHint').replace('{n}', n)}</small>` : ''}
+    <p class="error" id="project-error" role="alert"></p>
+    <div style="display:flex;gap:8px;justify-content:flex-end"><button type="button" class="btn" data-action="close-modal">${t('cancel')}</button><button class="btn btn-dark" type="submit">${t('save')}</button></div>
+  </form>`, w => w.querySelector('#project-form').addEventListener('submit', e => {
+    e.preventDefault();
+    const f = e.target, btn = f.querySelector('[type=submit]');
+    btn.disabled = true;
+    api('api_saveProject', { id, name: f.elements.name.value, date: f.elements.date.value, description: f.elements.description.value,
+      archived: f.elements.archived ? f.elements.archived.checked : false, applyTemplate: f.elements.applyTemplate ? f.elements.applyTemplate.checked : false })
+      .then(r => {
+        const i = S.projects.findIndex(x => x.id === r.project.id);
+        if (i >= 0) S.projects[i] = r.project; else S.projects.push(r.project);
+        r.tasks.forEach(x => S.tasks.set(x.id, x));
+        closeModal(); render();
+        toast(r.tasks.length ? t('projectMade').replace('{n}', r.tasks.length) : t('projectSaved'));
+      }).catch(err => { btn.disabled = false; f.querySelector('#project-error').textContent = errText(err.code); });
+  }));
+}
+
+function inboxModal() {
+  const items = S.inbox || [], seen = saved.get('ies-tasks-seen') || '';
+  modal(`<h2>${t('inbox')}</h2>${items.length ? `<div class="inbox">${items.map(i => `<button type="button" class="inbox-item ${i.time > seen ? 'new' : ''}" data-action="inbox-open" data-id="${esc(i.taskId)}">
+      <span><b>${esc(i.actor)}</b> ${esc(actText(i.action))} · <span dir="auto">${esc(i.title)}</span></span>
+      ${i.details && i.action === 'commented' ? `<span class="muted" dir="auto">${esc(i.details)}</span>` : i.details && i.action === 'updated' ? `<span class="muted">${esc(changeText(i.details))}</span>` : ''}
+      <time>${esc(fmtTime(i.time))}</time></button>`).join('')}</div>` : `<p class="muted">${t('inboxEmpty')}</p>`}
+    <div style="display:flex;justify-content:flex-end"><button class="btn btn-dark" data-action="close-modal">${t('markSeen')}</button></div>`);
+  if (items.length) { saved.set('ies-tasks-seen', items[0].time); render(); }
+}
+
+function calFeedModal() {
+  api('api_feedUrl').then(r => modal(`<h2>${t('calFeedTitle')}</h2>
+    <div style="display:flex;gap:8px"><input class="input" id="feed-url" readonly dir="ltr" value="${esc(r.url)}" aria-label="URL" style="flex:1"><button class="btn" id="copy-feed">${t('copy')}</button></div>
+    <div class="feed-steps">${t('calFeedSteps')}</div>
+    <div style="display:flex;justify-content:flex-end"><button class="btn btn-dark" data-action="close-modal">${t('close')}</button></div>`,
+    w => w.querySelector('#copy-feed').addEventListener('click', () => {
+      const i = w.querySelector('#feed-url'); i.select();
+      (navigator.clipboard ? navigator.clipboard.writeText(r.url) : Promise.reject()).catch(() => document.execCommand('copy')).finally(() => toast(t('copied')));
+    }))).catch(fail);
+}
+
 function viewDashboard() {
   const today = todayStr();
   const all = allTasks(), open = all.filter(x => x.status !== 'done');
@@ -805,6 +993,7 @@ function viewTeam() {
       <label class="check"><input type="checkbox" name="digest" ${st.digest ? 'checked' : ''}>${t('digest')}</label>
       <small class="muted">${t('digestHelp')}</small>
       <label class="field"><span>${t('digestHour')}</span><select class="input" name="digestHour">${Array.from({ length: 24 }, (_, h) => `<option value="${h}" ${h === st.digestHour ? 'selected' : ''}>${String(h).padStart(2, '0')}:00</option>`).join('')}</select></label>
+      <label class="field"><span>${t('eventTemplate')}</span><textarea class="input" name="eventTemplate" rows="9" dir="auto">${esc(st.eventTemplate || '')}</textarea><small class="muted">${t('eventTemplateHelp')}</small></label>
       <button class="btn btn-dark" type="submit">${t('save')}</button>
       <a href="${esc(st.sheetUrl)}" target="_blank" rel="noopener">${t('openSheet')} ↗</a>
     </form></section></div>`;
@@ -840,7 +1029,11 @@ function advanceTask(id, status, quiet) {
   const view = () => { if (D && D.view && D.id === id) renderDrawerKeepScroll(); };
   renderMain(); view();
   if (!quiet) toast(t('movedTo').replace('{s}', t(status)), false, () => advanceTask(id, prev, true));
-  api('api_saveTask', { id, status, base: { status: prev } }).then(saved => { S.tasks.set(id, saved); renderMain(); view(); })
+  api('api_saveTask', { id, status, base: { status: prev } }).then(saved => {
+    S.tasks.set(id, saved);
+    if (saved.spawned) { S.tasks.set(saved.spawned.id, saved.spawned); toast(t('repeatedNext').replace('{d}', fmtDay(saved.spawned.due))); }
+    renderMain(); view();
+  })
     .catch(err => { S.tasks.set(id, Object.assign({}, x, { status: prev })); renderMain(); view(); fail(err); if (err.code === 'CONFLICT') sync(); });
 }
 
@@ -871,6 +1064,8 @@ function renderTaskView() {
         <span class="pill" style="background:color-mix(in srgb, ${prioColor(x.priority)} 12%, white);color:${prioColor(x.priority)}">${t('priority')}: ${t(x.priority)}</span>
         ${x.blocked ? `<span class="chip blocked">${t('blocked')}</span>` : ''}
         ${x.team ? `<span class="pill">${esc(x.team)}</span>` : ''}
+        ${x.project && projName(x.project) ? `<span class="pill">${ICON.folder} ${esc(projName(x.project))}</span>` : ''}
+        ${x.repeat ? `<span class="pill">${ICON.repeat} ${t(x.repeat === 'weekly' ? 'rWeekly' : 'rMonthly')}</span>` : ''}
       </div>
       ${next ? `<button type="button" class="next-btn ${next[0] === 'done' ? 'to-done' : ''}" data-action="v-status" data-v="${next[0]}">${t(BIG_NEXT[x.status])}</button>` : `<div class="done-note">${t('doneNote')}</div>`}
       <div class="stage-row"><span>${t('changeStatus')}:</span><div class="seg" role="group">${S.statuses.map(s => `<button type="button" data-action="v-status" data-v="${s}" aria-pressed="${x.status === s}">${t(s)}</button>`).join('')}</div></div>
@@ -919,9 +1114,9 @@ function openTask(id, preset) {
     return;
   }
   const myTeam = S.settings.teams.includes(S.me.team) ? S.me.team : '';
-  const base = x || { title: '', description: '', status: 'todo', priority: 'medium', team: myTeam, assignees: [], due: '', labels: [], checklist: [], blocked: false, ...preset };
+  const base = x || { title: '', description: '', status: 'todo', priority: 'medium', team: myTeam, assignees: [], due: '', labels: [], checklist: [], blocked: false, project: S.filters.project || '', repeat: '', ...preset };
   D = { id: x ? x.id : null, orig: JSON.parse(JSON.stringify(base)), draft: JSON.parse(JSON.stringify(base)), detail: null,
-    moreOpen: !!(x && (x.labels.length || x.blocked)), pending: [], uploading: [] };
+    moreOpen: !!(x && (x.labels.length || x.blocked || x.repeat)), pending: [], uploading: [] };
   renderDrawer();
   if (x) api('api_taskDetail', x.id).then(det => { if (D && D.id === x.id) { D.detail = det; renderDetail(); } }).catch(() => {});
   setTimeout(() => { const el = $('#d-title'); if (el && !x) el.focus(); }, 30);
@@ -930,7 +1125,7 @@ function openTask(id, preset) {
 function dirtyFields() {
   if (!D || D.view) return {};
   const out = {};
-  ['title', 'description', 'status', 'priority', 'team', 'due', 'blocked'].forEach(k => { if (D.draft[k] !== D.orig[k]) out[k] = D.draft[k]; });
+  ['title', 'description', 'status', 'priority', 'team', 'due', 'blocked', 'project', 'repeat'].forEach(k => { if ((D.draft[k] || '') !== (D.orig[k] || '')) out[k] = D.draft[k]; });
   ['assignees', 'labels', 'checklist'].forEach(k => { if (JSON.stringify(D.draft[k]) !== JSON.stringify(D.orig[k])) out[k] = D.draft[k]; });
   return out;
 }
@@ -952,6 +1147,7 @@ function renderDrawer() {
         <div class="quick seg" role="group">${[['today', 0], ['tomorrow', 1], ['week', 7], ['none', null]].map(([k, n]) => { const v = n === null ? '' : addDays(todayStr(), n); return `<button type="button" data-action="d-due" data-v="${v}" aria-pressed="${d.due === v}">${t('d' + k[0].toUpperCase() + k.slice(1))}</button>`; }).join('')}</div>
         <input class="input" type="date" name="due" value="${esc(d.due)}" aria-label="${t('due')}"></div>
       <div class="field"><span>${t('priority')}</span><div class="seg prio" role="group">${S.priorities.map(p => `<button type="button" data-action="d-prio" data-v="${p}" aria-pressed="${d.priority === p}">${t(p)}</button>`).join('')}</div></div>
+      ${(S.projects || []).some(p => !p.archived || p.id === d.project) ? `<label class="field"><span>${t('project')}</span><select class="input" name="project"><option value="">${t('none')}</option>${S.projects.filter(p => !p.archived || p.id === d.project).map(p => `<option value="${esc(p.id)}" ${d.project === p.id ? 'selected' : ''}>${esc(p.name)}</option>`).join('')}</select></label>` : ''}
       <label class="field"><span>${t('description')}</span><textarea class="input" name="description" rows="4">${esc(d.description)}</textarea></label>
       <div class="field"><span>${t('checklist')} ${d.checklist.length ? `(${doneN}/${d.checklist.length})` : ''}</span>
         ${d.checklist.length ? `<div class="progress"><i style="width:${doneN / d.checklist.length * 100}%"></i></div>` : ''}
@@ -963,6 +1159,7 @@ function renderDrawer() {
       <details class="more" ${D.moreOpen ? 'open' : ''}><summary>${t('more')}</summary>
         <label class="field"><span>${t('teamField')}</span><select class="input" name="team"><option value="">${t('none')}</option>${teams.map(x => `<option ${d.team === x ? 'selected' : ''}>${esc(x)}</option>`).join('')}</select></label>
         <label class="field"><span>${t('labels')}</span><input class="input" name="labels" value="${esc(d.labels.join(', '))}" placeholder="${t('labelsHelp')}"></label>
+        <label class="field"><span>${t('repeat')}</span><select class="input" name="repeat">${[['', 'rNone'], ['weekly', 'rWeekly'], ['monthly', 'rMonthly']].map(([v, k]) => `<option value="${v}" ${(d.repeat || '') === v ? 'selected' : ''}>${t(k)}</option>`).join('')}</select></label>
         <label class="check"><input type="checkbox" name="blocked" ${d.blocked ? 'checked' : ''}>${t('isBlocked')}</label>
       </details>
       <div class="field"><span>${t('attachments')}</span>
@@ -991,13 +1188,14 @@ function renderDetail() {
   // Keep a comment being typed (and its focus) when the comments arrive or refresh.
   const box = $('#c-new'), typed = box ? box.value : '', focused = box && document.activeElement === box;
   el.innerHTML = `<p class="section-title">${t('comments')}</p>
-    ${det ? det.comments.map(c => `<div class="comment"><b>${esc(c.author)}</b><time>${esc(fmtTime(c.createdAt))}</time><p>${esc(c.text)}</p></div>`).join('') : '<div class="spinner"></div>'}
+    ${det ? det.comments.map(c => `<div class="comment"><b>${esc(c.author)}</b><time>${esc(fmtTime(c.createdAt))}</time><p>${mentionHtml(c.text)}</p></div>`).join('') : '<div class="spinner"></div>'}
     <div style="display:flex;gap:8px;align-items:flex-end;margin-top:8px"><textarea class="input" id="c-new" rows="2" placeholder="${t('addComment')}" maxlength="2000" style="min-height:44px"></textarea>
     <button type="button" class="btn btn-sm btn-dark" data-action="post-comment">${t('post')}</button></div>
+    <div id="mention-box" class="mention-box" role="listbox" hidden></div><small class="muted">${t('mentionHint')}</small>
     ${det && det.activity.length ? `<p class="section-title">${t('activity')}</p><ul class="activity">${det.activity.map(a => `<li><b>${esc(a.actor)}</b> · ${esc(actText(a.action))}${a.details ? ': ' + esc(a.action === 'updated' ? changeText(a.details) : a.details) : ''}<br><time>${esc(fmtTime(a.time))}</time></li>`).join('')}</ul>` : ''}`;
   const box2 = $('#c-new');
   if (box2 && typed) box2.value = typed;
-  if (box2 && focused) box2.focus();
+  if (box2 && focused) { box2.focus(); box2.setSelectionRange(box2.value.length, box2.value.length); showMentions(box2); }
 }
 
 function wireDrawer() {
@@ -1011,7 +1209,7 @@ function wireDrawer() {
   });
   form.addEventListener('change', e => {
     const el = e.target;
-    if (el.name === 'priority' || el.name === 'team') D.draft[el.name] = el.value;
+    if (el.name === 'priority' || el.name === 'team' || el.name === 'project' || el.name === 'repeat') D.draft[el.name] = el.value;
     if (el.name === 'blocked') D.draft.blocked = el.checked;
   });
   form.addEventListener('submit', e => e.preventDefault());
@@ -1159,7 +1357,7 @@ function saveTask() {
   const patch = dirtyFields();
   if (!D.id && !D.draft.title.trim()) { const f = $('#d-title'); if (f) { f.scrollIntoView({ block: 'center' }); f.focus(); } return toast(errText('title'), true); }
   if (D.id && !Object.keys(patch).length) return closeDrawer(true);
-  if (!D.id) Object.assign(patch, { title: D.draft.title, status: D.draft.status, priority: D.draft.priority, team: D.draft.team }); // prefilled fields count too
+  if (!D.id) Object.assign(patch, { title: D.draft.title, status: D.draft.status, priority: D.draft.priority, team: D.draft.team, project: D.draft.project || '', repeat: D.draft.repeat || '' }); // prefilled fields count too
   if (D.id) {
     patch.id = D.id;
     // What this editor started from, so the server can merge with (or refuse to overwrite) someone else's changes.
@@ -1172,6 +1370,7 @@ function saveTask() {
   api('api_saveTask', patch).then(x => {
     S.tasks.set(x.id, x);
     toast(D.id ? t('saved') : t('created'));
+    if (x.spawned) { S.tasks.set(x.spawned.id, x.spawned); toast(t('repeatedNext').replace('{d}', fmtDay(x.spawned.due))); }
     closeDrawer(true);
     renderMain();
     queued.reduce((p, f) => p.then(() => uploadFile(x.id, f)), Promise.resolve());
@@ -1270,16 +1469,26 @@ document.addEventListener('click', e => {
   if (S.menu && !e.target.closest('.menu') && !(el && el.dataset.action === 'menu')) { S.menu = false; render(); if (!el) return; }
   if (!el) return;
   const a = el.dataset.action;
-  if (a === 'view') { S.view = el.dataset.view; saved.set('ies-tasks-view', S.view); S.menu = false; render(); }
+  if (a === 'view') { S.view = el.dataset.view; saved.set('ies-tasks-view', S.view); S.menu = false; S.side = false; render(); window.scrollTo(0, 0); }
+  else if (a === 'side') { S.side = !S.side; render(); if (S.side) { const f = document.querySelector('.side .tab[aria-current]'); if (f) f.focus(); } }
+  else if (a === 'project') { S.filters.project = el.dataset.id; S.view = 'board'; saved.set('ies-tasks-view', 'board'); S.side = false; render(); window.scrollTo(0, 0); }
+  else if (a === 'clear-project') { S.filters.project = ''; render(); }
+  else if (a === 'project-new') projectForm(null);
+  else if (a === 'project-edit') projectForm(el.dataset.id);
+  else if (a === 'toggle-archived-p') { S.showArchivedP = el.checked; renderMain(); }
+  else if (a === 'inbox') inboxModal();
+  else if (a === 'inbox-open') { closeModal(); const id = el.dataset.id; if (S.tasks.has(id)) openTask(id); }
+  else if (a === 'cal-feed') { S.side = false; render(); calFeedModal(); }
+  else if (a === 'mention') insertMention(el.dataset.name);
   else if (a === 'new') openTask(null, el.dataset.status ? { status: el.dataset.status } : {});
   else if (a === 'open') openTask(el.dataset.id);
   else if (a === 'sync') sync(true);
-  else if (a === 'menu') { S.menu = !S.menu; render(); }
+  else if (a === 'menu') { S.side = !S.side; render(); }
   else if (a === 'lang') { S.lang = S.lang === 'ar' ? 'en' : 'ar'; saved.set('ies-tasks-lang', S.lang); S.menu = false; if (S.me) render(); else showLogin(); }
   else if (a === 'signout') signOut(false);
-  else if (a === 'change-code') { S.menu = false; render(); changeCodeForm(); }
+  else if (a === 'change-code') { S.menu = false; S.side = false; render(); changeCodeForm(); }
   else if (a === 'notify') api('api_setNotify', !S.me.notify).then(r => { S.me.notify = r.notify; S.menu = false; render(); toast(r.notify ? t('notifyNowOn').replace('{e}', S.me.email || '—') : t('notifyNowOff')); }).catch(fail);
-  else if (a === 'clear-filters') { S.filters = { q: '', team: '', who: '', prio: '', showDone: S.filters.showDone }; renderMain(); }
+  else if (a === 'clear-filters') { S.filters = { q: '', team: '', who: '', prio: '', project: '', showDone: S.filters.showDone }; renderMain(); }
   else if (a === 'sort') { const k = el.dataset.key; S.sort = { key: k, dir: S.sort.key === k ? -S.sort.dir : 1 }; renderMain(); }
   else if (a === 'cal') { const st = Number(el.dataset.step); if (!st) S.cal = null; else { let m = S.cal.m + st, y = S.cal.y; if (m < 0) { m = 11; y--; } if (m > 11) { m = 0; y++; } S.cal = { y, m }; } renderMain(); }
   else if (a === 'close-drawer') closeDrawer(false);
@@ -1334,7 +1543,26 @@ document.addEventListener('click', e => {
   else if (a === 'reset-code') { const m = S.members.find(x => x.id === el.dataset.id); confirmBox(t('resetConfirm'), () => api('api_resetCode', m.id, false).then(r => showCode(m.name, r.code)).catch(fail)); }
 });
 
+/** "@na" before the caret in a comment: suggest team members; picking one writes "@Name ". */
+function mentionQuery(el) { const m = /@([^\s@]{0,20})$/.exec(el.value.slice(0, el.selectionStart)); return m ? m[1] : null; }
+function showMentions(el) {
+  const box = $('#mention-box'); if (!box) return;
+  const q = mentionQuery(el);
+  const list = q === null ? [] : S.members.filter(m => m.active && m.id !== S.me.id && (m.name.toLowerCase().startsWith(q.toLowerCase()) || m.name.toLowerCase().includes(' ' + q.toLowerCase()))).slice(0, 6);
+  box.hidden = !list.length;
+  box.innerHTML = list.map(m => { const first = m.name.split(' ')[0], dup = S.members.filter(x => x.name.split(' ')[0] === first).length > 1;
+    return `<button type="button" role="option" data-action="mention" data-name="${esc(dup ? m.name : first)}">${avatar(m.id)}${esc(m.name)}</button>`; }).join('');
+}
+function insertMention(name) {
+  const el = $('#c-new'); if (!el) return;
+  const pos = el.selectionStart, before = el.value.slice(0, pos).replace(/@([^\s@]{0,20})$/, '@' + name + ' ');
+  el.value = before + el.value.slice(pos);
+  el.focus(); el.setSelectionRange(before.length, before.length);
+  $('#mention-box').hidden = true;
+}
+
 document.addEventListener('input', e => {
+  if (e.target.id === 'c-new') return showMentions(e.target);
   const k = e.target.dataset && e.target.dataset.filter;
   if (!k) return;
   S.filters[k] = e.target.type === 'checkbox' ? e.target.checked : e.target.value;
@@ -1346,7 +1574,7 @@ document.addEventListener('submit', e => {
   if (e.target.id !== 'settings-form') return;
   e.preventDefault();
   const f = e.target;
-  api('api_saveSettings', { teams: f.teams.value.split('\n').map(s => s.trim()).filter(Boolean), digest: f.digest.checked, digestHour: Number(f.digestHour.value) })
+  api('api_saveSettings', { teams: f.teams.value.split('\n').map(s => s.trim()).filter(Boolean), digest: f.digest.checked, digestHour: Number(f.digestHour.value), eventTemplate: f.eventTemplate.value })
     .then(s => { S.settings = Object.assign(S.settings, s); renderMain(); toast(t('settingsSaved')); }).catch(fail);
 });
 
@@ -1357,7 +1585,7 @@ document.addEventListener('paste', e => {
 });
 
 document.addEventListener('keydown', e => {
-  if (e.key === 'Escape') { if (document.querySelector('.modal-wrap')) closeModal(); else if (D) closeDrawer(false); else if (S.menu) { S.menu = false; render(); } }
+  if (e.key === 'Escape') { if (document.querySelector('.modal-wrap')) closeModal(); else if (D) closeDrawer(false); else if (S.side) { S.side = false; render(); } else if (S.menu) { S.menu = false; render(); } }
   if (e.key === 'Enter' && (e.metaKey || e.ctrlKey) && D) saveTask();
   if ((e.key === 'Enter' || e.key === ' ') && e.target.matches && e.target.matches('[data-action="open"]:not(button)')) { e.preventDefault(); openTask(e.target.dataset.id); }
 });

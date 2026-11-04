@@ -38,6 +38,11 @@ async function signIn(p, name = 'Admin', code = dev.adminCode) {
 }
 
 const column = (p, status) => p.locator(`.col[data-status="${status}"]`);
+/** Opens a view; on phones through the ☰ menu. */
+async function go(p, view) {
+  if (await p.locator('.burger').isVisible()) await p.click('.burger');
+  await p.click(`[data-action="view"][data-view="${view}"]`);
+}
 
 describe('task manager UI', () => {
   it('rejects a wrong code and signs in with the right one', async () => {
@@ -183,15 +188,13 @@ describe('task manager UI', () => {
   it('switches to English (left to right) and keeps the session after reload', async () => {
     const p = await page();
     await signIn(p);
-    await p.click('[data-action="menu"]');
-    await p.click('.menu [data-action="lang"]');
+    await p.click('.side [data-action="lang"]');
     await p.waitForFunction(() => document.documentElement.dir === 'ltr');
     assert.match(await p.textContent('.tabs'), /Board/);
     await p.reload({ waitUntil: 'networkidle' });
     await p.waitForSelector('.board');
     assert.equal(await p.evaluate(() => document.documentElement.lang), 'en');
-    await p.click('[data-action="menu"]');
-    await p.click('.menu [data-action="signout"]');
+    await p.click('.side [data-action="signout"]');
     await p.waitForSelector('#login-form');
     await p.close();
   });
@@ -473,10 +476,10 @@ describe('phone', () => {
     dev.app.call('api_saveTask', token(), { title: 'Due today on the calendar', due: today });
     const p = await phone();
     await signIn(p);
-    await p.click('[data-action="view"][data-view="list"]');
+    await go(p, 'list');
     assert.equal(await p.locator('.table-wrap thead').isVisible(), false);
     assert.equal(await p.evaluate(() => document.documentElement.scrollWidth > innerWidth + 1), false);
-    await p.click('[data-action="view"][data-view="calendar"]');
+    await go(p, 'calendar');
     await p.locator('.agenda .card', { hasText: 'Due today on the calendar' }).waitFor();
     assert.ok(await p.locator('.day.today .dots i').count() >= 1);
     await p.close();
@@ -490,6 +493,115 @@ describe('phone', () => {
     await column(p, 'todo').locator('.card', { hasText: 'Undo me' }).waitFor();
     await p.waitForTimeout(400);
     assert.equal(dev.app.call('api_bootstrap', token()).tasks.find(x => x.title === 'Undo me').status, 'todo');
+    await p.close();
+  });
+});
+
+describe('navigation, projects and the rest', () => {
+  const token = () => dev.app.call('api_login', 'M-0001', dev.adminCode).token;
+
+  it('has a sidebar on computers and a ☰ drawer on phones', async () => {
+    const d = await page();
+    await signIn(d);
+    assert.ok(await d.locator('.side').isVisible());
+    assert.equal(await d.locator('.burger').isVisible(), false);
+    await d.close();
+    const p = await page({ width: 390, height: 844 });
+    await signIn(p);
+    const inView = () => p.evaluate(() => { const r = document.querySelector('.side').getBoundingClientRect(); return r.right > 1 && r.left < innerWidth - 1; });
+    assert.equal(await inView(), false, 'drawer closed');
+    await p.click('.burger');
+    await p.waitForTimeout(300);
+    assert.equal(await inView(), true, 'drawer open');
+    await p.click('.side [data-action="view"][data-view="dashboard"]');
+    await p.waitForSelector('.kpis');
+    await p.waitForTimeout(300);
+    assert.equal(await inView(), false, 'picking a page closes it');
+    await p.click('.burger'); await p.waitForTimeout(300);
+    await p.mouse.click(20, 400); // the dimmed area (the drawer opens from the right in Arabic)
+    await p.waitForTimeout(300);
+    assert.equal(await inView(), false, 'tapping outside closes it');
+    await p.close();
+  });
+
+  it('creates an event with its template tasks and shows its tasks from the sidebar', async () => {
+    const p = await page();
+    await signIn(p);
+    await p.click('[data-action="view"][data-view="projects"]');
+    await p.click('[data-action="project-new"]');
+    await p.fill('#project-form [name="name"]', 'Robotics Day');
+    await p.fill('#project-form [name="date"]', '2027-03-15');
+    await p.click('#project-form [type="submit"]');
+    await p.locator('.proj', { hasText: 'Robotics Day' }).waitFor();
+    const r = dev.app.call('api_bootstrap', token());
+    const proj = r.projects.find(x => x.name === 'Robotics Day');
+    const tasks = r.tasks.filter(x => x.project === proj.id);
+    assert.ok(tasks.length >= 10);
+    await p.click(`.side [data-action="project"][data-id="${proj.id}"]`);
+    await p.locator('.proj-filter', { hasText: 'Robotics Day' }).waitFor();
+    assert.equal(await p.locator('.board .card').count(), tasks.length, 'board shows only this event');
+    await p.click('[data-action="clear-project"]');
+    assert.ok(await p.locator('.board .card').count() > tasks.length);
+    await p.close();
+  });
+
+  it('repeats a weekly task when it is done', async () => {
+    const p = await page();
+    await signIn(p);
+    await p.click('.top-actions [data-action="new"]');
+    await p.fill('#d-title', 'Weekly meeting minutes');
+    await p.click('[data-action="d-due"]:has-text("اليوم")');
+    await p.click('details.more summary');
+    await p.selectOption('[name="repeat"]', 'weekly');
+    await p.click('[data-action="save-task"]');
+    await p.waitForSelector('.drawer', { state: 'detached' });
+    await p.click('[data-action="view"][data-view="board"]');
+    for (const [from, to] of [['todo', 'doing'], ['doing', 'review'], ['review', 'done']]) {
+      await column(p, from).locator('.card', { hasText: 'Weekly meeting minutes' }).first().locator('[data-action="advance"]').click();
+      await column(p, to).locator('.card', { hasText: 'Weekly meeting minutes' }).first().waitFor();
+      await p.waitForTimeout(250);
+    }
+    await column(p, 'todo').locator('.card', { hasText: 'Weekly meeting minutes' }).waitFor();
+    const list = dev.app.call('api_bootstrap', token()).tasks.filter(x => x.title === 'Weekly meeting minutes');
+    assert.equal(list.length, 2);
+    assert.deepEqual(list.map(x => x.status).sort(), ['done', 'todo']);
+    await p.close();
+  });
+
+  it('suggests people after @ in a comment, highlights mentions and counts notifications', async () => {
+    const hala = dev.app.call('api_publicInfo').members.find(m => m.name === 'Hala Rawashdeh');
+    const t = dev.app.call('api_saveTask', token(), { title: 'Mention test', assignees: [hala.id] });
+    const p = await page();
+    await signIn(p);
+    await p.click('[data-action="view"][data-view="board"]');
+    await p.locator('.card', { hasText: 'Mention test' }).locator('.card-title').click();
+    await p.waitForSelector('#c-new');
+    await p.type('#c-new', 'Please check @Ha');
+    await p.locator('#mention-box [data-action="mention"]', { hasText: 'Hala Rawashdeh' }).click();
+    assert.equal(await p.inputValue('#c-new'), 'Please check @Hala ');
+    await p.type('#c-new', 'thanks');
+    await p.click('[data-action="post-comment"]');
+    await p.locator('.comment .mention', { hasText: '@Hala' }).waitFor();
+    await p.close();
+    const h = await page();
+    await signIn(h, 'Hala Rawashdeh', dev.codes['Hala Rawashdeh']);
+    const badge = h.locator('.bell .bell-n');
+    await badge.waitFor();
+    await h.click('.bell');
+    await h.locator('.inbox-item', { hasText: 'Mention test' }).first().waitFor();
+    await h.locator('.inbox-item', { hasText: 'Mention test' }).first().click();
+    await h.waitForSelector('#v-title');
+    assert.equal(await h.locator('.bell .bell-n').count(), 0, 'seen after opening');
+    assert.equal(t.title, 'Mention test');
+    await h.close();
+  });
+
+  it('gives a private calendar link', async () => {
+    const p = await page();
+    await signIn(p, 'Hala Rawashdeh', dev.codes['Hala Rawashdeh']);
+    await p.click('.side [data-action="cal-feed"]');
+    const url = await p.inputValue('#feed-url');
+    assert.match(url, /\?feed=M-\d{4}\.[0-9a-f]{24}$/);
     await p.close();
   });
 });
