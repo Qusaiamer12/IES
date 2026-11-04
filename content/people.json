@@ -146,5 +146,16 @@
     "links": {
       "linkedin": "https://www.linkedin.com/in/hala-rawashdeh-8792a0373"
     }
+  },
+  {
+    "slug": "mayar-alshiekh",
+    "memberId": "IES-011",
+    "nameEn": "Mayar Alshiekh",
+    "nameAr": "ميار الشيخ",
+    "specialtyEn": "Mechatronics Engineering",
+    "photo": null,
+    "bio": null,
+    "highlights": [],
+    "links": {}
   }
 ]
