@@ -301,7 +301,7 @@ describe('team scenarios', () => {
     await p.fill('#c-new', 'Use the new logo please');
     await p.click('[data-action="post-comment"]');
     await p.locator('.comment', { hasText: 'Use the new logo' }).waitFor();
-    assert.ok(dev.app.mail.slice(mailsBefore).some(m => m.to === 'hala@example.com' && /علّق/.test(m.subject)), 'Hala is emailed about the comment');
+    assert.ok(dev.app.mail.slice(mailsBefore).some(m => m.to === 'hala@example.com' && /commented/.test(m.subject)), 'Hala is emailed about the comment');
 
     await p.click('[data-action="archive"]');
     await p.click('#confirm-yes');
