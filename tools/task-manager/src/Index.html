@@ -262,7 +262,7 @@ const T = {
     err: { AUTH: 'انتهت الجلسة، سجّل دخول من جديد.', BAD_CODE: 'الرمز غلط.', LOCKED: 'محاولات كثيرة. جرّب بعد 15 دقيقة.', FORBIDDEN: 'ما عندك صلاحية لهاد.',
       NOT_FOUND: 'المهمة مش موجودة (يمكن انحذفت).', title: 'اكتب عنوان (لحد 200 حرف).', due: 'تاريخ غير صالح.', assignees: 'في عضو مش موجود أو موقوف.',
       email: 'إيميل غير صالح.', 'email-taken': 'الإيميل مستخدم لعضو ثاني.', name: 'اكتب الاسم.', self: 'ما بتقدر تشيل صلاحيتك أو توقف حسابك.', code: 'الرمز لازم يكون 6 أحرف أو أرقام على الأقل.',
-      text: 'التعليق فاضي أو طويل كتير.', generic: 'صار خطأ. جرّب كمان مرة.', offline: 'ما في اتصال. تأكد من الإنترنت.' },
+      text: 'التعليق فاضي أو طويل كتير.', CONFLICT: 'عضو ثاني عدّل ({f}) وإنت فاتح المهمة. تعديلك لسا موجود؛ إذا حفظت كمان مرة بيتثبت بدل تعديله.', generic: 'صار خطأ. جرّب كمان مرة.', offline: 'ما في اتصال. تأكد من الإنترنت.' },
   },
   en: {
     appSub: 'Team task manager', loading: 'Loading…', signIn: 'Sign in', whoAreYou: 'Who are you?', chooseName: 'Choose your name',
@@ -292,7 +292,7 @@ const T = {
     err: { AUTH: 'Your session ended. Please sign in again.', BAD_CODE: 'Wrong code.', LOCKED: 'Too many attempts. Try again in 15 minutes.', FORBIDDEN: 'You don’t have permission for that.',
       NOT_FOUND: 'Task not found (it may have been deleted).', title: 'Enter a title (up to 200 characters).', due: 'Invalid date.', assignees: 'An assignee is missing or inactive.',
       email: 'Invalid email.', 'email-taken': 'Another member uses this email.', name: 'Enter a name.', self: 'You can’t remove your own admin role or deactivate yourself.', code: 'The code needs at least 6 letters or digits.',
-      text: 'The comment is empty or too long.', generic: 'Something went wrong. Please try again.', offline: 'No connection. Check your internet.' },
+      text: 'The comment is empty or too long.', CONFLICT: 'Someone else changed ({f}) while you had this task open. Your edit is still here; save again to keep yours instead.', generic: 'Something went wrong. Please try again.', offline: 'No connection. Check your internet.' },
   },
 };
 
@@ -325,10 +325,10 @@ function api(fn, ...args) {
       .withSuccessHandler(resolve)
       .withFailureHandler(e => {
         const msg = String((e && e.message) || e);
-        const m = /(AUTH|BAD_CODE|LOCKED|FORBIDDEN|NOT_FOUND|BAD_INPUT:[\w-]+)/.exec(msg);
-        const code = m ? m[1].replace('BAD_INPUT:', '') : (/network|NetworkError|Failed to fetch/i.test(msg) ? 'offline' : 'generic');
+        const m = /(AUTH|BAD_CODE|LOCKED|FORBIDDEN|NOT_FOUND|CONFLICT:[\w,]+|BAD_INPUT:[\w-]+)/.exec(msg);
+        const code = m ? m[1].replace('BAD_INPUT:', '').replace(/^CONFLICT:.*/, 'CONFLICT') : (/network|NetworkError|Failed to fetch/i.test(msg) ? 'offline' : 'generic');
         if (code === 'AUTH' && fn !== 'api_login') signOut(true);
-        reject(Object.assign(new Error(msg), { code }));
+        reject(Object.assign(new Error(msg), { code, fields: m && m[1].startsWith('CONFLICT:') ? m[1].slice(9).split(',') : [] }));
       })[fn](...withToken);
   });
 }
@@ -352,6 +352,9 @@ const initials = name => String(name || '?').trim().split(/\s+/).map(w => w[0]).
 const member = id => S.members.find(m => m.id === id);
 const avatar = id => { const m = member(id); return m ? `<span class="avatar" style="background:${colorOf(id)}" title="${esc(m.name)}">${esc(initials(m.name))}</span>` : ''; };
 const todayStr = () => new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Amman', year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date());
+const ammanDay = iso => { if (!iso) return ''; try { return new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Amman', year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date(iso)); } catch (e) { return String(iso).slice(0, 10); } };
+// Done in the last 7 days = today and the 6 days before it, by the date in Amman (completedAt is stored in UTC).
+const doneInLast7 = x => { if (x.status !== 'done' || !x.completedAt) return false; const d = ammanDay(x.completedAt), today = todayStr(); return d >= addDays(today, -6) && d <= today; };
 const addDays = (d, n) => { const x = new Date(d + 'T12:00:00Z'); x.setUTCDate(x.getUTCDate() + n); return x.toISOString().slice(0, 10); };
 const fmtDay = d => { if (!d) return ''; const [y, m, day] = d.split('-').map(Number); return `${day} ${t('months')[m - 1].slice(0, S.lang === 'ar' ? 20 : 3)}${y !== Number(todayStr().slice(0, 4)) ? ' ' + y : ''}`; };
 const fmtTime = iso => { if (!iso) return ''; try { return new Intl.DateTimeFormat(S.lang === 'ar' ? 'ar-JO-u-nu-latn' : 'en-GB', { dateStyle: 'medium', timeStyle: 'short', timeZone: 'Asia/Amman' }).format(new Date(iso)); } catch (e) { return iso; } };
@@ -367,7 +370,8 @@ function toast(msg, error) {
   toast.t = setTimeout(() => el.classList.add('hidden'), error ? 5000 : 2400);
 }
 // Known errors get a plain message; anything else also shows the server's words, so a problem can be reported.
-const fail = e => toast(errText(e.code) + (e.code === 'generic' && e.message ? ' (' + String(e.message).replace(/^(Exception|Error):\s*/, '').slice(0, 140) + ')' : ''), true);
+const conflictText = fields => { const names = { team: 'teamField', blocked: 'isBlocked' }; return t('err').CONFLICT.replace('{f}', (fields || []).map(k => t(names[k] || k)).join(S.lang === 'ar' ? '، ' : ', ')); };
+const fail = e => e.code === 'CONFLICT' ? toast(conflictText(e.fields), true) : toast(errText(e.code) + (e.code === 'generic' && e.message ? ' (' + String(e.message).replace(/^(Exception|Error):\s*/, '').slice(0, 140) + ')' : ''), true);
 
 function applyLang() {
   document.documentElement.lang = S.lang;
@@ -560,7 +564,7 @@ function viewList() {
 }
 
 function viewMine() {
-  const today = todayStr(), week = addDays(today, 7), weekAgo = addDays(today, -7);
+  const today = todayStr(), week = addDays(today, 7);
   const mine = allTasks().filter(x => x.assignees.includes(S.me.id));
   const open = mine.filter(x => x.status !== 'done');
   const groups = [
@@ -569,7 +573,7 @@ function viewMine() {
     ['thisWeek', open.filter(x => x.due > today && x.due <= week)],
     ['later', open.filter(x => x.due > week)],
     ['noDate', open.filter(x => !x.due)],
-    ['doneRecently', mine.filter(x => x.status === 'done' && x.completedAt.slice(0, 10) >= weekAgo)],
+    ['doneRecently', mine.filter(doneInLast7)],
   ].filter(g => g[1].length);
   if (!groups.length) return `<h1 class="page-title">${t('mine')}</h1><div class="empty">${t('noTasks')}</div>`;
   return `<h1 class="page-title">${t('mine')}</h1>` + groups.map(([k, items]) => `<section class="group"><h2>${t(k)} <span class="count">${items.length}</span></h2>
@@ -604,11 +608,11 @@ function viewCalendar() {
 }
 
 function viewDashboard() {
-  const today = todayStr(), week = addDays(today, 7), weekAgo = addDays(today, -7);
+  const today = todayStr();
   const all = allTasks(), open = all.filter(x => x.status !== 'done');
   const overdue = open.filter(x => x.due && x.due < today).length;
-  const dueWeek = open.filter(x => x.due && x.due >= today && x.due <= week).length;
-  const doneWeek = all.filter(x => x.status === 'done' && x.completedAt.slice(0, 10) >= weekAgo).length;
+  const dueWeek = open.filter(x => x.due && x.due >= today && x.due <= addDays(today, 6)).length; // 7 days incl. today
+  const doneWeek = all.filter(doneInLast7).length;
   const maxStatus = Math.max(1, ...S.statuses.map(s => all.filter(x => x.status === s).length));
   const load = S.members.filter(m => m.active).map(m => {
     const mine = open.filter(x => x.assignees.includes(m.id));
@@ -671,8 +675,8 @@ function wireDrag() {
       const prev = x.status;
       S.tasks.set(id, Object.assign({}, x, { status }));
       renderMain();
-      api('api_saveTask', { id, status }).then(saved => { S.tasks.set(id, saved); renderMain(); })
-        .catch(err => { S.tasks.set(id, Object.assign({}, x, { status: prev })); renderMain(); fail(err); });
+      api('api_saveTask', { id, status, base: { status: prev } }).then(saved => { S.tasks.set(id, saved); renderMain(); })
+        .catch(err => { S.tasks.set(id, Object.assign({}, x, { status: prev })); renderMain(); fail(err); if (err.code === 'CONFLICT') sync(); });
     });
   });
 }
@@ -800,7 +804,12 @@ function saveTask() {
   if (!D.id && !D.draft.title.trim()) { const f = $('#d-title'); if (f) { f.scrollIntoView({ block: 'center' }); f.focus(); } return toast(errText('title'), true); }
   if (D.id && !Object.keys(patch).length) return closeDrawer(true);
   if (!D.id) Object.assign(patch, { title: D.draft.title, status: D.draft.status, priority: D.draft.priority });
-  if (D.id) patch.id = D.id;
+  if (D.id) {
+    patch.id = D.id;
+    // What this editor started from, so the server can merge with (or refuse to overwrite) someone else's changes.
+    patch.base = {};
+    Object.keys(patch).forEach(k => { if (k !== 'id' && k !== 'base') patch.base[k] = D.orig[k]; });
+  }
   const btn = $('#save-btn');
   btn.disabled = true; btn.textContent = t('saving');
   api('api_saveTask', patch).then(x => {
@@ -808,7 +817,20 @@ function saveTask() {
     toast(D.id ? t('saved') : t('created'));
     closeDrawer(true);
     renderMain();
-  }).catch(err => { btn.disabled = false; btn.textContent = t('save'); fail(err); });
+  }).catch(err => {
+    btn.disabled = false; btn.textContent = t('save');
+    if (err.code !== 'CONFLICT') return fail(err);
+    // Someone else changed the same field meanwhile: load their version as the new starting point, keep what this
+    // person typed, and say so. Saving again keeps this person's version, knowingly.
+    const id = D.id;
+    Promise.resolve(sync()).then(() => {
+      const fresh = S.tasks.get(id);
+      if (!D || D.id !== id || !fresh) return;
+      err.fields.forEach(k => { if (k in fresh) D.orig[k] = JSON.parse(JSON.stringify(fresh[k])); });
+      renderDrawer();
+      fail(err);
+    });
+  });
 }
 
 // =============================================================================== modals

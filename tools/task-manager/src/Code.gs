@@ -55,18 +55,26 @@ function api_publicInfo() {
   };
 }
 
+/**
+ * Wrong codes lock a name: 5 in a row lock it for 15 minutes, 15 within 6 hours lock it for 6 hours. The counters are
+ * read and written under the script lock, so attempts sent in parallel can't slip past them.
+ */
 function api_login(memberId, code) {
-  const cache = CacheService.getScriptCache();
-  const key = 'fail:' + memberId;
-  const fails = Number(cache.get(key) || 0);
-  if (fails >= 5) throw new Error('LOCKED');
-  const m = table_('Members').items.find(x => x.ID === memberId && bool_(x.Active));
-  if (!m || !m.CodeHash || codeHash_(m.CodeSalt, code) !== m.CodeHash) {
-    cache.put(key, String(fails + 1), 900);
-    throw new Error('BAD_CODE');
-  }
-  cache.remove(key);
-  return { token: makeToken_(m), me: memberView_(m, m) };
+  const id = str_(memberId).slice(0, 20);
+  return withLock_(() => {
+    const cache = CacheService.getScriptCache();
+    const shortKey = 'fail:' + id, longKey = 'fail6h:' + id;
+    const fails = Number(cache.get(shortKey) || 0), daily = Number(cache.get(longKey) || 0);
+    if (fails >= 5 || daily >= 15) throw new Error('LOCKED');
+    const m = table_('Members').items.find(x => x.ID === id && bool_(x.Active));
+    if (!m || !m.CodeHash || codeHash_(m.CodeSalt, code) !== m.CodeHash) {
+      cache.put(shortKey, String(fails + 1), 900);
+      cache.put(longKey, String(daily + 1), 21600);
+      throw new Error('BAD_CODE');
+    }
+    cache.remove(shortKey); cache.remove(longKey);
+    return { token: makeToken_(m), me: memberView_(m, m) };
+  });
 }
 
 /** Everything the app needs after sign-in. */
@@ -99,6 +107,7 @@ function api_saveTask(token, patch) {
     const now = iso_();
     const existing = patch && patch.id ? T.items.find(t => t.ID === patch.id) : null;
     if (patch && patch.id && !existing) throw new Error('NOT_FOUND');
+    if (existing && patch.base) patch = rebasePatch_(patch, taskView_(existing));
     const fields = cleanTaskPatch_(patch || {}, !existing);
     const rec = existing ? Object.assign({}, existing) : {
       ID: nextId_(T.items, 'T-'), Status: 'todo', Priority: 'medium', Blocked: false, Archived: false,
@@ -353,6 +362,50 @@ function settingsView_() {
 }
 
 // ------------------------------------------------------------------------------------------------ validation
+
+/**
+ * Two people editing the same task at once. `patch.base` holds the values the editor started from. Fields nobody else
+ * touched since then are saved as they are. Lists (checklist, assignees, labels) are merged: the editor's additions,
+ * removals and ticks are applied to the current list, so both people's changes survive. A plain field (title, due…)
+ * that someone else changed to a different value is refused with CONFLICT:<fields>, so nothing is overwritten unseen.
+ */
+function rebasePatch_(patch, cur) {
+  const base = patch.base, out = {}, conflicts = [];
+  const same = (a, b) => JSON.stringify(a) === JSON.stringify(b);
+  Object.keys(patch).forEach(k => {
+    if (k === 'base') return;
+    out[k] = patch[k];
+    if (k === 'id' || !Object.prototype.hasOwnProperty.call(base, k) || !(k in cur)) return;
+    if (same(cur[k], base[k]) || same(cur[k], patch[k])) return; // nobody else changed it, or same result
+    if (k === 'checklist') out[k] = mergeChecklist_(base[k], patch[k], cur[k]);
+    else if (k === 'assignees' || k === 'labels') out[k] = mergeSet_(base[k], patch[k], cur[k]);
+    else conflicts.push(k);
+  });
+  if (conflicts.length) throw new Error('CONFLICT:' + conflicts.join(','));
+  return out;
+}
+
+function mergeSet_(base, mine, cur) {
+  base = (base || []).map(String); mine = (mine || []).map(String);
+  const removed = base.filter(x => mine.indexOf(x) < 0), added = mine.filter(x => base.indexOf(x) < 0);
+  const out = (cur || []).filter(x => removed.indexOf(x) < 0);
+  added.forEach(x => { if (out.indexOf(x) < 0) out.push(x); });
+  return out;
+}
+
+/** Checklist items are matched by their text: added, removed and ticked items are applied to the current list. */
+function mergeChecklist_(base, mine, cur) {
+  const norm = l => (Array.isArray(l) ? l : []).map(i => ({ t: str_(i && i.t).trim(), d: !!(i && i.d) })).filter(i => i.t);
+  base = norm(base); mine = norm(mine); cur = norm(cur);
+  const find = (l, t) => l.filter(i => i.t === t)[0];
+  const removed = base.filter(i => !find(mine, i.t)).map(i => i.t);
+  const ticks = {};
+  mine.forEach(i => { const b = find(base, i.t); if (b && b.d !== i.d) ticks[i.t] = i.d; });
+  const out = cur.filter(i => removed.indexOf(i.t) < 0)
+    .map(i => (Object.prototype.hasOwnProperty.call(ticks, i.t) ? { t: i.t, d: ticks[i.t] } : i));
+  mine.forEach(i => { if (!find(base, i.t) && !find(out, i.t)) out.push(i); });
+  return out;
+}
 
 function cleanTaskPatch_(p, isNew) {
   const out = {};

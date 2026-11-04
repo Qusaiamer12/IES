@@ -221,3 +221,90 @@ describe('task manager UI', () => {
     await p.close();
   });
 });
+
+describe('team scenarios', () => {
+  const token = () => dev.app.call('api_login', 'M-0001', dev.adminCode).token;
+  const ammanDate = d => new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Amman' }).format(d);
+  const plusDays = (day, n) => { const x = new Date(day + 'T12:00:00+03:00'); x.setUTCDate(x.getUTCDate() + n); return x; };
+
+  it('counts "done in the last 7 days" as today and the 6 days before it, in Amman time', async () => {
+    dev.app.call('api_saveTask', token(), { title: 'Finished for the KPI test', status: 'done' });
+    const today = ammanDate(new Date());
+    const doneKpi = async at => {
+      const ctx = await browser.newContext({ viewport: { width: 1440, height: 900 } });
+      const p = await ctx.newPage();
+      await p.clock.setFixedTime(at);
+      await p.addInitScript(() => localStorage.setItem('ies-tasks-lang', 'en'));
+      await p.goto(dev.url, { waitUntil: 'networkidle' });
+      await signIn(p);
+      await p.click('[data-action="view"][data-view="dashboard"]');
+      const n = Number(await p.locator('.kpi', { hasText: 'Done in the last 7 days' }).locator('b').textContent());
+      await ctx.close();
+      return n;
+    };
+    assert.ok(await doneKpi(plusDays(today, 6)) >= 1, 'still counted 6 days later');
+    assert.equal(await doneKpi(plusDays(today, 7)), 0, 'not counted 7 days later (that would be 8 calendar days)');
+  });
+
+  it('tells the second editor when someone else changed the same field, without losing either edit', async () => {
+    const t = dev.app.call('api_saveTask', token(), { title: 'Order the banners' });
+    const a = await page(), b = await page();
+    await signIn(a); await signIn(b, 'Tala Samhan', dev.codes['Tala Samhan']);
+    await a.locator('.card', { hasText: 'Order the banners' }).click();
+    await b.locator('.card', { hasText: 'Order the banners' }).click();
+    await a.fill('#d-title', 'Order the banners (3 sizes)');
+    await a.click('[data-action="save-task"]');
+    await a.waitForSelector('.drawer', { state: 'detached' });
+    await b.fill('#d-title', 'Order the banners by Sunday');
+    await b.click('[data-action="save-task"]');
+    await b.waitForFunction(() => document.querySelector('#toast').textContent.includes('عضو ثاني'));
+    assert.equal(await b.locator('#d-title').inputValue(), 'Order the banners by Sunday', 'B keeps what they typed');
+    const now = () => dev.app.call('api_bootstrap', token()).tasks.find(x => x.id === t.id);
+    assert.equal(now().title, 'Order the banners (3 sizes)', "A's save was not overwritten");
+    await b.click('[data-action="save-task"]');
+    await b.waitForSelector('.drawer', { state: 'detached' });
+    assert.equal(now().title, 'Order the banners by Sunday', 'saving again keeps B, knowingly');
+    assert.deepEqual(a.errors.concat(b.errors), []);
+    await a.close(); await b.close();
+  });
+
+  it('works end to end on a phone: create, assign, sync to a teammate, move, comment, archive, with emails', async () => {
+    const mailsBefore = dev.app.mail.length;
+    const p = await page({ width: 390, height: 844 });
+    const hala = await page();
+    await signIn(p, 'Tala Samhan', dev.codes['Tala Samhan']);
+    await signIn(hala, 'Hala Rawashdeh', dev.codes['Hala Rawashdeh']);
+    await p.click('.top-actions [data-action="new"]');
+    await p.fill('#d-title', 'Design the workshop certificate');
+    await p.click('.person:has-text("Hala Rawashdeh")');
+    await p.click('[data-action="save-task"]');
+    await p.waitForSelector('.drawer', { state: 'detached' });
+    const assigned = dev.app.mail.slice(mailsBefore).find(m => m.to === 'hala@example.com');
+    assert.ok(assigned && /Design the workshop certificate/.test(assigned.subject), 'Hala is emailed about the assignment');
+
+    await hala.click('[data-action="sync"]');
+    await hala.locator('.card', { hasText: 'Design the workshop certificate' }).waitFor();
+
+    await p.locator('.card', { hasText: 'Design the workshop certificate' }).click();
+    await p.click('[data-action="d-status"][data-v="doing"]');
+    await p.click('[data-action="save-task"]');
+    await p.waitForSelector('.drawer', { state: 'detached' });
+    await p.locator('.card', { hasText: 'Design the workshop certificate' }).click();
+    await p.waitForSelector('#c-new');
+    await p.fill('#c-new', 'Use the new logo please');
+    await p.click('[data-action="post-comment"]');
+    await p.locator('.comment', { hasText: 'Use the new logo' }).waitFor();
+    assert.ok(dev.app.mail.slice(mailsBefore).some(m => m.to === 'hala@example.com' && /commented/.test(m.subject)), 'Hala is emailed about the comment');
+
+    await p.click('[data-action="archive"]');
+    await p.click('#confirm-yes');
+    await p.waitForSelector('.drawer', { state: 'detached' });
+    assert.equal(await p.locator('.card', { hasText: 'Design the workshop certificate' }).count(), 0);
+    await hala.click('[data-action="sync"]');
+    await hala.waitForFunction(() => ![...document.querySelectorAll('.card')].some(c => c.textContent.includes('Design the workshop certificate')));
+    const overflow = await p.evaluate(() => document.documentElement.scrollWidth > window.innerWidth + 1);
+    assert.equal(overflow, false);
+    assert.deepEqual(p.errors.concat(hala.errors), []);
+    await p.close(); await hala.close();
+  });
+});

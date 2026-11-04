@@ -25,7 +25,7 @@ Everything the team does in the app is a row in the sheet, in the chapter's Driv
 
 Members choose their name and type a **personal code** (like `K7M2-9QXA`) that an admin gives them from the *Team*
 page. No Google account or permission screens for members. Codes are stored only as salted hashes; five wrong tries
-lock the account for 15 minutes; an admin resetting a code signs that person out everywhere. Members can change their
+lock that name for 15 minutes, and 15 within six hours lock it for six hours (checked on the server, under a lock); an admin resetting a code signs that person out everywhere. Members can change their
 own code from the menu.
 
 ## Install (once, about two minutes)
@@ -105,8 +105,9 @@ dev/server.mjs     local preview with a google.script.run stand-in: npm run task
 dev/*.test.mjs     backend tests + browser tests (Playwright, axe): npm run tasks:test (also in CI)
 ```
 
-Design notes: every write runs under `LockService`; task saves are *patches* (only changed fields) so two people
-editing different fields both win; text that looks like a formula is stored as text; dates are stored as
+Design notes: every write runs under `LockService`; task saves are *patches* (only changed fields) that carry the
+values the editor started from: two people editing different fields both win, their checklist, assignee and label
+changes are merged, and a plain field both changed is refused for the second one (`CONFLICT`) instead of overwritten; text that looks like a formula is stored as text; dates are stored as
 `YYYY-MM-DD` text. Why Apps Script + Sheets: [ADR 0007](../../docs/decisions/0007-task-manager-on-sheets.md).
 
 ---

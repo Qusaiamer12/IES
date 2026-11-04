@@ -274,3 +274,75 @@ describe('sheet quirks', () => {
     assert.ok(m.code);
   });
 });
+
+describe('two people editing the same task at once', () => {
+  let lina, t;
+  beforeEach(() => {
+    const r = app.call('api_saveMember', admin.token, { name: 'Lina' });
+    lina = app.call('api_login', r.member.id, r.code);
+    t = app.call('api_saveTask', admin.token, { title: 'Poster', assignees: [admin.me.id], labels: ['design'],
+      checklist: [{ t: 'Draft', d: false }, { t: 'Print', d: false }] });
+  });
+  const get = () => app.call('api_bootstrap', admin.token).tasks.find(x => x.id === t.id);
+
+  it('merges checklist changes: one ticks an item while the other adds one', () => {
+    app.call('api_saveTask', admin.token, { id: t.id, checklist: [{ t: 'Draft', d: true }, { t: 'Print', d: false }], base: { checklist: t.checklist } });
+    app.call('api_saveTask', lina.token, { id: t.id, checklist: [...t.checklist, { t: 'Share', d: false }], base: { checklist: t.checklist } });
+    assert.deepEqual(get().checklist, [{ t: 'Draft', d: true }, { t: 'Print', d: false }, { t: 'Share', d: false }]);
+  });
+
+  it('merges a removed item with a tick on another', () => {
+    app.call('api_saveTask', admin.token, { id: t.id, checklist: [{ t: 'Print', d: false }], base: { checklist: t.checklist } });
+    app.call('api_saveTask', lina.token, { id: t.id, checklist: [{ t: 'Draft', d: false }, { t: 'Print', d: true }], base: { checklist: t.checklist } });
+    assert.deepEqual(get().checklist, [{ t: 'Print', d: true }]);
+  });
+
+  it('merges assignees and labels', () => {
+    app.call('api_saveTask', admin.token, { id: t.id, assignees: [admin.me.id, lina.me.id], base: { assignees: t.assignees } });
+    app.call('api_saveTask', lina.token, { id: t.id, assignees: [], labels: ['design', 'urgent'], base: { assignees: t.assignees, labels: t.labels } });
+    assert.deepEqual(get().assignees, [lina.me.id]);
+    assert.deepEqual(get().labels, ['design', 'urgent']);
+  });
+
+  it('refuses to overwrite a field someone else changed, and accepts it once the editor has seen it', () => {
+    app.call('api_saveTask', admin.token, { id: t.id, title: 'Poster v2', base: { title: 'Poster' } });
+    throwsCode(() => app.call('api_saveTask', lina.token, { id: t.id, title: 'Poster final', due: '2026-12-01', base: { title: 'Poster', due: '' } }), 'CONFLICT:title');
+    assert.equal(get().title, 'Poster v2');
+    assert.equal(get().due, '', 'nothing from the refused save is written');
+    app.call('api_saveTask', lina.token, { id: t.id, title: 'Poster final', base: { title: 'Poster v2' } });
+    assert.equal(get().title, 'Poster final');
+  });
+
+  it('does not complain when both made the same change, or when only other fields changed', () => {
+    app.call('api_saveTask', admin.token, { id: t.id, status: 'doing', base: { status: 'todo' } });
+    app.call('api_saveTask', lina.token, { id: t.id, status: 'doing', base: { status: 'todo' } });
+    app.call('api_saveTask', lina.token, { id: t.id, priority: 'high', base: { priority: 'medium' } });
+    assert.equal(get().status, 'doing');
+    assert.equal(get().priority, 'high');
+  });
+});
+
+describe('server-side protection', () => {
+  it('checks admin rights on the server, not only by hiding buttons', () => {
+    const r = app.call('api_saveMember', admin.token, { name: 'Sami' });
+    const sami = app.call('api_login', r.member.id, r.code);
+    throwsCode(() => app.call('api_saveMember', sami.token, { name: 'Sneaky' }), 'FORBIDDEN');
+    throwsCode(() => app.call('api_resetCode', sami.token, admin.me.id, false), 'FORBIDDEN');
+    throwsCode(() => app.call('api_saveSettings', sami.token, { teams: ['X'] }), 'FORBIDDEN');
+    const tk = app.call('api_saveTask', admin.token, { title: 'Admin task' });
+    throwsCode(() => app.call('api_deleteTask', sami.token, tk.id), 'FORBIDDEN');
+    throwsCode(() => app.call('api_bootstrap', 'not-a-token'), 'AUTH');
+  });
+
+  it('locks a name for 6 hours after 15 wrong codes, even when spread over 15-minute windows', () => {
+    const id = admin.me.id;
+    for (let round = 0; round < 3; round++) {
+      for (let i = 0; i < 5; i++) throwsCode(() => app.call('api_login', id, 'WRONG1'), 'BAD_CODE');
+      throwsCode(() => app.call('api_login', id, adminCode), 'LOCKED');
+      app.cache.delete('fail:' + id); // the 15-minute lock expires
+    }
+    throwsCode(() => app.call('api_login', id, adminCode), 'LOCKED');
+    app.cache.delete('fail6h:' + id);
+    assert.ok(app.call('api_login', id, adminCode).token);
+  });
+});
