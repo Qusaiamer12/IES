@@ -59,7 +59,7 @@ describe('task manager UI', () => {
     await signIn(p);
     await p.click('.top-actions [data-action="new"]');
     await p.fill('#d-title', 'Print the NFC cards');
-    await p.selectOption('[name="priority"]', 'high');
+    await p.click('[data-action="d-prio"][data-v="high"]');
     await p.fill('[name="due"]', '2026-12-01');
     await p.click('.person:has-text("Tala Samhan")');
     await p.fill('#cl-new', 'Collect photos');
@@ -285,11 +285,15 @@ describe('team scenarios', () => {
     await hala.click('[data-action="sync"]');
     await hala.locator('.card', { hasText: 'Design the workshop certificate' }).waitFor();
 
-    await p.locator('.card', { hasText: 'Design the workshop certificate' }).click();
-    await p.click('[data-action="d-status"][data-v="doing"]');
-    await p.click('[data-action="save-task"]');
-    await p.waitForSelector('.drawer', { state: 'detached' });
-    await p.locator('.card', { hasText: 'Design the workshop certificate' }).click();
+    // One tap moves it on; on a phone the board shows one status at a time, with tabs.
+    await p.locator('.card', { hasText: 'Design the workshop certificate' }).locator('[data-action="advance"]').click();
+    await p.waitForFunction(() => document.querySelector('#toast').textContent.includes('قيد التنفيذ'));
+    await p.click('[data-action="board-tab"][data-s="doing"]');
+    const moved = p.locator('.col.on .card', { hasText: 'Design the workshop certificate' });
+    await moved.waitFor();
+    await p.waitForTimeout(300);
+    assert.equal(dev.app.call('api_bootstrap', token()).tasks.find(x => x.title === 'Design the workshop certificate').status, 'doing');
+    await moved.click();
     await p.waitForSelector('#c-new');
     await p.fill('#c-new', 'Use the new logo please');
     await p.click('[data-action="post-comment"]');
@@ -306,5 +310,80 @@ describe('team scenarios', () => {
     assert.equal(overflow, false);
     assert.deepEqual(p.errors.concat(hala.errors), []);
     await p.close(); await hala.close();
+  });
+});
+
+describe('easier everyday use', () => {
+  const token = () => dev.app.call('api_login', 'M-0001', dev.adminCode).token;
+  const realErrors = p => p.errors.filter(e => !/Failed to load resource|ERR_|net::/.test(e));
+
+  it('attaches files and photos to a task, shows them, counts them on the card and removes them', async () => {
+    dev.app.call('api_saveTask', token(), { title: 'Collect sponsor quotes' });
+    const p = await page();
+    await signIn(p, 'Tala Samhan', dev.codes['Tala Samhan']);
+    await p.locator('.card', { hasText: 'Collect sponsor quotes' }).locator('.card-title').click();
+    await p.setInputFiles('#file-in', [
+      { name: 'quote.pdf', mimeType: 'application/pdf', buffer: Buffer.from('%PDF-1.4 test') },
+      { name: 'stage.png', mimeType: 'image/png', buffer: Buffer.from('89504e470d0a1a0a', 'hex') },
+    ]);
+    await p.locator('.file-row:not(.busy)', { hasText: 'quote.pdf' }).waitFor();
+    await p.locator('.thumb', { hasText: 'stage.png' }).waitFor();
+    const t = dev.app.call('api_bootstrap', token()).tasks.find(x => x.title === 'Collect sponsor quotes');
+    assert.equal(t.attachments, 2);
+    await p.keyboard.press('Escape');
+    await p.waitForSelector('.drawer', { state: 'detached' });
+    assert.match(await p.locator('.card', { hasText: 'Collect sponsor quotes' }).textContent(), /2/);
+    await p.locator('.card', { hasText: 'Collect sponsor quotes' }).locator('.card-title').click();
+    await p.locator('.file-row', { hasText: 'quote.pdf' }).locator('[data-action="attach-remove"]').click();
+    await p.click('#confirm-yes');
+    await p.waitForFunction(() => !document.querySelector('#attach').textContent.includes('quote.pdf'));
+    assert.equal(dev.app.call('api_taskDetail', token(), t.id).attachments.length, 1);
+    assert.deepEqual(realErrors(p), []);
+    await p.close();
+  });
+
+  it('makes a new task quick: my team by default, date and priority in one tap, steps and files kept without pressing Enter', async () => {
+    const p = await page({ width: 390, height: 844 });
+    await signIn(p, 'Tala Samhan', dev.codes['Tala Samhan']);
+    await p.locator('.tip').waitFor();
+    await p.click('[data-action="tip-ok"]');
+    assert.equal(await p.locator('.tip').count(), 0);
+    await p.click('.top-actions [data-action="new"]');
+    await p.fill('#d-title', 'Prepare the welcome slides');
+    assert.match(await p.locator('.people .person').first().textContent(), /Tala Samhan/, 'me first');
+    await p.click('[data-action="d-due"]:has-text("بكرة")');
+    await p.click('[data-action="d-prio"][data-v="urgent"]');
+    await p.fill('#cl-new', 'Ask Noor for the agenda');
+    await p.setInputFiles('#file-in', { name: 'agenda.docx', mimeType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', buffer: Buffer.from('doc') });
+    await p.locator('.file-row', { hasText: 'agenda.docx' }).waitFor();
+    await p.click('[data-action="save-task"]');
+    await p.waitForSelector('.drawer', { state: 'detached' });
+    await p.waitForFunction(() => document.querySelector('#toast').textContent.length > 0);
+    await p.waitForTimeout(800);
+    const t = dev.app.call('api_bootstrap', token()).tasks.find(x => x.title === 'Prepare the welcome slides');
+    const tomorrow = new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Amman' })); tomorrow.setDate(tomorrow.getDate() + 1);
+    assert.equal(t.due, new Intl.DateTimeFormat('en-CA').format(tomorrow));
+    assert.equal(t.priority, 'urgent');
+    assert.equal(t.team, 'Core Team');
+    assert.deepEqual(t.checklist, [{ t: 'Ask Noor for the agenda', d: false }]);
+    assert.equal(t.attachments, 1, 'the file chosen before saving was uploaded after');
+    assert.deepEqual(realErrors(p), []);
+    await p.close();
+  });
+
+  it('moves a task through every stage with one tap each', async () => {
+    dev.app.call('api_saveTask', token(), { title: 'Print the badges' });
+    const p = await page();
+    await signIn(p);
+    for (const [from, to] of [['todo', 'doing'], ['doing', 'review'], ['review', 'done']]) {
+      await column(p, from).locator('.card', { hasText: 'Print the badges' }).locator('[data-action="advance"]').click();
+      await column(p, to).locator('.card', { hasText: 'Print the badges' }).waitFor();
+      await p.waitForTimeout(200);
+    }
+    assert.equal(await column(p, 'done').locator('.card', { hasText: 'Print the badges' }).locator('[data-action="advance"]').count(), 0);
+    const t = dev.app.call('api_bootstrap', token()).tasks.find(x => x.title === 'Print the badges');
+    assert.equal(t.status, 'done');
+    assert.ok(t.completedAt);
+    await p.close();
   });
 });

@@ -11,13 +11,20 @@ Everything the team does in the app is a row in the sheet, in the chapter's Driv
 
 ## What it does
 
-- **Board** with To do / In progress / Review / Done; drag cards between columns (desktop) or change the status in the task.
+- **Board** with To do / In progress / Review / Done. Every card has a one-tap button for its next stage (*Start*, *To review*,
+  *Done ✓*); on desktop you can also drag cards. On phones the board shows one stage at a time, with tabs.
 - **Tasks**: title, description, priority, team, several assignees, due date, labels, checklist, "blocked" flag.
+- **Attachments**: photos, PDFs, any file up to 10 MB, from the button, by dropping files on the task or pasting an
+  image. Big phone photos are resized before upload. Files go to the Drive folder *IES HU Tasks — attachments* next to
+  the sheet, viewable by link (the links are shown only inside the app).
 - **Comments** and a full **history** on every task (who changed what, when).
+- **Quick to fill in**: your own name first among assignees, your team preselected, due date in one tap (today, tomorrow,
+  in a week), priority as buttons, less-used fields folded away.
 - **List** (sortable), **My tasks** (overdue / today / this week / later), **Calendar** (by due date), **Dashboard**
   (open, overdue, due this week, done this week, workload per member, progress per team).
 - **Filters** by text, team, person and priority. **Arabic / English**, right-to-left, works on phones.
-- **Email**: when someone assigns you a task or comments on yours; optional **daily reminder** of overdue and soon-due tasks.
+- **Email** (Arabic, with the chapter logo): when you are assigned a task (also by yourself) or someone comments on yours;
+  optional **daily reminder** of overdue and soon-due tasks.
 - **Team admin** (admins only): add members, give or reset sign-in codes, deactivate people, edit teams, reminders.
 - Syncs every 45 seconds, so everyone sees the same board.
 
@@ -81,6 +88,7 @@ chapter account (`ies.2026.hu@gmail.com`) — see *Ownership* below.
 | `Comments` | One row per comment. |
 | `Activity` | Every change: who did what, when (an audit trail). |
 | `Settings` | `teams`, `digest`, `digestHour`. |
+| `Attachments` | One row per file: task, name, type, size, Drive file id and link, who uploaded it. |
 
 You can read, filter, chart and export the sheet freely. You may add your own columns or reorder them: the app finds
 columns by their header name and keeps columns it doesn't know. Missing columns are recreated automatically. Don't
@@ -88,7 +96,7 @@ rename the header cells or the tab names. Archive tasks from the app rather than
 
 ## Ownership (important for future committees)
 
-The sheet and the script belong to the account that created them. Before the creator graduates, transfer ownership of
+The sheet, the script and the attachments folder belong to the account that created them. Before the creator graduates, transfer ownership of
 the sheet to the chapter account (Drive → Share → Transfer ownership) and redeploy from that account, or at least add
 the chapter account as an editor. See `docs/OPERATIONS.md` → yearly handover.
 

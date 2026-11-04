@@ -164,7 +164,7 @@ describe('tasks', () => {
     assert.equal(app.call('api_bootstrap', admin.token).tasks.find(x => x.id === t.id).due, '2026-11-25');
   });
 
-  it('emails new assignees (not the person assigning) and keeps names readable in the sheet', () => {
+  it('emails new assignees and keeps names readable in the sheet', () => {
     const { member } = app.call('api_saveMember', admin.token, { name: 'Tala Samhan', email: 'tala@example.com' });
     const before = app.mail.length;
     const t = app.call('api_saveTask', admin.token, { title: 'Minutes', assignees: [member.id, admin.me.id] });
@@ -364,10 +364,74 @@ describe('emails', () => {
     assert.ok(m.body.includes('Poster <b>v2</b>') && !m.body.includes('<td'), 'plain-text copy');
   });
 
-  it('does not email you about a task you assigned to yourself', () => {
+  it('emails you about a task you assigned to yourself, worded for you', () => {
     app.call('api_saveMember', admin.token, { id: admin.me.id, name: admin.me.name, email: 'me@example.com', admin: true, active: true });
     app.mail.length = 0;
     app.call('api_saveTask', admin.token, { title: 'Mine', assignees: [admin.me.id] });
-    assert.equal(app.mail.length, 0);
+    assert.equal(app.mail.length, 1);
+    assert.equal(app.mail[0].to, 'me@example.com');
+    assert.ok(app.mail[0].htmlBody.includes('كلّفت حالك'));
+  });
+});
+
+describe('attachments', () => {
+  const b64 = s => Buffer.from(s).toString('base64');
+  it('saves files to a Drive folder next to the sheet, shares them by link and lists them on the task', () => {
+    const t = app.call('api_saveTask', admin.token, { title: 'Poster' });
+    const a = app.call('api_uploadAttachment', admin.token, t.id, { name: 'poster.png', type: 'image/png', data: b64('PNGDATA') });
+    const b = app.call('api_uploadAttachment', admin.token, t.id, { name: 'quote.pdf', type: 'application/pdf', data: b64('%PDF') });
+    const file = app.drive.files.get(app.drive.files.size && [...app.drive.files.keys()][0]);
+    assert.equal(file.folder.name, 'IES HU Tasks — attachments');
+    assert.equal(file.folder.parent, app.sheetFolder, 'folder sits next to the sheet');
+    assert.deepEqual(file.sharing, ['ANYONE_WITH_LINK', 'VIEW']);
+    assert.equal(Buffer.from(file.bytes.map(x => x & 255)).toString(), 'PNGDATA');
+    assert.ok(a.thumb.includes('thumbnail?id=') && !b.thumb, 'images get a thumbnail, other files do not');
+    const det = app.call('api_taskDetail', admin.token, t.id);
+    assert.deepEqual(det.attachments.map(x => x.name), ['poster.png', 'quote.pdf']);
+    assert.equal(det.attachments[0].size, 7);
+    assert.equal(app.call('api_bootstrap', admin.token).tasks.find(x => x.id === t.id).attachments, 2);
+    assert.ok(det.activity.some(x => x.action === 'attached' && x.details === 'quote.pdf'));
+    app.call('api_uploadAttachment', admin.token, t.id, { name: 'x.txt', type: 'text/plain', data: b64('x') });
+    assert.equal(new Set([...app.drive.files.values()].map(f => f.folder.id)).size, 1, 'one folder, reused');
+  });
+
+  it('rejects bad, empty and too large files, and unknown tasks', () => {
+    const t = app.call('api_saveTask', admin.token, { title: 'T' });
+    throwsCode(() => app.call('api_uploadAttachment', admin.token, t.id, { name: 'a', type: 'text/plain', data: '' }), 'BAD_INPUT:file');
+    throwsCode(() => app.call('api_uploadAttachment', admin.token, t.id, { name: 'a', type: 'text/plain', data: '***' }), 'BAD_INPUT:file');
+    throwsCode(() => app.call('api_uploadAttachment', admin.token, t.id, { name: 'big', type: 'text/plain', data: Buffer.alloc(10 * 1024 * 1024 + 1).toString('base64') }), 'BAD_INPUT:file-size');
+    throwsCode(() => app.call('api_uploadAttachment', admin.token, 'T-9999', { name: 'a', type: 'text/plain', data: b64('a') }), 'NOT_FOUND');
+    throwsCode(() => app.call('api_uploadAttachment', 'bad-token', t.id, { name: 'a', type: 'text/plain', data: b64('a') }), 'AUTH');
+    assert.equal(app.drive.files.size, 0);
+  });
+
+  it('cleans file names and stores formula-like names as text', () => {
+    const t = app.call('api_saveTask', admin.token, { title: 'T' });
+    const a = app.call('api_uploadAttachment', admin.token, t.id, { name: '=HYPERLINK("x")/../a?.png', type: 'weird type', data: b64('a') });
+    assert.equal(a.name, '=HYPERLINK(_x_)_.._a_.png');
+    assert.equal(a.type, 'application/octet-stream');
+    assert.equal(app.call('api_taskDetail', admin.token, t.id).attachments[0].name, a.name);
+  });
+
+  it('lets only the uploader or an admin remove a file, and trashes it in Drive', () => {
+    const r = app.call('api_saveMember', admin.token, { name: 'Omar' });
+    const omar = app.call('api_login', r.member.id, r.code);
+    const t = app.call('api_saveTask', omar.token, { title: 'Hall booking' });
+    const mine = app.call('api_uploadAttachment', omar.token, t.id, { name: 'form.pdf', type: 'application/pdf', data: b64('1') });
+    const adminFile = app.call('api_uploadAttachment', admin.token, t.id, { name: 'admin.pdf', type: 'application/pdf', data: b64('2') });
+    throwsCode(() => app.call('api_removeAttachment', omar.token, adminFile.id), 'FORBIDDEN');
+    app.call('api_removeAttachment', omar.token, mine.id);
+    assert.deepEqual(app.call('api_taskDetail', omar.token, t.id).attachments.map(a => a.name), ['admin.pdf']);
+    assert.ok([...app.drive.files.values()].find(f => f.name === 'form.pdf').trashed);
+    app.call('api_removeAttachment', admin.token, adminFile.id);
+    assert.equal(app.call('api_taskDetail', omar.token, t.id).attachments.length, 0);
+  });
+
+  it('trashes a deleted task\'s files too', () => {
+    const t = app.call('api_saveTask', admin.token, { title: 'Gone' });
+    app.call('api_uploadAttachment', admin.token, t.id, { name: 'a.png', type: 'image/png', data: b64('a') });
+    app.call('api_deleteTask', admin.token, t.id);
+    assert.ok([...app.drive.files.values()].every(f => f.trashed));
+    assert.equal(app.ss.getSheetByName('Attachments').getLastRow(), 1);
   });
 });

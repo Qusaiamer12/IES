@@ -45,7 +45,9 @@ const SCHEMA = {
   Comments: ['ID', 'TaskID', 'AuthorID', 'AuthorName', 'Text', 'CreatedAt'],
   Activity: ['Time', 'ActorID', 'ActorName', 'TaskID', 'Action', 'Details'],
   Settings: ['Key', 'Value', 'Notes'],
+  Attachments: ['ID', 'TaskID', 'Name', 'Type', 'Size', 'FileID', 'Url', 'UploaderID', 'UploaderName', 'CreatedAt'],
 };
+const MAX_UPLOAD_BYTES = 10 * 1024 * 1024; // per file; bigger files go to Drive by hand and their link in the description
 const BOOL_COLUMNS = ['Blocked', 'Archived', 'Admin', 'Active', 'Notify'];
 const STATUSES = ['todo', 'doing', 'review', 'done'];
 const PRIORITIES = ['low', 'medium', 'high', 'urgent'];
@@ -148,7 +150,7 @@ function api_saveTask(token, patch) {
     const after = taskView_(rec);
     logTaskChanges_(me, before, after);
     notifyAssigned_(me, before, after);
-    return Object.assign(after, { comments: commentCount_(after.id) });
+    return Object.assign(after, { comments: commentCount_(after.id), attachments: table_('Attachments').items.filter(a => a.TaskID === after.id).length });
   }));
 }
 
@@ -175,7 +177,9 @@ function api_deleteTask(token, id) {
     T.sh.deleteRow(t._row);
     const C = table_('Comments', true);
     C.items.filter(c => c.TaskID === id).map(c => c._row).sort((a, b) => b - a).forEach(r => C.sh.deleteRow(r));
-    resetMemo_('Tasks'); resetMemo_('Comments');
+    const A = table_('Attachments', true);
+    A.items.filter(a => a.TaskID === id).sort((a, b) => b._row - a._row).forEach(a => { trashFile_(a.FileID); A.sh.deleteRow(a._row); });
+    resetMemo_('Tasks'); resetMemo_('Comments'); resetMemo_('Attachments');
     log_(me, id, 'deleted', t.Title);
     return { id: id };
   }));
@@ -189,8 +193,83 @@ function api_taskDetail(token, id) {
     activity: table_('Activity').items.filter(a => a.TaskID === id)
       .map(a => ({ time: a.Time, actor: a.ActorName, action: a.Action, details: a.Details }))
       .sort((a, b) => b.time.localeCompare(a.time)).slice(0, 60),
+    attachments: table_('Attachments').items.filter(a => a.TaskID === id).map(attachmentView_)
+      .sort((a, b) => a.createdAt.localeCompare(b.createdAt)),
   }));
 }
+
+// ------------------------------------------------------------------------------------------------ attachments
+
+/**
+ * Saves a file (sent from the browser as base64) to the attachments folder in Drive and lists it on the task.
+ * `file`: { name, type, data }. Files are viewable by anyone with the link; the links are only shown inside the app.
+ */
+function api_uploadAttachment(token, taskId, file) {
+  return withUser_(token, me => {
+    const task = table_('Tasks').items.find(x => x.ID === taskId);
+    if (!task) throw new Error('NOT_FOUND');
+    const name = str_(file && file.name).replace(/[\\/:*?"<>|\u0000-\u001f]/g, '_').trim().slice(0, 150) || 'file';
+    const type = /^[\w.+-]+\/[\w.+-]+$/.test(str_(file && file.type)) ? str_(file.type) : 'application/octet-stream';
+    const data = str_(file && file.data);
+    if (!data || data.length > Math.ceil(MAX_UPLOAD_BYTES / 3) * 4 + 4) throw new Error(data ? 'BAD_INPUT:file-size' : 'BAD_INPUT:file');
+    let bytes;
+    try { bytes = Utilities.base64Decode(data); } catch (e) { throw new Error('BAD_INPUT:file'); }
+    if (!bytes.length) throw new Error('BAD_INPUT:file');
+    if (bytes.length > MAX_UPLOAD_BYTES) throw new Error('BAD_INPUT:file-size');
+    // The Drive upload is the slow part: do it before taking the lock, then record it under the lock.
+    const df = attachmentsFolder_().createFile(Utilities.newBlob(bytes, type, name));
+    df.setDescription(`${taskId} · ${task.Title} · ${me.Name}`);
+    try { df.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW); } catch (e) { console.warn('could not share', e); }
+    return withLock_(() => {
+      const A = table_('Attachments', true);
+      const a = { ID: nextId_(A.items, 'A-'), TaskID: taskId, Name: name, Type: type, Size: bytes.length, FileID: df.getId(),
+        Url: df.getUrl(), UploaderID: me.ID, UploaderName: me.Name, CreatedAt: iso_() };
+      writeRecord_('Attachments', a, null);
+      const T = table_('Tasks', true), cur = T.items.find(x => x.ID === taskId);
+      if (cur) writeRecord_('Tasks', Object.assign({}, cur, { UpdatedAt: a.CreatedAt }), cur);
+      log_(me, taskId, 'attached', name);
+      return attachmentView_(a);
+    });
+  });
+}
+
+/** Removes an attachment (the uploader or an admin). The Drive file goes to the trash, so it can still be recovered. */
+function api_removeAttachment(token, id) {
+  return withUser_(token, me => withLock_(() => {
+    const A = table_('Attachments', true), a = A.items.find(x => x.ID === id);
+    if (!a) throw new Error('NOT_FOUND');
+    if (!bool_(me.Admin) && a.UploaderID !== me.ID) throw new Error('FORBIDDEN');
+    trashFile_(a.FileID);
+    A.sh.deleteRow(a._row);
+    resetMemo_('Attachments');
+    log_(me, a.TaskID, 'removed attachment', a.Name);
+    return { id: id, taskId: a.TaskID };
+  }));
+}
+
+function attachmentView_(a) {
+  const type = str_(a.Type), fileId = str_(a.FileID);
+  return {
+    id: a.ID, taskId: a.TaskID, name: str_(a.Name), type: type, size: Number(a.Size) || 0, url: str_(a.Url),
+    thumb: /^image\//.test(type) && fileId ? 'https://drive.google.com/thumbnail?id=' + encodeURIComponent(fileId) + '&sz=w480' : '',
+    by: str_(a.UploaderName), byId: str_(a.UploaderID), createdAt: str_(a.CreatedAt),
+  };
+}
+
+/** The Drive folder for attachments, next to the sheet. Created on first use and remembered. */
+function attachmentsFolder_() {
+  const props = PropertiesService.getScriptProperties();
+  const saved = props.getProperty('attachmentsFolder');
+  if (saved) { try { const f = DriveApp.getFolderById(saved); if (!f.isTrashed()) return f; } catch (e) { /* deleted: make a new one */ } }
+  let parent;
+  try { const it = DriveApp.getFileById(ss_().getId()).getParents(); parent = it.hasNext() ? it.next() : DriveApp.getRootFolder(); }
+  catch (e) { parent = DriveApp.getRootFolder(); }
+  const folder = parent.createFolder(CONFIG.APP_NAME + ' — attachments');
+  props.setProperty('attachmentsFolder', folder.getId());
+  return folder;
+}
+
+function trashFile_(fileId) { try { if (fileId) DriveApp.getFileById(fileId).setTrashed(true); } catch (e) { console.warn('could not trash', fileId, e); } }
 
 function api_addComment(token, taskId, text) {
   return withUser_(token, me => withLock_(() => {
@@ -368,8 +447,10 @@ function taskView_(t) {
 function tasksView_() {
   const counts = {};
   table_('Comments').items.forEach(c => { counts[c.TaskID] = (counts[c.TaskID] || 0) + 1; });
+  const files = {};
+  table_('Attachments').items.forEach(a => { files[a.TaskID] = (files[a.TaskID] || 0) + 1; });
   return table_('Tasks').items.filter(t => !bool_(t.Archived))
-    .map(t => Object.assign(taskView_(t), { comments: counts[t.ID] || 0 }));
+    .map(t => Object.assign(taskView_(t), { comments: counts[t.ID] || 0, attachments: files[t.ID] || 0 }));
 }
 
 function memberView_(m, viewer) {
@@ -513,13 +594,16 @@ function logTaskChanges_(me, before, after) {
 }
 
 function notifyAssigned_(me, before, after) {
-  const added = after.assignees.filter(id => !before || before.assignees.indexOf(id) < 0).filter(id => id !== me.ID);
+  // Everyone newly assigned gets an email, including someone who assigned themselves (a reminder in their inbox).
+  const added = after.assignees.filter(id => !before || before.assignees.indexOf(id) < 0);
   if (!added.length) return;
   notify_(added, m => ({
     subject: `مهمة جديدة: ${after.title}`,
-    preheader: `${me.Name} كلّفك بمهمة${after.due ? ' · الموعد ' + dayText_(after.due) : ''}`,
+    preheader: `${m.ID === me.ID ? 'كلّفت حالك بمهمة' : me.Name + ' كلّفك بمهمة'}${after.due ? ' · الموعد ' + dayText_(after.due) : ''}`,
     heading: 'عندك مهمة جديدة',
-    intro: `أهلًا ${esc_(firstName_(m.Name))}، <b>${esc_(me.Name)}</b> كلّفك بهاي المهمة:`,
+    intro: m.ID === me.ID
+      ? `أهلًا ${esc_(firstName_(m.Name))}، كلّفت حالك بهاي المهمة. هاي نسخة عشان تضل قدامك:`
+      : `أهلًا ${esc_(firstName_(m.Name))}، <b>${esc_(me.Name)}</b> كلّفك بهاي المهمة:`,
     body: taskCardHtml_(after),
     button: { label: 'افتح المهمة', taskId: after.id },
   }));
@@ -758,7 +842,7 @@ function writeRecord_(name, rec, existing) {
 function ensureSchema_() {
   if (MEMO_.schemaOk) return;
   const cache = CacheService.getScriptCache();
-  const cacheKey = 'schema-v1:' + ss_().getId();
+  const cacheKey = 'schema-v2:' + ss_().getId(); // bump when SCHEMA changes, so existing sheets get new tabs/columns
   if (cache.get(cacheKey)) { MEMO_.schemaOk = true; return; }
   const ss = ss_();
   Object.keys(SCHEMA).forEach(name => {

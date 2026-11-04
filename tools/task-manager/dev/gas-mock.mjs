@@ -71,6 +71,28 @@ export function loadApp({ srcDir, sheetId = 'TEST_SHEET' }) {
   const triggers = [];
   const props = new Map();
   const cache = new Map();
+  // A tiny Drive: folders and files with ids, sharing and trash.
+  const drive = { files: new Map(), folders: new Map(), seq: 0 };
+  const iter = list => { let i = 0; return { hasNext: () => i < list.length, next: () => list[i++] }; };
+  const makeFolder = (name, parent) => {
+    const id = 'folder' + ++drive.seq;
+    const f = { id, name, parent, trashed: false, getId: () => id, getName: () => name, isTrashed: () => f.trashed,
+      createFolder: n => makeFolder(n, f),
+      createFile: blob => {
+        const fid = 'file' + ++drive.seq;
+        const file = { id: fid, name: blob.name, type: blob.type, bytes: blob.bytes, folder: f, trashed: false, sharing: null, description: '',
+          getId: () => fid, getUrl: () => `https://drive.google.com/file/d/${fid}/view`, getName: () => blob.name,
+          setDescription: d => ((file.description = d), file), setSharing: (a, p) => ((file.sharing = [a, p]), file),
+          setTrashed: v => ((file.trashed = v), file), getParents: () => iter([f]) };
+        drive.files.set(fid, file);
+        return file;
+      } };
+    drive.folders.set(id, f);
+    return f;
+  };
+  const root = makeFolder('My Drive', null);
+  const sheetFolder = root.createFolder('IES 26-27');
+  const sheetFile = { getParents: () => iter([sheetFolder]) };
   const ctx = {
     console,
     SpreadsheetApp: {
@@ -99,6 +121,17 @@ export function loadApp({ srcDir, sheetId = 'TEST_SHEET' }) {
         return fmt.replace('yyyy', p.year).replace('MM', p.month).replace('dd', p.day).replace('HH', p.hour).replace('mm', p.minute).replace('ss', p.second);
       },
       sleep() {},
+      base64Decode: b64 => {
+        if (!/^[A-Za-z0-9+/]*={0,2}$/.test(String(b64))) throw new Error('Could not decode string.');
+        return signed(Buffer.from(String(b64), 'base64'));
+      },
+      newBlob: (bytes, type, name) => ({ bytes, type, name }),
+    },
+    DriveApp: {
+      Access: { ANYONE_WITH_LINK: 'ANYONE_WITH_LINK' }, Permission: { VIEW: 'VIEW' },
+      getRootFolder: () => root,
+      getFileById: id => { if (id === sheetId) return sheetFile; const f = drive.files.get(id); if (!f) throw new Error('No item with the given ID: ' + id); return f; },
+      getFolderById: id => { const f = drive.folders.get(id); if (!f) throw new Error('No item with the given ID: ' + id); return f; },
     },
     MailApp: { getRemainingDailyQuota: () => 100, sendEmail: m => mail.push(m) },
     ScriptApp: {
@@ -124,7 +157,7 @@ export function loadApp({ srcDir, sheetId = 'TEST_SHEET' }) {
     const result = ctx[fn](...JSON.parse(JSON.stringify(args)));
     return result === undefined ? undefined : JSON.parse(JSON.stringify(result));
   }
-  return { call, ctx, ss, mail, triggers, cache };
+  return { call, ctx, ss, mail, triggers, cache, drive, sheetFolder };
 }
 
 /** Same hashing as Code.gs, to seed members with a known code (also used for the real sheet's first admin). */

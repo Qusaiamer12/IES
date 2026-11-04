@@ -86,6 +86,45 @@ textarea.input{min-height:96px;resize:vertical}
 .card.done h3{text-decoration:line-through;color:var(--ink-3)}
 .p-low{border-inline-start-color:var(--p-low)}.p-medium{border-inline-start-color:var(--p-medium)}.p-high{border-inline-start-color:var(--p-high)}.p-urgent{border-inline-start-color:var(--p-urgent)}
 .card-top,.card-meta{display:flex;flex-wrap:wrap;align-items:center;gap:6px}
+.card-title{all:unset;display:block;cursor:pointer;margin:4px 0 8px;font-size:15px;line-height:1.35;font-weight:600;overflow-wrap:anywhere;color:var(--ink)}
+.card-title:focus-visible{outline:2px solid var(--blue);outline-offset:2px;border-radius:4px}
+.card.done .card-title{text-decoration:line-through;color:var(--ink-3)}
+.adv{border:1.5px solid var(--line);background:#fff;border-radius:999px;padding:3px 11px;font-size:12.5px;font-weight:700;color:var(--navy);cursor:pointer;white-space:nowrap}
+.adv:hover{border-color:var(--navy)}.adv.to-done{border-color:#13795B;color:#13795B}
+.card-foot{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:8px}
+.status-tabs{display:none}
+.filter-toggle{display:none}.filter-extra{display:contents}
+.tip{display:flex;gap:12px;align-items:center;justify-content:space-between;background:#FFF8E6;border:1px solid #FFE3A3;border-radius:12px;padding:10px 14px;margin-bottom:12px;font-size:14px;line-height:1.6}
+.quick{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px}
+.seg.prio button[aria-pressed="true"][data-v="low"]{background:var(--p-low);border-color:var(--p-low)}
+.seg.prio button[aria-pressed="true"][data-v="high"]{background:var(--p-high);border-color:var(--p-high)}
+.seg.prio button[aria-pressed="true"][data-v="urgent"]{background:var(--p-urgent);border-color:var(--p-urgent)}
+.seg.prio button[aria-pressed="true"][data-v="medium"]{background:var(--p-medium);border-color:var(--p-medium)}
+details.more{border:1px solid var(--line);border-radius:12px;padding:10px 14px}
+details.more summary{cursor:pointer;font-weight:600;font-size:14px;color:var(--ink-2)}
+details.more[open] summary{margin-bottom:12px}
+details.more .field{margin-bottom:12px}
+.cl-add{display:flex;gap:8px}.cl-add .input{flex:1}
+.me-tag{font-size:11px;font-weight:700;color:var(--ink-3)}
+.attach-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:8px;margin-bottom:8px}
+.thumb{position:relative;display:block;border-radius:10px;overflow:hidden;border:1px solid var(--line);aspect-ratio:1;background:var(--paper)}
+.thumb a{color:inherit;text-decoration:none}
+.thumb img{width:100%;height:100%;object-fit:cover;display:block}
+.thumb.noimg a::before{content:'IMG';position:absolute;inset:0;display:grid;place-items:center;font-weight:800;font-size:13px;color:#6A2BE0;background:#F1EAFD}
+.thumb.noimg img{display:none}
+.thumb span{position:absolute;inset:auto 0 0 0;background:linear-gradient(transparent,rgba(11,21,48,.75));color:#fff;font-size:11px;padding:14px 6px 4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.file-list{display:flex;flex-direction:column;gap:6px;margin-bottom:8px}
+.file-row{display:flex;align-items:center;gap:10px;border:1px solid var(--line);border-radius:10px;padding:7px 10px;background:#fff}
+.file-row a{color:var(--ink);font-weight:600;text-decoration:none;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;min-width:0}
+.file-row a:hover{text-decoration:underline}
+.file-row small{color:var(--ink-3);white-space:nowrap}
+.file-ico{flex:none;font-weight:800;font-size:10.5px;letter-spacing:.3px;color:#fff;background:var(--ink-2);border-radius:6px;padding:6px 0;width:40px;text-align:center}
+.file-ico.pdf{background:#C0262D}.file-ico.doc{background:#1449D6}.file-ico.xls{background:#13795B}.file-ico.ppt{background:#E2570B}.file-ico.img{background:#6A2BE0}
+.file-row.busy{opacity:.7}.file-row.busy .file-ico{background:var(--line);color:var(--ink-2)}
+.x-btn{flex:none;border:0;background:transparent;color:var(--ink-3);cursor:pointer;border-radius:999px;width:28px;height:28px;display:grid;place-items:center}
+.x-btn:hover{background:var(--paper);color:var(--red)}
+.thumb .x-btn{position:absolute;top:4px;inset-inline-end:4px;background:rgba(255,255,255,.92);color:var(--ink)}
+.drawer.dragover::after{content:attr(data-drop);position:absolute;inset:10px;border:3px dashed var(--blue);border-radius:16px;background:rgba(20,73,214,.08);display:grid;place-items:center;font-weight:800;font-size:18px;color:var(--blue);pointer-events:none;z-index:5}
 .card-meta{font-size:12.5px;color:var(--ink-3);justify-content:space-between}
 .meta-items{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
 .meta-items span{display:inline-flex;align-items:center;gap:4px}
@@ -203,8 +242,17 @@ tbody tr:hover{background:#F7F9FD}
 
 /* ---------- small screens */
 @media (max-width:900px){
-  .board{grid-template-columns:repeat(4,85vw);overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:8px}
-  .col{scroll-snap-align:start}
+  .status-tabs{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;background:#E6E9F0;border-radius:12px;padding:4px;margin-bottom:12px}
+  .status-tabs button{border:0;background:transparent;border-radius:9px;padding:8px 2px;font-weight:700;font-size:12.5px;color:var(--ink-2);display:flex;flex-direction:column;align-items:center;gap:2px}
+  .status-tabs button[aria-selected="true"]{background:#fff;color:var(--navy);box-shadow:0 1px 3px rgba(0,0,0,.12)}
+  .status-tabs b{font-size:15px}
+  .board{display:block}
+  .board .col{display:none}
+  .board .col.on{display:block}
+  .board .col-head{display:none}
+  .filter-toggle{display:inline-flex}
+  .filter-extra{display:none}
+  .filter-extra.open{display:contents}
   .kpis{grid-template-columns:repeat(2,minmax(0,1fr))}
   .panels,.admin-grid{grid-template-columns:1fr}
   .tabs{position:fixed;bottom:0;left:0;right:0;margin:0;background:var(--navy);padding:8px 10px calc(8px + env(safe-area-inset-bottom));z-index:25;justify-content:space-between;box-shadow:0 -6px 20px rgba(0,0,0,.2)}
@@ -241,10 +289,15 @@ const T = {
     newTask: 'مهمة جديدة', search: 'ابحث…', allTeams: 'كل اللجان', everyone: 'الكل', anyPriority: 'كل الأولويات', clear: 'مسح الفلاتر', showDone: 'إظهار المنجز',
     todo: 'للتنفيذ', doing: 'قيد التنفيذ', review: 'مراجعة', done: 'منجز',
     low: 'منخفضة', medium: 'متوسطة', high: 'عالية', urgent: 'عاجلة',
+    start: 'ابدأ', toReview: 'للمراجعة', markDone: 'تم ✓', movedTo: 'انتقلت إلى «{s}»', filters: 'فلترة', more: 'خيارات إضافية (اللجنة، الوسوم، عائق)',
+    me: 'أنا', dToday: 'اليوم', dTomorrow: 'بكرة', dWeek: 'بعد أسبوع', dNone: 'بدون موعد', titlePh: 'شو المهمة؟ مثلًا: حجز قاعة للورشة', addStepBtn: 'أضف',
+    tip: 'أهلًا! اضغط على أي مهمة لتفتحها. زر «ابدأ» و«تم ✓» بنقل المهمة خطوة لقدّام، وزر + فوق بيعمل مهمة جديدة.', gotIt: 'تمام', openTask: 'افتح المهمة',
     addHere: '+ إضافة مهمة', blocked: 'متوقفة', noTasks: 'ما في مهام هون.', untitled: 'بدون عنوان',
     title: 'العنوان', status: 'الحالة', priority: 'الأولوية', teamField: 'اللجنة', assignees: 'المسؤولين', due: 'الموعد النهائي', labels: 'وسوم',
     labelsHelp: 'افصل بينها بفاصلة', description: 'الوصف', checklist: 'قائمة خطوات', addStep: 'أضف خطوة واضغط Enter', isBlocked: 'متوقفة (في عائق)',
     save: 'حفظ', saving: 'جاري الحفظ…', cancel: 'إلغاء', close: 'إغلاق', saved: 'انحفظ', created: 'انضافت المهمة',
+    attachments: 'الملحقات', attachAdd: 'أرفق ملف أو صورة', attachHelp: 'صور، PDF، ملفات… لحد 10 ميغا للملف. بتقدر تسحب الملفات لهون أو تلصق صورة.', uploading: 'جاري الرفع…', uploaded: 'انرفع الملف', pendingNote: 'رح ينرفعوا لما تحفظ المهمة', confirmRemoveFile: 'أكيد بدك تشيل هاد الملف؟', removeFile: 'شيل الملف', uploadedBy: 'رفعه', dropHere: 'إفلت الملفات هون',
+    acts: { created: 'أنشأ المهمة', updated: 'عدّل', commented: 'علّق', attached: 'أرفق', 'removed attachment': 'شال ملف', archived: 'أرشف المهمة', restored: 'رجّع المهمة', deleted: 'حذف المهمة', blocked: 'متوقفة', unblocked: 'رجعت تمشي', description: 'الوصف', checklist: 'الخطوات', labels: 'الوسوم', assignees: 'المسؤولين', team: 'اللجنة', due: 'الموعد', title: 'العنوان', status: 'الحالة', priority: 'الأولوية' },
     comments: 'التعليقات', addComment: 'اكتب تعليق…', post: 'إرسال', activity: 'السجل', archive: 'أرشفة', restore: 'استرجاع', delete: 'حذف نهائي',
     archived: 'انأرشفت المهمة', deleted: 'انحذفت المهمة', confirmDelete: 'حذف المهمة وتعليقاتها نهائيًا؟ ما في رجعة.', confirmArchive: 'أرشفة المهمة؟ بتختفي من اللوحة وبتضل محفوظة بالشيت.',
     yes: 'أكيد', unsaved: 'في تغييرات ما انحفظت. تسكّر بدون حفظ؟', none: '—',
@@ -262,7 +315,7 @@ const T = {
     err: { AUTH: 'انتهت الجلسة، سجّل دخول من جديد.', BAD_CODE: 'الرمز غلط.', LOCKED: 'محاولات كثيرة. جرّب بعد 15 دقيقة.', FORBIDDEN: 'ما عندك صلاحية لهاد.',
       NOT_FOUND: 'المهمة مش موجودة (يمكن انحذفت).', title: 'اكتب عنوان (لحد 200 حرف).', due: 'تاريخ غير صالح.', assignees: 'في عضو مش موجود أو موقوف.',
       email: 'إيميل غير صالح.', 'email-taken': 'الإيميل مستخدم لعضو ثاني.', name: 'اكتب الاسم.', self: 'ما بتقدر تشيل صلاحيتك أو توقف حسابك.', code: 'الرمز لازم يكون 6 أحرف أو أرقام على الأقل.',
-      text: 'التعليق فاضي أو طويل كتير.', CONFLICT: 'عضو ثاني عدّل ({f}) وإنت فاتح المهمة. تعديلك لسا موجود؛ إذا حفظت كمان مرة بيتثبت بدل تعديله.', generic: 'صار خطأ. جرّب كمان مرة.', offline: 'ما في اتصال. تأكد من الإنترنت.' },
+      text: 'التعليق فاضي أو طويل كتير.', 'file-size': 'الملف أكبر من 10 ميغا. حطه على درايف وحط رابطه بالوصف.', file: 'ما قدرنا نقرأ الملف، جرّب كمان مرة.', CONFLICT: 'عضو ثاني عدّل ({f}) وإنت فاتح المهمة. تعديلك لسا موجود؛ إذا حفظت كمان مرة بيتثبت بدل تعديله.', generic: 'صار خطأ. جرّب كمان مرة.', offline: 'ما في اتصال. تأكد من الإنترنت.' },
   },
   en: {
     appSub: 'Team task manager', loading: 'Loading…', signIn: 'Sign in', whoAreYou: 'Who are you?', chooseName: 'Choose your name',
@@ -271,10 +324,15 @@ const T = {
     newTask: 'New task', search: 'Search…', allTeams: 'All teams', everyone: 'Everyone', anyPriority: 'Any priority', clear: 'Clear filters', showDone: 'Show done',
     todo: 'To do', doing: 'In progress', review: 'Review', done: 'Done',
     low: 'Low', medium: 'Medium', high: 'High', urgent: 'Urgent',
+    start: 'Start', toReview: 'To review', markDone: 'Done ✓', movedTo: 'Moved to “{s}”', filters: 'Filters', more: 'More options (team, labels, blocked)',
+    me: 'me', dToday: 'Today', dTomorrow: 'Tomorrow', dWeek: 'In a week', dNone: 'No date', titlePh: 'What needs doing? e.g. Book a room for the workshop', addStepBtn: 'Add',
+    tip: 'Welcome! Tap any task to open it. “Start” and “Done ✓” move a task one step forward, and + at the top creates a new one.', gotIt: 'Got it', openTask: 'Open task',
     addHere: '+ Add task', blocked: 'Blocked', noTasks: 'No tasks here.', untitled: 'Untitled',
     title: 'Title', status: 'Status', priority: 'Priority', teamField: 'Team', assignees: 'Assignees', due: 'Due date', labels: 'Labels',
     labelsHelp: 'Separate with commas', description: 'Description', checklist: 'Checklist', addStep: 'Add a step and press Enter', isBlocked: 'Blocked (something is in the way)',
     save: 'Save', saving: 'Saving…', cancel: 'Cancel', close: 'Close', saved: 'Saved', created: 'Task created',
+    attachments: 'Attachments', attachAdd: 'Attach a file or photo', attachHelp: 'Photos, PDFs, any file… up to 10 MB each. You can also drop files here or paste an image.', uploading: 'Uploading…', uploaded: 'File uploaded', pendingNote: 'They upload when you save the task', confirmRemoveFile: 'Remove this file?', removeFile: 'Remove file', uploadedBy: 'by', dropHere: 'Drop files here',
+    acts: { created: 'created the task', updated: 'changed', commented: 'commented', attached: 'attached', 'removed attachment': 'removed a file', archived: 'archived the task', restored: 'restored the task', deleted: 'deleted the task', blocked: 'blocked', unblocked: 'unblocked', description: 'description', checklist: 'checklist', labels: 'labels', assignees: 'assignees', team: 'team', due: 'due date', title: 'title', status: 'status', priority: 'priority' },
     comments: 'Comments', addComment: 'Write a comment…', post: 'Post', activity: 'History', archive: 'Archive', restore: 'Restore', delete: 'Delete',
     archived: 'Task archived', deleted: 'Task deleted', confirmDelete: 'Delete this task and its comments for good? This cannot be undone.', confirmArchive: 'Archive this task? It leaves the board but stays in the sheet.',
     yes: 'Yes', unsaved: 'You have unsaved changes. Close without saving?', none: '—',
@@ -292,7 +350,7 @@ const T = {
     err: { AUTH: 'Your session ended. Please sign in again.', BAD_CODE: 'Wrong code.', LOCKED: 'Too many attempts. Try again in 15 minutes.', FORBIDDEN: 'You don’t have permission for that.',
       NOT_FOUND: 'Task not found (it may have been deleted).', title: 'Enter a title (up to 200 characters).', due: 'Invalid date.', assignees: 'An assignee is missing or inactive.',
       email: 'Invalid email.', 'email-taken': 'Another member uses this email.', name: 'Enter a name.', self: 'You can’t remove your own admin role or deactivate yourself.', code: 'The code needs at least 6 letters or digits.',
-      text: 'The comment is empty or too long.', CONFLICT: 'Someone else changed ({f}) while you had this task open. Your edit is still here; save again to keep yours instead.', generic: 'Something went wrong. Please try again.', offline: 'No connection. Check your internet.' },
+      text: 'The comment is empty or too long.', 'file-size': 'The file is over 10 MB. Put it on Drive and paste its link in the description.', file: 'Could not read the file, please try again.', CONFLICT: 'Someone else changed ({f}) while you had this task open. Your edit is still here; save again to keep yours instead.', generic: 'Something went wrong. Please try again.', offline: 'No connection. Check your internet.' },
   },
 };
 
@@ -310,6 +368,7 @@ const S = {
   token: saved.get('ies-tasks-token'),
   me: null, members: [], tasks: new Map(), settings: null, statuses: ['todo', 'doing', 'review', 'done'], priorities: ['low', 'medium', 'high', 'urgent'],
   view: saved.get('ies-tasks-view') || 'board',
+  boardTab: saved.get('ies-tasks-tab') || 'todo', showFilters: false,
   filters: { q: '', team: '', who: '', prio: '', showDone: false },
   sort: { key: 'due', dir: 1 },
   cal: null, lastSync: null, menu: false,
@@ -339,6 +398,7 @@ const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': 
 const ICON = {
   cal: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>',
   check: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.5l5 5L20 6.5"/></svg>',
+  clip: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5l-8.6 8.6a5 5 0 0 1-7.1-7.1l8.6-8.6a3.5 3.5 0 0 1 5 5l-8.6 8.6a2 2 0 0 1-2.8-2.8l7.9-7.9"/></svg>',
   chat: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"><path d="M4 5h16v11H9l-5 4z"/></svg>',
   plus: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>',
   x: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>',
@@ -502,10 +562,13 @@ function toolbar(opts = {}) {
   const active = S.members.filter(m => m.active);
   return `<div class="toolbar">
     <input class="input search" type="search" placeholder="${t('search')}" value="${esc(f.q)}" data-filter="q" aria-label="${t('search')}">
+    ${(() => { const n = [f.team, f.who, f.prio].filter(Boolean).length; return `<button type="button" class="btn btn-sm filter-toggle" data-action="toggle-filters" aria-expanded="${S.showFilters}">${t('filters')}${n ? ` (${n})` : ''}</button>`; })()}
+    <div class="filter-extra ${S.showFilters ? 'open' : ''}">
     <select class="input" data-filter="team" aria-label="${t('teamField')}"><option value="">${t('allTeams')}</option>${teams.map(x => `<option ${f.team === x ? 'selected' : ''}>${esc(x)}</option>`).join('')}</select>
     <select class="input" data-filter="who" aria-label="${t('assignees')}"><option value="">${t('everyone')}</option>${active.map(m => `<option value="${m.id}" ${f.who === m.id ? 'selected' : ''}>${esc(m.name)}</option>`).join('')}</select>
     <select class="input" data-filter="prio" aria-label="${t('priority')}"><option value="">${t('anyPriority')}</option>${S.priorities.map(p => `<option value="${p}" ${f.prio === p ? 'selected' : ''}>${t(p)}</option>`).join('')}</select>
     ${opts.showDone ? `<label class="check"><input type="checkbox" data-filter="showDone" ${f.showDone ? 'checked' : ''}>${t('showDone')}</label>` : ''}
+    </div>
     ${f.q || f.team || f.who || f.prio ? `<button class="btn btn-ghost btn-sm" data-action="clear-filters">${t('clear')}</button>` : ''}
   </div>`;
 }
@@ -521,23 +584,28 @@ const prioRank = p => S.priorities.indexOf(p);
 const byDueThenPrio = (a, b) => (a.due || '9999').localeCompare(b.due || '9999') || prioRank(b.priority) - prioRank(a.priority);
 
 // =============================================================================== views
+const NEXT_STEP = { todo: ['doing', 'start'], doing: ['review', 'toReview'], review: ['done', 'markDone'] };
 function card(x) {
   const done = x.checklist.filter(i => i.d).length;
+  const next = NEXT_STEP[x.status];
   const due = x.due ? `<span class="due ${dueClass(x)}">${ICON.cal}${esc(fmtDay(x.due))}</span>` : '';
-  return `<article class="card p-${x.priority} ${x.status === 'done' ? 'done' : ''}" role="button" tabindex="0" draggable="true" data-action="open" data-id="${esc(x.id)}">
+  return `<article class="card p-${x.priority} ${x.status === 'done' ? 'done' : ''}" draggable="true" data-action="open" data-id="${esc(x.id)}">
     <div class="card-top">${x.team ? `<span class="chip">${esc(x.team)}</span>` : ''}${x.blocked ? `<span class="chip blocked">${t('blocked')}</span>` : ''}${x.labels.slice(0, 3).map(l => `<span class="chip label">${esc(l)}</span>`).join('')}</div>
-    <h3>${esc(x.title || t('untitled'))}</h3>
-    <div class="card-meta"><span class="meta-items">${due}${x.checklist.length ? `<span>${ICON.check}${done}/${x.checklist.length}</span>` : ''}${x.comments ? `<span>${ICON.chat}${x.comments}</span>` : ''}</span>
+    <h3 style="margin:0"><button type="button" class="card-title" data-action="open" data-id="${esc(x.id)}">${esc(x.title || t('untitled'))}</button></h3>
+    <div class="card-meta"><span class="meta-items">${due}${x.checklist.length ? `<span>${ICON.check}${done}/${x.checklist.length}</span>` : ''}${x.comments ? `<span>${ICON.chat}${x.comments}</span>` : ''}${x.attachments ? `<span title="${t('attachments')}">${ICON.clip}${x.attachments}</span>` : ''}</span>
     <span class="avatars">${x.assignees.slice(0, 4).map(avatar).join('')}</span></div>
+    ${next ? `<div class="card-foot"><span></span><button type="button" class="adv ${next[0] === 'done' ? 'to-done' : ''}" data-action="advance" data-id="${esc(x.id)}" data-to="${next[0]}" aria-label="${esc(t(next[1]) + ': ' + x.title)}">${t(next[1])}</button></div>` : ''}
   </article>`;
 }
 
 function viewBoard() {
   const list = filtered(allTasks());
-  return toolbar() + `<div class="board">${S.statuses.map(s => {
+  const tip = saved.get('ies-tasks-tip') ? '' : `<div class="tip" role="note"><span>${t('tip')}</span><button class="btn btn-sm" data-action="tip-ok">${t('gotIt')}</button></div>`;
+  const tabs = `<div class="status-tabs" role="tablist">${S.statuses.map(s => `<button type="button" role="tab" data-action="board-tab" data-s="${s}" aria-selected="${S.boardTab === s}"><b>${list.filter(x => x.status === s).length}</b>${t(s)}</button>`).join('')}</div>`;
+  return tip + toolbar() + tabs + `<div class="board">${S.statuses.map(s => {
     const items = list.filter(x => x.status === s).sort((a, b) => s === 'done' ? b.completedAt.localeCompare(a.completedAt) : byDueThenPrio(a, b));
     const shown = s === 'done' ? items.slice(0, 30) : items;
-    return `<section class="col" data-status="${s}" aria-label="${t(s)}">
+    return `<section class="col ${S.boardTab === s ? 'on' : ''}" data-status="${s}" aria-label="${t(s)}">
       <div class="col-head"><span class="dot" style="background:${statusColor[s]}"></span>${t(s)}<span class="count">${items.length}</span></div>
       <div class="cards">${shown.map(card).join('')}</div>
       ${s !== 'done' ? `<button class="col-add" data-action="new" data-status="${s}">${t('addHere')}</button>` : ''}
@@ -672,11 +740,7 @@ function wireDrag() {
       e.preventDefault(); col.classList.remove('drop');
       const id = e.dataTransfer.getData('text/plain'), status = col.dataset.status, x = S.tasks.get(id);
       if (!x || x.status === status) return;
-      const prev = x.status;
-      S.tasks.set(id, Object.assign({}, x, { status }));
-      renderMain();
-      api('api_saveTask', { id, status, base: { status: prev } }).then(saved => { S.tasks.set(id, saved); renderMain(); })
-        .catch(err => { S.tasks.set(id, Object.assign({}, x, { status: prev })); renderMain(); fail(err); if (err.code === 'CONFLICT') sync(); });
+      advanceTask(id, status);
     });
   });
 }
@@ -684,10 +748,24 @@ function wireDrag() {
 // =============================================================================== task drawer
 let D = null; // the open drawer: { id, orig, draft }
 
+/** Moves a task to another status right away (card button or drag), and puts it back if the server says no. */
+function advanceTask(id, status) {
+  const x = S.tasks.get(id);
+  if (!x || x.status === status) return;
+  const prev = x.status;
+  S.tasks.set(id, Object.assign({}, x, { status }));
+  renderMain();
+  toast(t('movedTo').replace('{s}', t(status)));
+  api('api_saveTask', { id, status, base: { status: prev } }).then(saved => { S.tasks.set(id, saved); renderMain(); })
+    .catch(err => { S.tasks.set(id, Object.assign({}, x, { status: prev })); renderMain(); fail(err); if (err.code === 'CONFLICT') sync(); });
+}
+
 function openTask(id, preset) {
   const x = id ? S.tasks.get(id) : null;
-  const base = x || { title: '', description: '', status: 'todo', priority: 'medium', team: '', assignees: [], due: '', labels: [], checklist: [], blocked: false, ...preset };
-  D = { id: x ? x.id : null, orig: JSON.parse(JSON.stringify(base)), draft: JSON.parse(JSON.stringify(base)), detail: null };
+  const myTeam = S.settings.teams.includes(S.me.team) ? S.me.team : '';
+  const base = x || { title: '', description: '', status: 'todo', priority: 'medium', team: myTeam, assignees: [], due: '', labels: [], checklist: [], blocked: false, ...preset };
+  D = { id: x ? x.id : null, orig: JSON.parse(JSON.stringify(base)), draft: JSON.parse(JSON.stringify(base)), detail: null,
+    moreOpen: !!(x && (x.labels.length || x.blocked)), pending: [], uploading: [] };
   renderDrawer();
   if (x) api('api_taskDetail', x.id).then(det => { if (D && D.id === x.id) { D.detail = det; renderDetail(); } }).catch(() => {});
   setTimeout(() => { const el = $('#d-title'); if (el && !x) el.focus(); }, 30);
@@ -706,31 +784,36 @@ function renderDrawer() {
   const teams = [...new Set(S.settings.teams.concat(d.team ? [d.team] : []))];
   const doneN = d.checklist.filter(i => i.d).length;
   $('#layer').innerHTML = `<div class="scrim" data-action="close-drawer"></div>
-  <aside class="drawer" role="dialog" aria-modal="true" aria-labelledby="d-title">
+  <aside class="drawer" role="dialog" aria-modal="true" aria-labelledby="d-title" data-drop="${t('dropHere')}">
     <div class="drawer-head"><span class="id">${esc(D.id || t('newTask'))}</span>
       ${x ? `<span class="muted" style="font-size:12px">${esc(fmtTime(x.updatedAt))}</span>` : ''}
       <button class="icon-btn" data-action="close-drawer" style="margin-inline-start:auto" aria-label="${t('close')}">${ICON.x}</button></div>
     <form class="drawer-body" id="task-form" novalidate>
-      <input class="title-input" id="d-title" name="title" value="${esc(d.title)}" placeholder="${t('title')}" maxlength="200" aria-label="${t('title')}" required>
-      <div class="field"><span>${t('status')}</span><div class="seg" role="group">${S.statuses.map(s => `<button type="button" data-action="d-status" data-v="${s}" aria-pressed="${d.status === s}">${t(s)}</button>`).join('')}</div></div>
-      <div class="row2">
-        <label class="field"><span>${t('priority')}</span><select class="input" name="priority">${S.priorities.map(p => `<option value="${p}" ${d.priority === p ? 'selected' : ''}>${t(p)}</option>`).join('')}</select></label>
-        <label class="field"><span>${t('due')}</span><input class="input" type="date" name="due" value="${esc(d.due)}"></label>
-      </div>
-      <div class="row2">
-        <label class="field"><span>${t('teamField')}</span><select class="input" name="team"><option value="">${t('none')}</option>${teams.map(x => `<option ${d.team === x ? 'selected' : ''}>${esc(x)}</option>`).join('')}</select></label>
-        <label class="field"><span>${t('labels')}</span><input class="input" name="labels" value="${esc(d.labels.join(', '))}" placeholder="${t('labelsHelp')}"></label>
-      </div>
-      <div class="field"><span>${t('assignees')}</span><div class="people">${S.members.filter(m => m.active || d.assignees.includes(m.id)).map(m => `<button type="button" class="person" data-action="d-person" data-id="${m.id}" aria-pressed="${d.assignees.includes(m.id)}">${avatar(m.id)}${esc(m.name)}</button>`).join('')}</div></div>
-      <label class="check"><input type="checkbox" name="blocked" ${d.blocked ? 'checked' : ''}>${t('isBlocked')}</label>
-      <label class="field"><span>${t('description')}</span><textarea class="input" name="description" rows="5">${esc(d.description)}</textarea></label>
+      <input class="title-input" id="d-title" name="title" value="${esc(d.title)}" placeholder="${t('titlePh')}" maxlength="200" aria-label="${t('title')}" required>
+      ${x ? `<div class="field"><span>${t('status')}</span><div class="seg" role="group">${S.statuses.map(s => `<button type="button" data-action="d-status" data-v="${s}" aria-pressed="${d.status === s}">${t(s)}</button>`).join('')}</div></div>` : ''}
+      <div class="field"><span>${t('assignees')}</span><div class="people">${S.members.filter(m => m.active || d.assignees.includes(m.id)).sort((a, b) => (b.id === S.me.id) - (a.id === S.me.id)).map(m => `<button type="button" class="person" data-action="d-person" data-id="${m.id}" aria-pressed="${d.assignees.includes(m.id)}">${avatar(m.id)}${esc(m.name)}${m.id === S.me.id ? ` <span class="me-tag">(${t('me')})</span>` : ''}</button>`).join('')}</div></div>
+      <div class="field"><span>${t('due')}</span>
+        <div class="quick seg" role="group">${[['today', 0], ['tomorrow', 1], ['week', 7], ['none', null]].map(([k, n]) => { const v = n === null ? '' : addDays(todayStr(), n); return `<button type="button" data-action="d-due" data-v="${v}" aria-pressed="${d.due === v}">${t('d' + k[0].toUpperCase() + k.slice(1))}</button>`; }).join('')}</div>
+        <input class="input" type="date" name="due" value="${esc(d.due)}" aria-label="${t('due')}"></div>
+      <div class="field"><span>${t('priority')}</span><div class="seg prio" role="group">${S.priorities.map(p => `<button type="button" data-action="d-prio" data-v="${p}" aria-pressed="${d.priority === p}">${t(p)}</button>`).join('')}</div></div>
+      <label class="field"><span>${t('description')}</span><textarea class="input" name="description" rows="4">${esc(d.description)}</textarea></label>
       <div class="field"><span>${t('checklist')} ${d.checklist.length ? `(${doneN}/${d.checklist.length})` : ''}</span>
         ${d.checklist.length ? `<div class="progress"><i style="width:${doneN / d.checklist.length * 100}%"></i></div>` : ''}
         <div class="checklist">${d.checklist.map((i, n) => `<div class="cl-item ${i.d ? 'done' : ''}">
           <input type="checkbox" data-action="cl-toggle" data-n="${n}" ${i.d ? 'checked' : ''} aria-label="${esc(i.t)}">
-          <input type="text" data-cl="${n}" value="${esc(i.t)}" maxlength="200">
+          <input type="text" data-cl="${n}" value="${esc(i.t)}" maxlength="200" aria-label="${t('checklist')} ${n + 1}">
           <button type="button" class="icon-btn" data-action="cl-remove" data-n="${n}" aria-label="×" style="width:30px;height:30px">${ICON.x}</button></div>`).join('')}
-          <input class="input" id="cl-new" placeholder="${t('addStep')}" maxlength="200"></div></div>
+          <div class="cl-add"><input class="input" id="cl-new" placeholder="${t('addStep')}" maxlength="200" aria-label="${t('addStep')}"><button type="button" class="btn btn-sm" data-action="cl-add">${t('addStepBtn')}</button></div></div></div>
+      <details class="more" ${D.moreOpen ? 'open' : ''}><summary>${t('more')}</summary>
+        <label class="field"><span>${t('teamField')}</span><select class="input" name="team"><option value="">${t('none')}</option>${teams.map(x => `<option ${d.team === x ? 'selected' : ''}>${esc(x)}</option>`).join('')}</select></label>
+        <label class="field"><span>${t('labels')}</span><input class="input" name="labels" value="${esc(d.labels.join(', '))}" placeholder="${t('labelsHelp')}"></label>
+        <label class="check"><input type="checkbox" name="blocked" ${d.blocked ? 'checked' : ''}>${t('isBlocked')}</label>
+      </details>
+      <div class="field"><span>${t('attachments')}</span>
+        <div id="attach"></div>
+        <div><button type="button" class="btn btn-sm" data-action="attach-pick">${ICON.clip} ${t('attachAdd')}</button>
+        <input type="file" id="file-in" multiple class="sr-only" tabindex="-1" aria-hidden="true"></div>
+        <small class="muted">${t('attachHelp')}</small></div>
       <div id="detail"></div>
     </form>
     <div class="drawer-foot">
@@ -745,6 +828,7 @@ function renderDrawer() {
 }
 
 function renderDetail() {
+  renderAttach();
   const el = $('#detail');
   if (!el || !D || !D.id) return;
   const det = D.detail;
@@ -754,7 +838,7 @@ function renderDetail() {
     ${det ? det.comments.map(c => `<div class="comment"><b>${esc(c.author)}</b><time>${esc(fmtTime(c.createdAt))}</time><p>${esc(c.text)}</p></div>`).join('') : '<div class="spinner"></div>'}
     <div style="display:flex;gap:8px;align-items:flex-end;margin-top:8px"><textarea class="input" id="c-new" rows="2" placeholder="${t('addComment')}" maxlength="2000" style="min-height:44px"></textarea>
     <button type="button" class="btn btn-sm btn-dark" data-action="post-comment">${t('post')}</button></div>
-    ${det && det.activity.length ? `<p class="section-title">${t('activity')}</p><ul class="activity">${det.activity.map(a => `<li><b>${esc(a.actor)}</b> · ${esc(a.action)}${a.details ? ': ' + esc(a.details) : ''}<br><time>${esc(fmtTime(a.time))}</time></li>`).join('')}</ul>` : ''}`;
+    ${det && det.activity.length ? `<p class="section-title">${t('activity')}</p><ul class="activity">${det.activity.map(a => `<li><b>${esc(a.actor)}</b> · ${esc(actText(a.action))}${a.details ? ': ' + esc(a.action === 'updated' ? changeText(a.details) : a.details) : ''}<br><time>${esc(fmtTime(a.time))}</time></li>`).join('')}</ul>` : ''}`;
   const box2 = $('#c-new');
   if (box2 && typed) box2.value = typed;
   if (box2 && focused) box2.focus();
@@ -765,6 +849,7 @@ function wireDrawer() {
   form.addEventListener('input', e => {
     const el = e.target;
     if (el.name === 'title' || el.name === 'description' || el.name === 'due') D.draft[el.name] = el.value;
+    if (el.name === 'due') document.querySelectorAll('[data-action="d-due"]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.v === el.value)));
     if (el.name === 'labels') D.draft.labels = el.value.split(',').map(s => s.trim()).filter(Boolean);
     if (el.dataset.cl !== undefined) D.draft.checklist[Number(el.dataset.cl)].t = el.value;
   });
@@ -774,14 +859,121 @@ function wireDrawer() {
     if (el.name === 'blocked') D.draft.blocked = el.checked;
   });
   form.addEventListener('submit', e => e.preventDefault());
+  const fileIn = $('#file-in');
+  if (fileIn) fileIn.addEventListener('change', () => { addFiles(fileIn.files); fileIn.value = ''; });
+  const drawer = document.querySelector('.drawer');
+  const hasFiles = e => e.dataTransfer && [...e.dataTransfer.types].includes('Files');
+  drawer.addEventListener('dragover', e => { if (!hasFiles(e)) return; e.preventDefault(); drawer.classList.add('dragover'); });
+  drawer.addEventListener('dragleave', e => { if (e.target === drawer || !drawer.contains(e.relatedTarget)) drawer.classList.remove('dragover'); });
+  drawer.addEventListener('drop', e => { if (!hasFiles(e)) return; e.preventDefault(); drawer.classList.remove('dragover'); addFiles(e.dataTransfer.files); });
+  const more = form.querySelector('details.more');
+  if (more) more.addEventListener('toggle', () => { if (D) D.moreOpen = more.open; });
   $('#cl-new').addEventListener('keydown', e => {
     if (e.key !== 'Enter') return;
     e.preventDefault();
-    const v = e.target.value.trim();
-    if (!v) return;
-    D.draft.checklist.push({ t: v, d: false });
-    renderDrawerKeepScroll(() => $('#cl-new') && $('#cl-new').focus());
+    if (addTypedStep()) renderDrawerKeepScroll(() => $('#cl-new') && $('#cl-new').focus());
   });
+}
+
+// History lines are stored in English in the sheet (an audit trail); show them in the reader's language.
+const actText = a => t('acts')[a] || a;
+const changeText = d => String(d).split(' · ').map(part => {
+  const m = /^(\w+)(:?)\s*(.*)$/.exec(part);
+  if (!m || !(m[1] in t('acts'))) return part;
+  const vals = m[3].replace(/\b(todo|doing|review|done|low|medium|high|urgent)\b/g, v => t(v));
+  return t('acts')[m[1]] + (m[2] || m[3] ? (m[2] ? ': ' : ' ') + vals : '');
+}).join(' · ');
+
+// =============================================================================== attachments
+const MAX_FILE = 10 * 1024 * 1024;
+const fmtSize = n => n < 1024 ? n + ' B' : n < 1048576 ? Math.round(n / 1024) + ' KB' : (n / 1048576).toFixed(1) + ' MB';
+const fileKind = (name, type) => {
+  const ext = (String(name).split('.').pop() || '').toLowerCase();
+  if (/^image\//.test(type)) return ['img', ext.toUpperCase().slice(0, 4) || 'IMG'];
+  if (ext === 'pdf') return ['pdf', 'PDF'];
+  if (/^docx?$/.test(ext)) return ['doc', 'DOC'];
+  if (/^(xlsx?|csv)$/.test(ext)) return ['xls', ext.toUpperCase()];
+  if (/^pptx?$/.test(ext)) return ['ppt', 'PPT'];
+  return ['', (ext || 'FILE').toUpperCase().slice(0, 4)];
+};
+
+function renderAttach() {
+  const el = $('#attach');
+  if (!el || !D) return;
+  const list = (D.detail && D.detail.attachments) || [];
+  const canRemove = a => S.me.admin || a.byId === S.me.id;
+  const images = list.filter(a => a.thumb), files = list.filter(a => !a.thumb);
+  const xBtn = a => canRemove(a) ? `<button type="button" class="x-btn" data-action="attach-remove" data-id="${esc(a.id)}" aria-label="${t('removeFile')}: ${esc(a.name)}">${ICON.x}</button>` : '';
+  const kind = (n, ty) => { const k = fileKind(n, ty); return `<span class="file-ico ${k[0]}">${esc(k[1])}</span>`; };
+  el.innerHTML =
+    (images.length ? `<div class="attach-grid">${images.map(a => `<div class="thumb"><a href="${esc(a.url)}" target="_blank" rel="noopener" title="${esc(a.name)}"><img src="${esc(a.thumb)}" alt="${esc(a.name)}" loading="lazy" referrerpolicy="no-referrer" onerror="this.closest('.thumb').classList.add('noimg')"><span>${esc(a.name)}</span></a>${xBtn(a)}</div>`).join('')}</div>` : '') +
+    (files.length || D.uploading.length || D.pending.length ? `<div class="file-list">` +
+      files.map(a => `<div class="file-row">${kind(a.name, a.type)}<a href="${esc(a.url)}" target="_blank" rel="noopener">${esc(a.name)}</a><small>${fmtSize(a.size)} · ${t('uploadedBy')} ${esc(a.by)}</small>${xBtn(a)}</div>`).join('') +
+      D.uploading.map(u => `<div class="file-row busy" aria-live="polite">${kind(u.name, u.type)}<span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(u.name)}</span><small>${t('uploading')}</small></div>`).join('') +
+      D.pending.map((f, n) => `<div class="file-row">${kind(f.name, f.type)}<span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(f.name)}</span><small>${fmtSize(f.size)} · ${t('pendingNote')}</small><button type="button" class="x-btn" data-action="pending-remove" data-n="${n}" aria-label="${t('removeFile')}: ${esc(f.name)}">${ICON.x}</button></div>`).join('') +
+    `</div>` : '');
+}
+
+const readBase64 = file => new Promise((ok, ko) => {
+  const r = new FileReader();
+  r.onload = () => ok(String(r.result).replace(/^data:[^,]*,/, ''));
+  r.onerror = () => ko(Object.assign(new Error('read'), { code: 'file' }));
+  r.readAsDataURL(file);
+});
+
+/** Big photos from phones (often 5–12 MB) are resized to 2000 px JPEG before upload: faster, and enough for any screen. */
+async function shrinkImage(file) {
+  if (!/^image\/(jpeg|png|webp)$/.test(file.type) || file.size < 1.5 * 1048576 || !window.createImageBitmap) return file;
+  try {
+    const img = await createImageBitmap(file);
+    const k = Math.min(1, 2000 / Math.max(img.width, img.height));
+    const c = document.createElement('canvas');
+    c.width = Math.round(img.width * k); c.height = Math.round(img.height * k);
+    const g = c.getContext('2d');
+    g.fillStyle = '#fff'; g.fillRect(0, 0, c.width, c.height);
+    g.drawImage(img, 0, 0, c.width, c.height);
+    const blob = await new Promise(r => c.toBlob(r, 'image/jpeg', 0.85));
+    if (!blob || blob.size >= file.size) return file;
+    return new File([blob], file.name.replace(/\.(png|webp|jpe?g)$/i, '') + '.jpg', { type: 'image/jpeg' });
+  } catch (e) { return file; }
+}
+
+async function addFiles(fileList) {
+  if (!D) return;
+  for (const original of [...fileList]) {
+    const file = await shrinkImage(original);
+    if (file.size > MAX_FILE) { toast(errText('file-size'), true); continue; }
+    if (!D) return;
+    if (!D.id) { D.pending.push(file); renderAttach(); }
+    else uploadFile(D.id, file);
+  }
+}
+
+/** Uploads one file to a saved task. Works even if the task is closed meanwhile. */
+function uploadFile(taskId, file) {
+  const u = { name: file.name, type: file.type };
+  if (D && D.id === taskId) { D.uploading.push(u); renderAttach(); }
+  const done = () => { if (D) { const i = D.uploading.indexOf(u); if (i >= 0) D.uploading.splice(i, 1); } };
+  return readBase64(file)
+    .then(data => api('api_uploadAttachment', taskId, { name: file.name, type: file.type || 'application/octet-stream', data }))
+    .then(a => {
+      done();
+      const x = S.tasks.get(taskId);
+      if (x) S.tasks.set(taskId, Object.assign({}, x, { attachments: (x.attachments || 0) + 1 }));
+      if (D && D.id === taskId) { D.detail = Object.assign({ comments: [], activity: [] }, D.detail); D.detail.attachments = (D.detail.attachments || []).concat([a]); renderAttach(); }
+      renderMain();
+      toast(t('uploaded'));
+    })
+    .catch(err => { done(); if (D && D.id === taskId) renderAttach(); fail(err); });
+}
+
+/** A step typed in the "add a step" box counts even if Enter or Add wasn't pressed. */
+function addTypedStep() {
+  const box = $('#cl-new'), v = box ? box.value.trim() : '';
+  if (!v || !D) return false;
+  D.draft.checklist.push({ t: v, d: false });
+  box.value = '';
+  return true;
 }
 
 function renderDrawerKeepScroll(after) {
@@ -794,16 +986,17 @@ function renderDrawerKeepScroll(after) {
 
 function closeDrawer(force) {
   if (!D) return;
-  if (!force && Object.keys(dirtyFields()).length) return confirmBox(t('unsaved'), () => closeDrawer(true));
+  if (!force && (Object.keys(dirtyFields()).length || D.pending.length)) return confirmBox(t('unsaved'), () => closeDrawer(true));
   D = null;
   $('#layer').innerHTML = '';
 }
 
 function saveTask() {
+  addTypedStep();
   const patch = dirtyFields();
   if (!D.id && !D.draft.title.trim()) { const f = $('#d-title'); if (f) { f.scrollIntoView({ block: 'center' }); f.focus(); } return toast(errText('title'), true); }
   if (D.id && !Object.keys(patch).length) return closeDrawer(true);
-  if (!D.id) Object.assign(patch, { title: D.draft.title, status: D.draft.status, priority: D.draft.priority });
+  if (!D.id) Object.assign(patch, { title: D.draft.title, status: D.draft.status, priority: D.draft.priority, team: D.draft.team }); // prefilled fields count too
   if (D.id) {
     patch.id = D.id;
     // What this editor started from, so the server can merge with (or refuse to overwrite) someone else's changes.
@@ -812,11 +1005,13 @@ function saveTask() {
   }
   const btn = $('#save-btn');
   btn.disabled = true; btn.textContent = t('saving');
+  const queued = D.id ? [] : D.pending.slice();
   api('api_saveTask', patch).then(x => {
     S.tasks.set(x.id, x);
     toast(D.id ? t('saved') : t('created'));
     closeDrawer(true);
     renderMain();
+    queued.reduce((p, f) => p.then(() => uploadFile(x.id, f)), Promise.resolve());
   }).catch(err => {
     btn.disabled = false; btn.textContent = t('save');
     if (err.code !== 'CONFLICT') return fail(err);
@@ -926,6 +1121,24 @@ document.addEventListener('click', e => {
   else if (a === 'cal') { const st = Number(el.dataset.step); if (!st) S.cal = null; else { let m = S.cal.m + st, y = S.cal.y; if (m < 0) { m = 11; y--; } if (m > 11) { m = 0; y++; } S.cal = { y, m }; } renderMain(); }
   else if (a === 'close-drawer') closeDrawer(false);
   else if (a === 'save-task') saveTask();
+  else if (a === 'advance') advanceTask(el.dataset.id, el.dataset.to);
+  else if (a === 'attach-pick') { const i = $('#file-in'); if (i) i.click(); }
+  else if (a === 'pending-remove') { D.pending.splice(Number(el.dataset.n), 1); renderAttach(); }
+  else if (a === 'attach-remove') {
+    const id = el.dataset.id, taskId = D.id;
+    confirmBox(t('confirmRemoveFile'), () => api('api_removeAttachment', id).then(() => {
+      const x = S.tasks.get(taskId);
+      if (x) S.tasks.set(taskId, Object.assign({}, x, { attachments: Math.max(0, (x.attachments || 1) - 1) }));
+      if (D && D.id === taskId && D.detail) { D.detail.attachments = D.detail.attachments.filter(f => f.id !== id); renderAttach(); }
+      renderMain();
+    }).catch(fail));
+  }
+  else if (a === 'board-tab') { S.boardTab = el.dataset.s; saved.set('ies-tasks-tab', S.boardTab); renderMain(); }
+  else if (a === 'toggle-filters') { S.showFilters = !S.showFilters; renderMain(); }
+  else if (a === 'tip-ok') { saved.set('ies-tasks-tip', '1'); renderMain(); }
+  else if (a === 'cl-add') { if (addTypedStep()) renderDrawerKeepScroll(() => $('#cl-new') && $('#cl-new').focus()); }
+  else if (a === 'd-prio') { D.draft.priority = el.dataset.v; document.querySelectorAll('[data-action="d-prio"]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.v === D.draft.priority))); }
+  else if (a === 'd-due') { D.draft.due = el.dataset.v; const i = document.querySelector('[name="due"]'); if (i) i.value = D.draft.due; document.querySelectorAll('[data-action="d-due"]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.v === D.draft.due))); }
   else if (a === 'd-status') { D.draft.status = el.dataset.v; document.querySelectorAll('[data-action="d-status"]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.v === D.draft.status))); }
   else if (a === 'd-person') { const id = el.dataset.id, list = D.draft.assignees; const i = list.indexOf(id); if (i >= 0) list.splice(i, 1); else list.push(id); el.setAttribute('aria-pressed', String(i < 0)); }
   else if (a === 'cl-toggle') { D.draft.checklist[Number(el.dataset.n)].d = el.checked; renderDrawerKeepScroll(); }
@@ -968,6 +1181,12 @@ document.addEventListener('submit', e => {
   const f = e.target;
   api('api_saveSettings', { teams: f.teams.value.split('\n').map(s => s.trim()).filter(Boolean), digest: f.digest.checked, digestHour: Number(f.digestHour.value) })
     .then(s => { S.settings = Object.assign(S.settings, s); renderMain(); toast(t('settingsSaved')); }).catch(fail);
+});
+
+document.addEventListener('paste', e => {
+  if (!D || !e.clipboardData || !e.clipboardData.files.length) return;
+  e.preventDefault();
+  addFiles(e.clipboardData.files);
 });
 
 document.addEventListener('keydown', e => {
