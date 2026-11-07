@@ -3,6 +3,7 @@
 import { readFileSync } from 'node:fs';
 import { createServer } from 'node:http';
 import { loadApp } from './gas-mock.mjs';
+import { sitePage } from '../build.mjs';
 
 const srcDir = new URL('../src/', import.meta.url);
 
@@ -58,6 +59,21 @@ export function startDevServer({ port = 4300, seed = true } = {}) {
         setTimeout(() => { res.writeHead(200, { 'Content-Type': 'application/json' }); res.end(JSON.stringify(out ?? null)); }, 60);
       });
       return;
+    }
+    // The website copy (public/tasks/index.html) talking to doPost, as ies-hu.vercel.app/tasks talks to Apps Script.
+    if (req.method === 'POST' && req.url === '/exec') {
+      let body = '';
+      req.on('data', c => (body += c));
+      req.on('end', () => {
+        app.ctx.MEMO_ = {};
+        const out = app.ctx.doPost({ postData: { contents: body, type: req.headers['content-type'] } });
+        setTimeout(() => { res.writeHead(200, { 'Content-Type': out.mime }); res.end(out.getContent()); }, 60);
+      });
+      return;
+    }
+    if (req.url === '/tasks' || req.url.startsWith('/tasks#')) {
+      res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
+      return res.end(sitePage('/exec'));
     }
     if (req.url === '/' || req.url.startsWith('/?') || req.url.startsWith('/#')) {
       const html = readFileSync(new URL('Index.html', srcDir), 'utf8').replace('<head>', '<head>' + shim);

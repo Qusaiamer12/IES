@@ -17,6 +17,11 @@ const CONFIG = {
   /** Icon of the browser tab. */
   FAVICON_URL: 'https://ies-hu.vercel.app/icon-192.png',
   LOGO_URL: 'https://ies-hu.vercel.app/images/ies-hu-logo.png', // shown at the top of emails
+  /**
+   * The address people open, used in emails and the "copy link" button: the copy of the app on the website
+   * (public/tasks/index.html, built from deploy.json). Leave empty to use the web app's own /exec address.
+   */
+  APP_URL: 'https://ies-hu.vercel.app/tasks',
   /** How long a login lasts on a device. */
   SESSION_DAYS: 30,
 };
@@ -83,6 +88,27 @@ function doGet(e) {
     .setTitle(CONFIG.APP_NAME)
     .addMetaTag('viewport', 'width=device-width, initial-scale=1, viewport-fit=cover')
     .setFaviconUrl(CONFIG.FAVICON_URL);
+}
+
+/** The same api_* functions as a plain JSON API, for the copy of the UI served from the website (CONFIG.APP_URL).
+ *  The page POSTs {fn, args} as text/plain (no CORS preflight, no Google sign-in, no cookies); the answer is
+ *  {ok, value} or {ok: false, message}, the message carrying the same error codes google.script.run would. */
+const POST_API_ = ['api_publicInfo', 'api_login', 'api_bootstrap', 'api_changes', 'api_saveTask', 'api_archiveTask',
+  'api_deleteTask', 'api_taskDetail', 'api_uploadAttachment', 'api_removeAttachment', 'api_addComment', 'api_changeCode',
+  'api_setNotify', 'api_saveMember', 'api_resetCode', 'api_saveSettings', 'api_saveProject', 'api_feedUrl',
+  'api_resendAssignment'];
+function doPost(e) {
+  let out;
+  try {
+    const req = JSON.parse((e && e.postData && e.postData.contents) || '{}');
+    const fn = str_(req.fn), args = Array.isArray(req.args) ? req.args : [];
+    if (POST_API_.indexOf(fn) < 0) throw new Error('NOT_FOUND');
+    const value = globalThis[fn].apply(null, args);
+    out = { ok: true, value: value === undefined ? null : value };
+  } catch (err) {
+    out = { ok: false, message: String((err && err.message) || err) };
+  }
+  return ContentService.createTextOutput(JSON.stringify(out)).setMimeType(ContentService.MimeType.JSON);
 }
 
 // ------------------------------------------------------------------------------------------------ public API
@@ -517,7 +543,7 @@ function calendarFeed_(token) {
   const lines = ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//IEEE IES HU//Tasks//EN', 'CALSCALE:GREGORIAN', 'METHOD:PUBLISH',
     'X-WR-CALNAME:' + icsText_(CONFIG.APP_NAME + (ok ? ' · ' + m.Name : '')), 'X-WR-TIMEZONE:' + CONFIG.TIME_ZONE];
   if (ok) {
-    const url = appUrl_(), stamp = iso_().replace(/[-:]/g, '').replace(/\.\d+/, '');
+    const url = publicUrl_(), stamp = iso_().replace(/[-:]/g, '').replace(/\.\d+/, '');
     table_('Tasks').items.filter(t => !bool_(t.Archived) && t.Status !== 'done' && t.Due && split_(t.Assignees).indexOf(id) >= 0).forEach(t => {
       const d = t.Due.replace(/-/g, ''), end = addDays_(t.Due, 1).replace(/-/g, '');
       lines.push('BEGIN:VEVENT', 'UID:' + t.ID + '@ies-hu-tasks', 'DTSTAMP:' + stamp, 'DTSTART;VALUE=DATE:' + d, 'DTEND;VALUE=DATE:' + end,
@@ -617,7 +643,7 @@ function settingsView_() {
     digestHour: Number(getSetting_('digestHour')) || 8,
     eventTemplate: str_(getSetting_('eventTemplate')),
     appName: CONFIG.APP_NAME,
-    appUrl: appUrl_(),
+    appUrl: publicUrl_(),
     sheetUrl: ss_().getUrl(),
   };
 }
@@ -935,7 +961,7 @@ function taskCardHtml_(t, compact) {
 
 /** Wraps content in the chapter's email layout. Inline styles and tables only, so it looks the same in Gmail, Outlook and phones. */
 function emailHtml_(o) {
-  const url = appUrl_();
+  const url = publicUrl_();
   const href = url ? url + (o.button && o.button.taskId ? '#task=' + encodeURIComponent(o.button.taskId) : '') : '';
   const button = o.button && href
     ? `<table role="presentation" cellpadding="0" cellspacing="0" style="margin:22px 0 4px"><tr><td bgcolor="#0B1530" style="border-radius:999px;background-color:#0B1530"><a href="${esc_(href)}" style="display:inline-block;padding:13px 28px;font-size:16px;font-weight:700;color:#FFFFFF;text-decoration:none;border-radius:999px">${esc_(o.button.label)} →</a></td></tr></table>` : '';
@@ -962,7 +988,7 @@ function emailText_(o) {
   const strip = h => str_(h).replace(/<br\s*\/?>/gi, '\n').replace(/<\/(p|div|tr|li|h1|h2)>/gi, '\n').replace(/<\/td>/gi, ' ').replace(/<[^>]+>/g, '')
     .replace(/&nbsp;/g, ' ').replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&#39;/g, "'")
     .replace(/[ \t]+/g, ' ').replace(/\n\s*\n+/g, '\n').trim();
-  const url = appUrl_();
+  const url = publicUrl_();
   return [o.heading, strip(o.intro), strip(o.body), o.signoff ? strip(o.signoff) : '', url ? url + (o.button && o.button.taskId ? '#task=' + o.button.taskId : '') : '', '— ' + CONFIG.APP_NAME + ' · IEEE IES HU']
     .filter(Boolean).join('\n\n');
 }
@@ -1225,6 +1251,8 @@ function parseChecklist_(v) {
   try { const a = JSON.parse(str_(v) || '[]'); return Array.isArray(a) ? a.map(i => ({ t: str_(i.t), d: !!i.d })) : []; } catch (e) { return []; }
 }
 function commentCount_(taskId) { return table_('Comments').items.filter(c => c.TaskID === taskId).length; }
+/** The address people open: the website copy (CONFIG.APP_URL) when set, else the /exec address. */
+function publicUrl_() { return str_(CONFIG.APP_URL) || appUrl_(); }
 /** The web app's /exec address. Remembered from web requests, because time triggers (the daily reminder) may get the /dev one. */
 function appUrl_() {
   let u = '';

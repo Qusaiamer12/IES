@@ -604,4 +604,19 @@ describe('navigation, projects and the rest', () => {
     assert.match(url, /\?feed=M-\d{4}\.[0-9a-f]{24}$/);
     await p.close();
   });
+
+  it('works from the website copy, which talks to doPost instead of google.script.run', async () => {
+    const ctx = await browser.newContext({ viewport: { width: 390, height: 844 } });
+    const p = await ctx.newPage();
+    const errors = [];
+    p.on('pageerror', e => errors.push(String(e)));
+    const posts = [];
+    p.on('request', r => { if (r.method() === 'POST') posts.push(r.url()); });
+    await p.goto(dev.url + '/tasks', { waitUntil: 'networkidle' });
+    await signIn(p);
+    await p.waitForSelector('.card');
+    assert.ok(posts.length > 0 && posts.every(u => u.endsWith('/exec')), 'every call goes to the web app');
+    assert.deepEqual(errors, []);
+    await ctx.close();
+  });
 });

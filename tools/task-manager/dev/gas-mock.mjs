@@ -142,7 +142,7 @@ export function loadApp({ srcDir, sheetId = 'TEST_SHEET' }) {
     },
     HtmlService: {},
     ContentService: {
-      MimeType: { ICAL: 'text/calendar' },
+      MimeType: { ICAL: 'text/calendar', JSON: 'application/json' },
       createTextOutput: text => ({ text, mime: '', setMimeType(m) { this.mime = m; return this; }, getContent() { return this.text; } }),
     },
     Logger: { log: (...a) => ctx.__log.push(a.join(' ')) },

@@ -15,6 +15,11 @@ const CONFIG = {
   /** Icon of the browser tab. */
   FAVICON_URL: 'https://ies-hu.vercel.app/icon-192.png',
   LOGO_URL: 'https://ies-hu.vercel.app/images/ies-hu-logo.png', // shown at the top of emails
+  /**
+   * The address people open, used in emails and the "copy link" button: the copy of the app on the website
+   * (public/tasks/index.html, built from deploy.json). Leave empty to use the web app's own /exec address.
+   */
+  APP_URL: 'https://ies-hu.vercel.app/tasks',
   /** How long a login lasts on a device. */
   SESSION_DAYS: 30,
 };

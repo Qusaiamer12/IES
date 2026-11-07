@@ -31,11 +31,18 @@ const nextConfig: NextConfig = {
       { source: '/:path*', headers: securityHeaders },
       // The game is indexed at its clean URL (/projects/pid-duel), not at the raw file.
       { source: '/games/:path*', headers: [{ key: 'X-Robots-Tag', value: 'noindex' }] },
+      // The committee's task manager (built from tools/task-manager): private to the team, kept out of search.
+      { source: '/tasks', headers: [{ key: 'X-Robots-Tag', value: 'noindex, nofollow' }] },
+      { source: '/tasks/:path*', headers: [{ key: 'X-Robots-Tag', value: 'noindex, nofollow' }] },
     ];
   },
   async rewrites() {
     // Projects that are self-contained HTML apps, served from public/ under a clean URL.
-    return [{ source: '/projects/pid-duel', destination: '/games/pid-duel.html' }];
+    // The task manager's UI (tools/task-manager → public/tasks/index.html); its data stays in the Google Sheet.
+    return [
+      { source: '/projects/pid-duel', destination: '/games/pid-duel.html' },
+      { source: '/tasks', destination: '/tasks/index.html' },
+    ];
   },
   async redirects() {
     return ALIASES.map(a => ({ ...a, permanent: true }));

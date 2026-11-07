@@ -253,6 +253,40 @@ describe('paste-ready build', () => {
   });
 });
 
+describe('website copy (doPost JSON API)', () => {
+  const post = body => {
+    app.ctx.MEMO_ = {};
+    const out = app.ctx.doPost({ postData: { contents: typeof body === 'string' ? body : JSON.stringify(body) } });
+    assert.equal(out.mime, 'application/json');
+    return JSON.parse(out.getContent());
+  };
+  it('answers the api_* functions as JSON', () => {
+    const info = post({ fn: 'api_publicInfo', args: [] });
+    assert.equal(info.ok, true);
+    assert.ok(info.value.members.length > 0);
+    const login = post({ fn: 'api_login', args: [info.value.members[0].id, adminCode] });
+    assert.equal(login.ok, true);
+    const boot = post({ fn: 'api_bootstrap', args: [login.value.token] });
+    assert.ok(Array.isArray(boot.value.tasks));
+  });
+  it('returns the same error codes as google.script.run, and only exposes the api_* list', () => {
+    assert.match(post({ fn: 'api_bootstrap', args: ['nope'] }).message, /AUTH/);
+    for (const fn of ['dailyDigest', 'setupFirstAdmin', 'table_', 'doGet', 'eval']) assert.deepEqual(post({ fn, args: [] }), { ok: false, message: 'NOT_FOUND' });
+    assert.equal(post('not json').ok, false);
+    assert.equal(post('').ok, false);
+  });
+  it('the website page is built from Index.html and points at the deployment', async () => {
+    const { readFileSync } = await import('node:fs');
+    const { sitePage, SITE_PAGE } = await import('../build.mjs');
+    const page = readFileSync(SITE_PAGE, 'utf8');
+    assert.equal(page, sitePage(), 'public/tasks/index.html is out of date: npm run tasks:build');
+    const { webAppUrl } = JSON.parse(readFileSync(new URL('../deploy.json', import.meta.url), 'utf8'));
+    assert.ok(page.includes('window.TASKS_API = ' + JSON.stringify(webAppUrl)));
+    assert.ok(page.indexOf('window.google =') < page.indexOf('function api(fn'), 'the shim runs before the app');
+    assert.ok(page.includes('noindex'));
+  });
+});
+
 describe('sheet quirks', () => {
   it('ignores empty rows whose checkboxes read FALSE and writes new rows right under the data', () => {
     const T = app.ss.getSheetByName('Tasks'), M = app.ss.getSheetByName('Members');
@@ -361,7 +395,7 @@ describe('emails', () => {
     assert.ok(m.htmlBody.includes('Hi Rana') && m.htmlBody.includes('Urgent') && m.htmlBody.includes('1 December 2026'));
     assert.ok(m.htmlBody.includes('1 of 2 done') && m.htmlBody.includes('Line 1<br>Line 2'));
     assert.ok(m.htmlBody.includes('Poster &lt;b&gt;v2&lt;/b&gt;') && !m.htmlBody.includes('<b>v2</b>'), 'typed HTML is escaped');
-    assert.ok(m.htmlBody.includes('/exec#task=' + t.id), 'button opens the task');
+    assert.ok(m.htmlBody.includes('https://ies-hu.vercel.app/tasks#task=' + t.id), 'button opens the task on the website');
     assert.ok(m.body.includes('Poster <b>v2</b>') && !m.body.includes('<td'), 'plain-text copy');
   });
 
